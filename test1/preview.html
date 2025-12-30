@@ -282,6 +282,19 @@
             white-space: nowrap;
         }
 
+        .word.falling {
+            animation: fall 5s linear forwards;
+        }
+
+        @keyframes fall {
+            from {
+                top: -50px;
+            }
+            to {
+                top: 350px;
+            }
+        }
+
         /* 爆炸效果 */
         .explosion {
             position: absolute;
@@ -1416,16 +1429,16 @@
             usedWords.push(currentWord.word);
 
             // 选择另一个不同的选项
-            let otherIndex;
+            let otherWord;
             const fullWordList = words[difficulty];
             do {
-                otherIndex = Math.floor(Math.random() * fullWordList.length);
-            } while (otherIndex === randomIndex && fullWordList[otherIndex].word !== currentWord.word);
+                otherWord = fullWordList[Math.floor(Math.random() * fullWordList.length)];
+            } while (otherWord.word === currentWord.word);
 
             // 随机排列两个选项
             const options = [
                 { ...currentWord, correct: true },
-                { ...fullWordList[otherIndex], correct: false }
+                { ...otherWord, correct: false }
             ].sort(() => Math.random() - 0.5);
 
             currentOptions = options;

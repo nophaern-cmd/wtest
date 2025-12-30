@@ -509,7 +509,7 @@ page {
 
 @keyframes fall {
   from {
-    top: 100rpx;
+    top: -100rpx;
   }
   to {
     top: calc(100% - 400rpx);

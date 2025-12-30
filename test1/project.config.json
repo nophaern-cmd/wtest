@@ -47,8 +47,8 @@
     "disableSWC": true
   },
   "compileType": "miniprogram",
-  "libVersion": "2.19.4",
-  "appid": "wxe936752af84be780",
+  "libVersion": "3.13.0",
+  "appid": "wx73fb56e2e2406e7d",
   "projectname": "helloworld",
   "condition": {},
   "simulatorPluginLibVersion": {},

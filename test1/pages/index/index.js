@@ -272,16 +272,16 @@ Page({
     this.setData({ usedWords: newUsedWords });
 
     // 选择另一个不同的选项
-    let otherIndex;
+    let otherWord;
     const fullWordList = this.data.words[this.data.difficulty];
     do {
-      otherIndex = Math.floor(Math.random() * fullWordList.length);
-    } while (otherIndex === randomIndex && fullWordList[otherIndex].word !== currentWord.word);
+      otherWord = fullWordList[Math.floor(Math.random() * fullWordList.length)];
+    } while (otherWord.word === currentWord.word);
 
     // 随机排列两个选项
     const options = [
       { ...currentWord, correct: true },
-      { ...fullWordList[otherIndex], correct: false }
+      { ...otherWord, correct: false }
     ].sort(() => Math.random() - 0.5);
 
     // 先移除动画类，强制重绘后再添加，确保每次都重新开始动画
