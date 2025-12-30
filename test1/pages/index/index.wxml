@@ -1,0 +1,261 @@
+<!--index.wxml-->
+<view class="container">
+  <!-- 游戏开始界面 -->
+  <view wx:if="{{!gameStarted && !showSettings}}" class="start-screen">
+    <view class="top-bar">
+      <view class="settings-top-btn" bindtap="showSettingsPanel">⚙️</view>
+    </view>
+    <view class="logo">🎮</view>
+    <view class="title">英语单词游戏</view>
+    <view class="subtitle">选择对应的图片，获得高分！</view>
+
+    <view class="difficulty-selector">
+      <view class="selector-label">选择难度</view>
+      <view class="difficulty-buttons">
+        <button
+          class="difficulty-btn {{difficulty === 'kindergarten' ? 'active' : ''}}"
+          bindtap="selectDifficulty"
+          data-level="kindergarten"
+        >
+          幼儿园
+        </button>
+        <button
+          class="difficulty-btn {{difficulty === 'primary' ? 'active' : ''}}"
+          bindtap="selectDifficulty"
+          data-level="primary"
+        >
+          小学
+        </button>
+        <button
+          class="difficulty-btn {{difficulty === 'middle' ? 'active' : ''}}"
+          bindtap="selectDifficulty"
+          data-level="middle"
+        >
+          初中
+        </button>
+      </view>
+    </view>
+
+    <view class="mode-selector">
+      <view class="mode-item {{wrongFirstMode ? 'active' : ''}}" bindtap="toggleWrongFirst">
+        <text class="mode-icon">📝</text>
+        <text class="mode-text">错题优先</text>
+      </view>
+      <view class="mode-info">
+        错题本: {{wrongWords.length}} 题
+      </view>
+    </view>
+
+    <button class="start-btn" bindtap="startGame">开始游戏</button>
+  </view>
+
+  <!-- 设置界面 -->
+  <view wx:if="{{!gameStarted && showSettings}}" class="settings-screen">
+    <view class="settings-header">
+      <text class="settings-title">⚙️ 游戏设置</text>
+      <text class="settings-close" bindtap="hideSettingsPanel">✕</text>
+    </view>
+
+    <view class="settings-tabs">
+      <view class="settings-tab {{activeTab === 'words' ? 'active' : ''}}" bindtap="switchTab" data-tab="words">
+        <text>📚 单词库</text>
+      </view>
+      <view class="settings-tab {{activeTab === 'wrong' ? 'active' : ''}}" bindtap="switchTab" data-tab="wrong">
+        <text>❌ 错题本 ({{wrongWords.length}})</text>
+      </view>
+      <view class="settings-tab {{activeTab === 'game' ? 'active' : ''}}" bindtap="switchTab" data-tab="game">
+        <text>🎮 游戏设置</text>
+      </view>
+    </view>
+
+    <!-- 单词库 -->
+    <view wx:if="{{activeTab === 'words'}}" class="settings-content">
+      <view class="difficulty-filter">
+        <text class="filter-label">查看难度:</text>
+        <view class="filter-buttons">
+          <button class="filter-btn {{viewDifficulty === 'kindergarten' ? 'active' : ''}}" bindtap="selectViewDifficulty" data-level="kindergarten">幼儿园</button>
+          <button class="filter-btn {{viewDifficulty === 'primary' ? 'active' : ''}}" bindtap="selectViewDifficulty" data-level="primary">小学</button>
+          <button class="filter-btn {{viewDifficulty === 'middle' ? 'active' : ''}}" bindtap="selectViewDifficulty" data-level="middle">初中</button>
+        </view>
+      </view>
+      <scroll-view scroll-y class="words-list">
+        <view class="words-grid">
+          <view
+            wx:for="{{words[viewDifficulty]}}"
+            wx:key="word"
+            class="word-item"
+          >
+            <text class="word-emoji">{{item.emoji}}</text>
+            <text class="word-text">{{item.word}}</text>
+            <text class="word-meaning">{{item.text}}</text>
+          </view>
+        </view>
+      </scroll-view>
+    </view>
+
+    <!-- 错题本 -->
+    <view wx:if="{{activeTab === 'wrong'}}" class="settings-content">
+      <view wx:if="{{wrongWords.length === 0}}" class="empty-state">
+        <text class="empty-icon">🎉</text>
+        <text class="empty-text">暂无错题</text>
+        <text class="empty-subtext">继续努力！</text>
+      </view>
+      <scroll-view wx:else scroll-y class="wrong-book-list">
+        <view class="wrong-book-section" wx:if="{{wrongWordsByDiff.kindergarten.length > 0}}">
+          <view class="section-title">幼儿园</view>
+          <view class="wrong-book-item" wx:for="{{wrongWordsByDiff.kindergarten}}" wx:for-item="item" wx:key="word" bindtap="removeFromWrongBook" data-word="{{item.word}}" data-difficulty="kindergarten">
+            <text class="wrong-book-emoji">{{item.emoji}}</text>
+            <text class="wrong-book-word">{{item.word}}</text>
+            <text class="wrong-book-meaning">{{item.text}}</text>
+            <text class="wrong-book-remove">✕</text>
+          </view>
+        </view>
+        <view class="wrong-book-section" wx:if="{{wrongWordsByDiff.primary.length > 0}}">
+          <view class="section-title">小学</view>
+          <view class="wrong-book-item" wx:for="{{wrongWordsByDiff.primary}}" wx:for-item="item" wx:key="word" bindtap="removeFromWrongBook" data-word="{{item.word}}" data-difficulty="primary">
+            <text class="wrong-book-emoji">{{item.emoji}}</text>
+            <text class="wrong-book-word">{{item.word}}</text>
+            <text class="wrong-book-meaning">{{item.text}}</text>
+            <text class="wrong-book-remove">✕</text>
+          </view>
+        </view>
+        <view class="wrong-book-section" wx:if="{{wrongWordsByDiff.middle.length > 0}}">
+          <view class="section-title">初中</view>
+          <view class="wrong-book-item" wx:for="{{wrongWordsByDiff.middle}}" wx:for-item="item" wx:key="word" bindtap="removeFromWrongBook" data-word="{{item.word}}" data-difficulty="middle">
+            <text class="wrong-book-emoji">{{item.emoji}}</text>
+            <text class="wrong-book-word">{{item.word}}</text>
+            <text class="wrong-book-meaning">{{item.text}}</text>
+            <text class="wrong-book-remove">✕</text>
+          </view>
+        </view>
+      </scroll-view>
+    </view>
+
+    <!-- 游戏设置 -->
+    <view wx:if="{{activeTab === 'game'}}" class="settings-content">
+      <view class="setting-item">
+        <view class="setting-label">错题优先模式</view>
+        <view class="setting-toggle {{wrongFirstMode ? 'active' : ''}}" bindtap="toggleWrongFirstFromSettings">
+          <text class="toggle-dot"></text>
+        </view>
+      </view>
+      <view class="setting-description">开启后，游戏会优先出错的题目</view>
+
+      <view class="setting-item">
+        <view class="setting-label">每轮题目数量</view>
+        <view class="setting-info">10 题</view>
+      </view>
+      <view class="setting-description">每次游戏的固定题目数量</view>
+
+      <view class="setting-item">
+        <view class="setting-label">初始生命值</view>
+        <view class="setting-info">3 ❤️</view>
+      </view>
+      <view class="setting-description">游戏开始时的生命值</view>
+    </view>
+  </view>
+
+  <!-- 游戏进行中 -->
+  <view wx:elif="{{gameStarted}}" class="game-screen">
+    <view class="score-board">
+      <view class="score-item">
+        <text class="label">进度</text>
+        <text class="score">{{currentRound}}/10</text>
+      </view>
+      <view class="score-item">
+        <text class="label">得分</text>
+        <text class="score {{score >= 0 ? 'positive' : 'negative'}}">{{score}}</text>
+      </view>
+      <view class="score-item">
+        <text class="label">生命</text>
+        <text class="lives">{{lives}}</text>
+      </view>
+    </view>
+
+    <view class="game-area">
+      <!-- 掉落的单词 -->
+      <view
+        class="word {{wordAnim}}"
+        style="top: {{wordTop}}px"
+      >
+        {{currentWord}}
+      </view>
+
+      <!-- 爆炸效果 -->
+      <view wx:if="{{showExplosion}}" class="explosion {{explosionType}}">
+        <text class="explosion-emoji">{{explosionEmoji}}</text>
+      </view>
+
+      <!-- 底部两个图片选项 -->
+      <view class="options">
+        <view
+          class="option-card {{selectedOption === 0 ? 'selected' : ''}} {{resultShown && options[0].correct ? 'correct' : ''}} {{resultShown && selectedOption === 0 && !options[0].correct ? 'wrong' : ''}}"
+          bindtap="selectOption"
+          data-index="0"
+        >
+          <text class="option-emoji">{{options[0].emoji}}</text>
+          <text class="option-text">{{options[0].text}}</text>
+        </view>
+        <view
+          class="option-card {{selectedOption === 1 ? 'selected' : ''}} {{resultShown && options[1].correct ? 'correct' : ''}} {{resultShown && selectedOption === 1 && !options[1].correct ? 'wrong' : ''}}"
+          bindtap="selectOption"
+          data-index="1"
+        >
+          <text class="option-emoji">{{options[1].emoji}}</text>
+          <text class="option-text">{{options[1].text}}</text>
+        </view>
+      </view>
+    </view>
+
+    <!-- 历史记录 -->
+    <view class="history-bar">
+      <scroll-view scroll-x class="history-scroll">
+        <view class="history-items">
+          <view
+            wx:for="{{history}}"
+            wx:key="index"
+            class="history-item {{item.correct ? 'correct' : 'wrong'}}"
+          >
+            <text class="history-word">{{item.word}}</text>
+            <text class="history-emoji">{{item.emoji}}</text>
+            <text class="history-status">{{item.correct ? '✓' : '✗'}}</text>
+          </view>
+        </view>
+      </scroll-view>
+    </view>
+  </view>
+
+  <!-- 游戏结束界面 -->
+  <view wx:if="{{gameOver}}" class="game-over">
+    <view class="over-logo">🏆</view>
+    <view class="over-title">游戏结束</view>
+    <view class="final-score">
+      <text>最终得分</text>
+      <text class="score {{finalScore >= 0 ? 'positive' : 'negative'}}">{{finalScore}}</text>
+    </view>
+    <view class="final-stats">
+      <text>正确: {{correctCount}} 题</text>
+      <text>错误: {{wrongCount}} 题</text>
+    </view>
+
+    <view class="wrong-words-section" wx:if="{{currentWrongWords.length > 0}}">
+      <view class="wrong-title">错题本</view>
+      <scroll-view scroll-y class="wrong-words-list">
+        <view
+          wx:for="{{currentWrongWords}}"
+          wx:key="index"
+          class="wrong-word-item {{item.addedToBook ? 'added' : ''}}"
+          bindtap="toggleWrongBook"
+          data-index="{{index}}"
+        >
+          <text class="wrong-word">{{item.word}}</text>
+          <text class="wrong-emoji">{{item.emoji}}</text>
+          <text class="wrong-meaning">{{item.text}}</text>
+          <text class="wrong-action">{{item.addedToBook ? '已添加' : '加入'}}</text>
+        </view>
+      </scroll-view>
+    </view>
+
+    <button class="restart-btn" bindtap="restartGame">再玩一次</button>
+  </view>
+</view>
