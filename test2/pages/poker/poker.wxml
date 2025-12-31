@@ -1,0 +1,144 @@
+<!--pages/poker/poker.wxml-->
+<view class="poker-container">
+  <!-- 游戏开始界面 -->
+  <view class="game-start" wx:if="{{!gameStarted}}">
+    <view class="start-content">
+      <text class="game-title">🃏 知识扑克</text>
+      <text class="game-desc">配对知识点，完成连击！</text>
+
+      <view class="game-info">
+        <view class="info-row">
+          <text class="info-label">学科:</text>
+          <text class="info-value">{{subjectName}}</text>
+        </view>
+        <view class="info-row">
+          <text class="info-label">难度:</text>
+          <text class="info-value">{{difficulty === 'primary' ? '小学' : '中学'}}</text>
+        </view>
+      </view>
+
+      <view class="rules">
+        <text class="rules-title">📖 游戏规则</text>
+        <text class="rule-item">• 上下两张卡片是配对的知识点</text>
+        <text class="rule-item">• 点击"配对"按钮确认配对成功</text>
+        <text class="rule-item">• 点击"不配对"按钮重新发牌</text>
+        <text class="rule-item">• 连续答对获得连击加分</text>
+      </view>
+
+      <button class="start-btn" bindtap="startGame">开始游戏</button>
+    </view>
+  </view>
+
+  <!-- 游戏进行中 -->
+  <view class="game-playing" wx:if="{{gameStarted && !gameOver}}">
+    <!-- 顶部状态栏 -->
+    <view class="status-bar">
+      <view class="status-left">
+        <view class="score-item">
+          <text class="score-label">分数</text>
+          <text class="score-value">{{score}}</text>
+        </view>
+        <view class="combo-badge" wx:if="{{combo > 1}}">
+          <text>🔥 {{combo}}连击</text>
+        </view>
+      </view>
+      <view class="status-right">
+        <text class="round-text">{{currentRound}}/{{totalRounds}}</text>
+        <view class="lives">
+          <text class="life {{index < lives ? '' : 'lost'}}" wx:for="{{[1,2,3]}}" wx:key="*this">❤️</text>
+        </view>
+      </view>
+    </view>
+
+    <!-- 卡片区域 -->
+    <view class="cards-area">
+      <view class="card-container">
+        <view class="card top-card {{topCardFlipped ? 'flipped' : ''}}" bindtap="flipCard" data-position="top">
+          <view class="card-front">
+            <text class="card-icon">❓</text>
+            <text class="card-hint">点击查看</text>
+          </view>
+          <view class="card-back">
+            <text class="card-question">{{topCard.question}}</text>
+            <text class="card-hint">{{topCard.hint || '提示: 点击下方卡片查看答案'}}</text>
+          </view>
+        </view>
+
+        <view class="vs-badge">⚔️</view>
+
+        <view class="card bottom-card {{bottomCardFlipped ? 'flipped' : ''}}" bindtap="flipCard" data-position="bottom">
+          <view class="card-front">
+            <text class="card-icon">❓</text>
+            <text class="card-hint">点击查看</text>
+          </view>
+          <view class="card-back">
+            <text class="card-answer">{{bottomCard.answer}}</text>
+            <text class="card-hint">这是正确答案吗?</text>
+          </view>
+        </view>
+      </view>
+    </view>
+
+    <!-- 操作按钮 -->
+    <view class="action-buttons">
+      <button
+        class="action-btn wrong-btn {{resultShown ? 'disabled' : ''}}"
+        bindtap="checkMatch"
+        data-match="false"
+        disabled="{{resultShown}}"
+      >
+        ❌ 不配对
+      </button>
+      <button
+        class="action-btn correct-btn {{resultShown ? 'disabled' : ''}}"
+        bindtap="checkMatch"
+        data-match="true"
+        disabled="{{resultShown}}"
+      >
+        ✅ 配对
+      </button>
+    </view>
+
+    <!-- 结果反馈 -->
+    <view class="result-feedback" wx:if="{{resultShown}}">
+      <view class="feedback-content {{isCorrect ? 'correct' : 'wrong'}}">
+        <text class="feedback-icon">{{isCorrect ? '🎉' : '💔'}}</text>
+        <text class="feedback-text">{{isCorrect ? '配对成功!' : '配对失败!'}}</text>
+        <text class="feedback-detail" wx:if="{{!isCorrect}}">正确答案: {{correctAnswer}}</text>
+      </view>
+    </view>
+  </view>
+
+  <!-- 游戏结束 -->
+  <view class="game-over" wx:if="{{gameOver}}">
+    <view class="over-content">
+      <text class="over-title">{{lives > 0 ? '🎊 恭喜完成!' : '💀 游戏结束'}}</text>
+
+      <view class="result-stats">
+        <view class="stat-box">
+          <text class="stat-label">最终得分</text>
+          <text class="stat-value">{{score}}</text>
+        </view>
+        <view class="stat-row">
+          <view class="stat-item">
+            <text class="stat-label">答对</text>
+            <text class="stat-value correct">{{correctCount}}</text>
+          </view>
+          <view class="stat-item">
+            <text class="stat-label">答错</text>
+            <text class="stat-value wrong">{{wrongCount}}</text>
+          </view>
+        </view>
+        <view class="stat-item">
+          <text class="stat-label">最高连击</text>
+          <text class="stat-value">{{maxCombo}}</text>
+        </view>
+      </view>
+
+      <view class="result-actions">
+        <button class="restart-btn" bindtap="restartGame">再玩一次</button>
+        <button class="home-btn" bindtap="goHome">返回首页</button>
+      </view>
+    </view>
+  </view>
+</view>

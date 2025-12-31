@@ -1,0 +1,282 @@
+/* pages/stats/stats.wxss */
+.stats-container {
+  min-height: 100vh;
+  background: #f5f5f5;
+  padding-bottom: 40rpx;
+}
+
+/* 头部统计 */
+.header-stats {
+  background: linear-gradient(135deg, #4A90E2, #357ABD);
+  padding: 40rpx 32rpx;
+  border-radius: 0 0 32rpx 32rpx;
+  margin-bottom: 32rpx;
+}
+
+.total-score {
+  text-align: center;
+  margin-bottom: 32rpx;
+}
+
+.score-label {
+  display: block;
+  font-size: 28rpx;
+  color: rgba(255, 255, 255, 0.9);
+  margin-bottom: 12rpx;
+}
+
+.score-value {
+  display: block;
+  font-size: 80rpx;
+  font-weight: bold;
+  color: #FFD700;
+  text-shadow: 0 4rpx 12rpx rgba(0, 0, 0, 0.3);
+}
+
+.total-games {
+  display: flex;
+  gap: 32rpx;
+  justify-content: center;
+}
+
+.game-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 24rpx 48rpx;
+  background: rgba(255, 255, 255, 0.2);
+  border-radius: 16rpx;
+  backdrop-filter: blur(10rpx);
+}
+
+.item-value {
+  font-size: 40rpx;
+  font-weight: bold;
+  color: white;
+  line-height: 1;
+  margin-bottom: 8rpx;
+}
+
+.item-label {
+  font-size: 24rpx;
+  color: rgba(255, 255, 255, 0.8);
+}
+
+/* 区块 */
+.section {
+  padding: 0 32rpx;
+  margin-bottom: 40rpx;
+}
+
+.section-title {
+  display: flex;
+  align-items: center;
+  gap: 12rpx;
+  margin-bottom: 24rpx;
+}
+
+.title-icon {
+  font-size: 36rpx;
+}
+
+.title-text {
+  font-size: 32rpx;
+  font-weight: 600;
+  color: #333;
+}
+
+/* 学科进度 */
+.progress-item {
+  background: white;
+  border-radius: 16rpx;
+  padding: 24rpx;
+  margin-bottom: 16rpx;
+  box-shadow: 0 2rpx 12rpx rgba(0, 0, 0, 0.08);
+}
+
+.progress-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 16rpx;
+}
+
+.subject-name {
+  font-size: 28rpx;
+  font-weight: 600;
+  color: #333;
+}
+
+.progress-text {
+  font-size: 24rpx;
+  color: #999;
+}
+
+.progress-bar {
+  height: 12rpx;
+  background: #f0f0f0;
+  border-radius: 6rpx;
+  overflow: hidden;
+}
+
+.progress-fill {
+  height: 100%;
+  border-radius: 6rpx;
+  transition: width 0.3s;
+}
+
+/* 游戏统计 */
+.game-stats-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 20rpx;
+}
+
+.game-stat-card {
+  background: white;
+  border-radius: 16rpx;
+  padding: 32rpx 24rpx;
+  text-align: center;
+  box-shadow: 0 2rpx 12rpx rgba(0, 0, 0, 0.08);
+}
+
+.game-icon {
+  font-size: 48rpx;
+  margin-bottom: 12rpx;
+}
+
+.game-name {
+  display: block;
+  font-size: 26rpx;
+  font-weight: 500;
+  color: #333;
+  margin-bottom: 16rpx;
+}
+
+.game-nums {
+  margin-bottom: 8rpx;
+}
+
+.num-correct {
+  font-size: 36rpx;
+  font-weight: bold;
+  color: #4CAF50;
+}
+
+.num-total {
+  font-size: 28rpx;
+  color: #999;
+}
+
+.game-accuracy {
+  display: block;
+  font-size: 24rpx;
+  color: #666;
+}
+
+/* 学习统计 */
+.learning-stats {
+  display: flex;
+  flex-direction: column;
+  gap: 16rpx;
+}
+
+.learning-item {
+  display: flex;
+  align-items: center;
+  background: white;
+  border-radius: 16rpx;
+  padding: 24rpx;
+  box-shadow: 0 2rpx 12rpx rgba(0, 0, 0, 0.08);
+}
+
+.learning-icon {
+  font-size: 48rpx;
+  margin-right: 20rpx;
+}
+
+.learning-content {
+  flex: 1;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.learning-label {
+  font-size: 28rpx;
+  color: #666;
+}
+
+.learning-value {
+  font-size: 32rpx;
+  font-weight: bold;
+  color: #333;
+}
+
+/* 成就徽章 */
+.achievements {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 16rpx;
+}
+
+.achievement-badge {
+  background: white;
+  border-radius: 16rpx;
+  padding: 24rpx;
+  text-align: center;
+  box-shadow: 0 2rpx 12rpx rgba(0, 0, 0, 0.08);
+  transition: all 0.3s;
+}
+
+.achievement-badge.unlocked {
+  border: 2rpx solid #FFD700;
+}
+
+.achievement-badge.locked {
+  opacity: 0.5;
+  filter: grayscale(1);
+}
+
+.badge-icon {
+  display: block;
+  font-size: 48rpx;
+  margin-bottom: 8rpx;
+}
+
+.badge-name {
+  display: block;
+  font-size: 24rpx;
+  font-weight: 500;
+  color: #333;
+  margin-bottom: 4rpx;
+}
+
+.badge-desc {
+  display: block;
+  font-size: 20rpx;
+  color: #999;
+}
+
+/* 操作按钮 */
+.actions {
+  padding: 0 32rpx;
+}
+
+.action-btn {
+  height: 88rpx;
+  border-radius: 16rpx;
+  font-size: 32rpx;
+  font-weight: 600;
+  border: none;
+}
+
+.clear-btn {
+  background: white;
+  color: #F44336;
+  border: 2rpx solid #F44336;
+}
+
+.clear-btn:active {
+  background: #FFEBEE;
+}

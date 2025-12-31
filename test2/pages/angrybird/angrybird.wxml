@@ -1,0 +1,127 @@
+<!--pages/angrybird/angrybird.wxml-->
+<view class="angrybird-container">
+  <!-- 游戏开始界面 -->
+  <view class="game-start" wx:if="{{!gameStarted}}">
+    <view class="start-content">
+      <text class="game-title">🐦 答题大作战</text>
+      <text class="game-desc">用正确答案击碎障碍！</text>
+
+      <view class="game-info">
+        <view class="info-row">
+          <text class="info-label">学科:</text>
+          <text class="info-value">{{subjectName}}</text>
+        </view>
+        <view class="info-row">
+          <text class="info-label">难度:</text>
+          <text class="info-value">{{difficulty === 'primary' ? '小学' : '中学'}}</text>
+        </view>
+      </view>
+
+      <view class="rules">
+        <text class="rules-title">📖 游戏规则</text>
+        <text class="rule-item">• 点击选项发射小鸟</text>
+        <text class="rule-item">• 正确答案击碎障碍，得分</text>
+        <text class="rule-item">• 错误答案反弹扣分</text>
+        <text class="rule-item">• 连续击中获得连击加分</text>
+      </view>
+
+      <button class="start-btn" bindtap="startGame">开始游戏</button>
+    </view>
+  </view>
+
+  <!-- 游戏进行中 -->
+  <view class="game-playing" wx:if="{{gameStarted && !gameOver}}">
+    <!-- 游戏区域 -->
+    <view class="game-area">
+      <!-- 障碍物 -->
+      <view class="obstacle {{obstacleHit ? 'hit' : ''}}">
+        <text class="obstacle-emoji">{{obstacleHit ? '💥' : '🧱'}}</text>
+        <text class="obstacle-health">HP: {{obstacleHP}}</text>
+      </view>
+
+      <!-- 答题区 -->
+      <view class="question-area">
+        <view class="question-box">
+          <text class="question-text">{{currentQuestion.question}}</text>
+          <text class="question-hint">{{currentQuestion.hint}}</text>
+        </view>
+
+        <view class="options-container">
+          <view
+            class="option-bird {{item.selected ? 'selected' : ''}} {{item.result}}"
+            wx:for="{{options}}"
+            wx:key="index"
+            bindtap="selectOption"
+            data-index="{{index}}"
+          >
+            <text class="bird-emoji">🐦</text>
+            <text class="option-text">{{item.text}}</text>
+          </view>
+        </view>
+      </view>
+    </view>
+
+    <!-- 状态栏 -->
+    <view class="status-bar">
+      <view class="score-display">
+        <text class="score-label">分数</text>
+        <text class="score-value">{{score}}</text>
+      </view>
+      <view class="combo-badge" wx:if="{{combo > 1}}">
+        <text>🔥 {{combo}}连击</text>
+      </view>
+      <view class="round-display">
+        <text>{{currentRound}}/{{totalRounds}}</text>
+      </view>
+      <view class="lives-display">
+        <text class="life {{index < lives ? '' : 'lost'}}" wx:for="{{[1,2,3]}}" wx:key="*this">❤️</text>
+      </view>
+    </view>
+
+    <!-- 射击动画 -->
+    <view class="projectile" wx:if="{{showProjectile}}" style="left: {{projectileX}}px; top: {{projectileY}}px;"></view>
+
+    <!-- 结果反馈 -->
+    <view class="result-overlay" wx:if="{{showResult}}">
+      <view class="result-content {{resultType}}">
+        <text class="result-emoji">{{resultType === 'correct' ? '🎯' : '💦'}}</text>
+        <text class="result-text">{{resultType === 'correct' ? '命中目标!' : '未命中!'}}</text>
+        <text class="result-score" wx:if="{{resultType === 'correct'}}">+{{currentScore}}</text>
+        <text class="result-score" wx:if="{{resultType === 'wrong'}}">{{currentScore}}</text>
+      </view>
+    </view>
+  </view>
+
+  <!-- 游戏结束 -->
+  <view class="game-over" wx:if="{{gameOver}}">
+    <view class="over-content">
+      <text class="over-title">{{lives > 0 ? '🎊 任务完成!' : '💀 游戏结束'}}</text>
+
+      <view class="result-stats">
+        <view class="stat-box">
+          <text class="stat-label">最终得分</text>
+          <text class="stat-value">{{score}}</text>
+        </view>
+        <view class="stat-row">
+          <view class="stat-item">
+            <text class="stat-label">命中</text>
+            <text class="stat-value correct">{{correctCount}}</text>
+          </view>
+          <view class="stat-item">
+            <text class="stat-label">脱靶</text>
+            <text class="stat-value wrong">{{wrongCount}}</text>
+          </view>
+        </view>
+        <view class="stat-item">
+          <text class="stat-label">最高连击</text>
+          <text class="stat-value">{{maxCombo}}</text>
+        </view>
+      </view>
+
+      <view class="result-actions">
+        <button class="restart-btn" bindtap="restartGame">再次挑战</button>
+        <button class="home-btn" bindtap="goHome">返回首页</button>
+      </view>
+    </view>
+  </view>
+</view>

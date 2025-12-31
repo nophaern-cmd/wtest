@@ -1,0 +1,185 @@
+/**app.wxss**/
+page {
+  background-color: #f5f5f5;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue', sans-serif;
+}
+
+.container {
+  padding: 20rpx;
+}
+
+/* 通用按钮样式 */
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 24rpx 48rpx;
+  border-radius: 12rpx;
+  font-size: 32rpx;
+  font-weight: 500;
+  transition: all 0.3s;
+}
+
+.btn-primary {
+  background: linear-gradient(135deg, #4A90E2, #357ABD);
+  color: white;
+  box-shadow: 0 4rpx 12rpx rgba(74, 144, 226, 0.3);
+}
+
+.btn-success {
+  background: linear-gradient(135deg, #52C41A, #389E0D);
+  color: white;
+  box-shadow: 0 4rpx 12rpx rgba(82, 196, 26, 0.3);
+}
+
+.btn-warning {
+  background: linear-gradient(135deg, #FA8C16, #D46B08);
+  color: white;
+  box-shadow: 0 4rpx 12rpx rgba(250, 140, 22, 0.3);
+}
+
+.btn-danger {
+  background: linear-gradient(135deg, #F5222D, #CF1322);
+  color: white;
+  box-shadow: 0 4rpx 12rpx rgba(245, 34, 45, 0.3);
+}
+
+.btn:active {
+  transform: scale(0.95);
+}
+
+/* 卡片样式 */
+.card {
+  background: white;
+  border-radius: 16rpx;
+  padding: 32rpx;
+  margin-bottom: 24rpx;
+  box-shadow: 0 2rpx 12rpx rgba(0, 0, 0, 0.08);
+}
+
+.card-title {
+  font-size: 36rpx;
+  font-weight: 600;
+  margin-bottom: 16rpx;
+}
+
+.card-content {
+  font-size: 28rpx;
+  color: #666;
+  line-height: 1.6;
+}
+
+/* 标签样式 */
+.tag {
+  display: inline-block;
+  padding: 8rpx 24rpx;
+  border-radius: 20rpx;
+  font-size: 24rpx;
+  margin-right: 12rpx;
+}
+
+.tag-chinese {
+  background: #FFF1F0;
+  color: #F5222D;
+}
+
+.tag-math {
+  background: #F6FFED;
+  color: #52C41A;
+}
+
+.tag-english {
+  background: #E6F7FF;
+  color: #1890FF;
+}
+
+.tag-history {
+  background: #F9F0FF;
+  color: #722ED1;
+}
+
+/* 动画效果 */
+@keyframes slideIn {
+  from {
+    transform: translateY(100%);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+.slide-in {
+  animation: slideIn 0.3s ease-out;
+}
+
+@keyframes shake {
+  0%, 100% { transform: translateX(0); }
+  25% { transform: translateX(-10rpx); }
+  75% { transform: translateX(10rpx); }
+}
+
+.shake {
+  animation: shake 0.5s ease-in-out;
+}
+
+@keyframes pop {
+  0% { transform: scale(1); }
+  50% { transform: scale(1.1); }
+  100% { transform: scale(1); }
+}
+
+.pop {
+  animation: pop 0.3s ease-in-out;
+}
+
+/* 分割线 */
+.divider {
+  height: 2rpx;
+  background: #f0f0f0;
+  margin: 32rpx 0;
+}
+
+/* 状态图标 */
+.icon {
+  font-size: 48rpx;
+  margin-right: 16rpx;
+}
+
+/* 进度条 */
+.progress-bar {
+  height: 8rpx;
+  background: #f0f0f0;
+  border-radius: 4rpx;
+  overflow: hidden;
+}
+
+.progress-fill {
+  height: 100%;
+  background: linear-gradient(90deg, #4A90E2, #357ABD);
+  transition: width 0.3s;
+}
+
+/* 答案选项 */
+.option-item {
+  padding: 32rpx;
+  border-radius: 16rpx;
+  background: white;
+  margin-bottom: 20rpx;
+  font-size: 30rpx;
+  border: 2rpx solid #e8e8e8;
+  transition: all 0.3s;
+}
+
+.option-item.correct {
+  background: #F6FFED;
+  border-color: #52C41A;
+  color: #52C41A;
+}
+
+.option-item.wrong {
+  background: #FFF1F0;
+  border-color: #F5222D;
+  color: #F5222D;
+}

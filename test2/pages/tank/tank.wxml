@@ -1,0 +1,131 @@
+<!--pages/tank/tank.wxml-->
+<view class="tank-container">
+  <!-- 游戏开始界面 -->
+  <view class="game-start" wx:if="{{!gameStarted}}">
+    <view class="start-content">
+      <text class="game-title">🎮 知识坦克</text>
+      <text class="game-desc">守护知识堡垒，击败错误！</text>
+
+      <view class="game-info">
+        <view class="info-row">
+          <text class="info-label">学科:</text>
+          <text class="info-value">{{subjectName}}</text>
+        </view>
+        <view class="info-row">
+          <text class="info-label">难度:</text>
+          <text class="info-value">{{difficulty === 'primary' ? '小学' : '中学'}}</text>
+        </view>
+      </view>
+
+      <view class="rules">
+        <text class="rules-title">📖 游戏规则</text>
+        <text class="rule-item">• 坦克守护知识堡垒</text>
+        <text class="rule-item">• 敌军从上方进攻</text>
+        <text class="rule-item">• 选择正确答案攻击敌人</text>
+        <text class="rule-item">• 错误敌人接近堡垒会扣血</text>
+      </view>
+
+      <button class="start-btn" bindtap="startGame">开始防御</button>
+    </view>
+  </view>
+
+  <!-- 游戏进行中 -->
+  <view class="game-playing" wx:if="{{gameStarted && !gameOver}}">
+    <!-- 战场区域 -->
+    <view class="battlefield">
+      <!-- 堡垒 -->
+      <view class="fortress">
+        <text class="fortress-emoji">🏰</text>
+        <view class="fortress-hp">
+          <text class="hp-label">HP</text>
+          <view class="hp-bar">
+            <view class="hp-fill" style="width: {{fortressHP / maxFortressHP * 100}}%"></view>
+          </view>
+          <text class="hp-value">{{fortressHP}}/{{maxFortressHP}}</text>
+        </view>
+      </view>
+
+      <!-- 敌人列表 -->
+      <view class="enemies">
+        <view
+          class="enemy {{item.shooting ? 'shooting' : ''}}"
+          wx:for="{{enemies}}"
+          wx:key="id"
+          style="left: {{item.x}}%; top: {{item.y}}%;"
+        >
+          <text class="enemy-emoji">{{item.emoji}}</text>
+          <text class="enemy-label">{{item.text}}</text>
+        </view>
+      </view>
+
+      <!-- 坦克 -->
+      <view class="tank {{tankMoving ? 'moving' : ''}}" style="left: {{tankX}}%;">
+        <text class="tank-emoji">🛡️</text>
+      </view>
+    </view>
+
+    <!-- 答题面板 -->
+    <view class="question-panel">
+      <view class="question-info">
+        <text class="question-wave">第 {{currentRound}} 波</text>
+        <text class="question-score">分数: {{score}}</text>
+      </view>
+
+      <view class="question-box">
+        <text class="question-text">{{currentQuestion.question}}</text>
+        <text class="question-hint">{{currentQuestion.hint}}</text>
+      </view>
+
+      <view class="options-grid">
+        <view
+          class="option-turret {{item.state}}"
+          wx:for="{{options}}"
+          wx:key="index"
+          bindtap="selectOption"
+          data-index="{{index}}"
+        >
+          <text class="turret-emoji">🎯</text>
+          <text class="option-text">{{item.text}}</text>
+        </view>
+      </view>
+    </view>
+
+    <!-- 攻击动画 -->
+    <view class="attack-effect" wx:if="{{showAttack}}">
+      <text class="attack-emoji">💥</text>
+    </view>
+  </view>
+
+  <!-- 游戏结束 -->
+  <view class="game-over" wx:if="{{gameOver}}">
+    <view class="over-content">
+      <text class="over-title">{{fortressHP > 0 ? '🏆 防御成功!' : '💔 堡垒失守'}}</text>
+
+      <view class="result-stats">
+        <view class="stat-box">
+          <text class="stat-label">最终得分</text>
+          <text class="stat-value">{{score}}</text>
+        </view>
+        <view class="stat-row">
+          <view class="stat-item">
+            <text class="stat-label">击杀</text>
+            <text class="stat-value correct">{{correctCount}}</text>
+          </view>
+          <view class="stat-item">
+            <text class="stat-label">漏敌</text>
+            <text class="stat-value wrong">{{wrongCount}}</text>
+          </view>
+        </view>
+        <view class="stat-item">
+          <text class="stat-label">波数</text>
+          <text class="stat-value">{{currentRound}}/{{totalRounds}}</text>
+        </view>
+      </view>
+
+      <view class="result-actions">
+        <button class="restart-btn" bindtap="restartGame">再次防御</button>
+        <button class="home-btn" bindtap="goHome">返回首页</button>
+      </view>
+    </view>
+  </view>
+</view>

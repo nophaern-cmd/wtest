@@ -1,0 +1,106 @@
+<!--home.wxml-->
+<view class="home-container">
+  <!-- 头部欢迎区 -->
+  <view class="header">
+    <view class="welcome">
+      <text class="title">🎮 趣味学习</text>
+      <text class="subtitle">让学习像玩游戏一样有趣</text>
+    </view>
+    <view class="stats-mini">
+      <view class="stat-item">
+        <text class="stat-value">{{totalScore}}</text>
+        <text class="stat-label">总分</text>
+      </view>
+      <view class="stat-item">
+        <text class="stat-value">{{totalGames}}</text>
+        <text class="stat-label">游戏</text>
+      </view>
+    </view>
+  </view>
+
+  <!-- 学科选择 -->
+  <view class="section">
+    <view class="section-title">📚 选择学科</view>
+    <scroll-view scroll-x class="subject-scroll">
+      <view class="subject-list">
+        <view
+          class="subject-item {{selectedSubject === item.id ? 'active' : ''}}"
+          wx:for="{{subjects}}"
+          wx:key="id"
+          bindtap="selectSubject"
+          data-id="{{item.id}}"
+        >
+          <text class="subject-icon">{{item.icon}}</text>
+          <text class="subject-name">{{item.name}}</text>
+        </view>
+      </view>
+    </scroll-view>
+  </view>
+
+  <!-- 游戏选择 -->
+  <view class="section">
+    <view class="section-title">🎯 选择游戏</view>
+    <view class="game-grid">
+      <view
+        class="game-card {{selectedSubject && item.supportedSubjects.indexOf(selectedSubject) !== -1 ? '' : 'disabled'}}"
+        wx:for="{{games}}"
+        wx:key="id"
+        bindtap="playGame"
+        data-game="{{item}}"
+      >
+        <view class="game-icon" style="background: {{item.color}}">{{item.icon}}</view>
+        <view class="game-info">
+          <text class="game-name">{{item.name}}</text>
+          <text class="game-desc">{{item.desc}}</text>
+        </view>
+        <view class="game-arrow" wx:if="{{selectedSubject && item.supportedSubjects.indexOf(selectedSubject) !== -1}}">→</view>
+      </view>
+    </view>
+  </view>
+
+  <!-- 推荐游戏 -->
+  <view class="section">
+    <view class="section-title">⭐ 推荐今日学习</view>
+    <view class="recommend-card">
+      <view class="recommend-item" bindtap="quickPlay" data-subject="math" data-game="poker">
+        <text class="recommend-icon">🔢</text>
+        <view class="recommend-content">
+          <text class="recommend-title">数学扑克</text>
+          <text class="recommend-desc">配对算式，快速计算</text>
+        </view>
+        <text class="recommend-btn">开始</text>
+      </view>
+      <view class="recommend-item" bindtap="quickPlay" data-subject="english" data-game="angrybird">
+        <text class="recommend-icon">🅰️</text>
+        <view class="recommend-content">
+          <text class="recommend-title">英语大作战</text>
+          <text class="recommend-desc">射击错误，记住单词</text>
+        </view>
+        <text class="recommend-btn">开始</text>
+      </view>
+    </view>
+  </view>
+
+  <!-- 难度选择 -->
+  <view class="section">
+    <view class="section-title">📊 选择难度</view>
+    <view class="difficulty-selector">
+      <view
+        class="difficulty-item {{difficulty === 'primary' ? 'active' : ''}}"
+        bindtap="selectDifficulty"
+        data-level="primary"
+      >
+        <text class="difficulty-icon">🌱</text>
+        <text class="difficulty-name">小学</text>
+      </view>
+      <view
+        class="difficulty-item {{difficulty === 'middle' ? 'active' : ''}}"
+        bindtap="selectDifficulty"
+        data-level="middle"
+      >
+        <text class="difficulty-icon">🌿</text>
+        <text class="difficulty-name">中学</text>
+      </view>
+    </view>
+  </view>
+</view>

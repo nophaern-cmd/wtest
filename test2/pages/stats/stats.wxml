@@ -1,0 +1,109 @@
+<!--pages/stats/stats.wxml-->
+<view class="stats-container">
+  <!-- 头部总览 -->
+  <view class="header-stats">
+    <view class="total-score">
+      <text class="score-label">总得分</text>
+      <text class="score-value">{{totalScore}}</text>
+    </view>
+    <view class="total-games">
+      <view class="game-item">
+        <text class="item-value">{{totalGames}}</text>
+        <text class="item-label">游戏次数</text>
+      </view>
+      <view class="game-item">
+        <text class="item-value">{{accuracy}}%</text>
+        <text class="item-label">正确率</text>
+      </view>
+    </view>
+  </view>
+
+  <!-- 学科进度 -->
+  <view class="section">
+    <view class="section-title">
+      <text class="title-icon">📚</text>
+      <text class="title-text">学科进度</text>
+    </view>
+    <view class="subject-progress-list">
+      <view class="progress-item" wx:for="{{subjectStats}}" wx:key="name">
+        <view class="progress-header">
+          <text class="subject-name">{{item.icon}} {{item.name}}</text>
+          <text class="progress-text">{{item.correct}}/{{item.total}} ({{item.accuracy}}%)</text>
+        </view>
+        <view class="progress-bar">
+          <view class="progress-fill" style="width: {{item.accuracy}}%; background: {{item.color}}"></view>
+        </view>
+      </view>
+    </view>
+  </view>
+
+  <!-- 游戏统计 -->
+  <view class="section">
+    <view class="section-title">
+      <text class="title-icon">🎮</text>
+      <text class="title-text">游戏统计</text>
+    </view>
+    <view class="game-stats-grid">
+      <view class="game-stat-card" wx:for="{{gameStats}}" wx:key="name">
+        <text class="game-icon">{{item.icon}}</text>
+        <text class="game-name">{{item.name}}</text>
+        <view class="game-nums">
+          <text class="num-correct">{{item.correct}}</text>
+          <text class="num-total">/{{item.total}}</text>
+        </view>
+        <text class="game-accuracy">{{item.accuracy}}%</text>
+      </view>
+    </view>
+  </view>
+
+  <!-- 最近记录 -->
+  <view class="section">
+    <view class="section-title">
+      <text class="title-icon">📊</text>
+      <text class="title-text">学习记录</text>
+    </view>
+    <view class="learning-stats">
+      <view class="learning-item">
+        <text class="learning-icon">🔥</text>
+        <view class="learning-content">
+          <text class="learning-label">总答题数</text>
+          <text class="learning-value">{{totalQuestions}}</text>
+        </view>
+      </view>
+      <view class="learning-item">
+        <text class="learning-icon">✅</text>
+        <view class="learning-content">
+          <text class="learning-label">正确答题</text>
+          <text class="learning-value">{{totalCorrect}}</text>
+        </view>
+      </view>
+      <view class="learning-item">
+        <text class="learning-icon">📅</text>
+        <view class="learning-content">
+          <text class="learning-label">最后学习</text>
+          <text class="learning-value">{{lastPlayTime}}</text>
+        </view>
+      </view>
+    </view>
+  </view>
+
+  <!-- 成就徽章 -->
+  <view class="section">
+    <view class="section-title">
+      <text class="title-icon">🏆</text>
+      <text class="title-text">成就徽章</text>
+    </view>
+    <view class="achievements">
+      <view class="achievement-badge {{item.unlocked ? 'unlocked' : 'locked'}}" wx:for="{{achievements}}" wx:key="id">
+        <text class="badge-icon">{{item.icon}}</text>
+        <text class="badge-name">{{item.name}}</text>
+        <text class="badge-desc" wx:if="{{item.unlocked}}">{{item.desc}}</text>
+      </view>
+    </view>
+  </view>
+
+  <!-- 操作按钮 -->
+  <view class="actions">
+    <button class="action-btn clear-btn" bindtap="clearData">清除数据</button>
+  </view>
+</view>
