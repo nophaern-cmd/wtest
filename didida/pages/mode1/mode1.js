@@ -281,71 +281,36 @@ Page({
   // 播放音频
   playAudio() {
     const word = this.data.word.word
-    wx.showLoading({ title: '加载中...' })
-    
-    // 使用微信语音合成
+
+    // 使用在线 TTS 服务（百度翻译TTS，更稳定）
+    const ttsUrl = `https://fanyi.baidu.com/gettts?lan=en&text=${encodeURIComponent(word)}&spd=3&source=web`
+
     const innerAudioContext = wx.createInnerAudioContext()
-    
-    // 调用TTS API（需要配置后端服务）
-    wx.request({
-      url: 'https://translate.google.com/translate_tts',
-      method: 'GET',
-      data: {
-        ie: 'UTF-8',
-        client: 'tw-ob',
-        q: word,
-        tl: 'en'
-      },
-      responseType: 'arraybuffer',
-      success: (res) => {
-        if (res.statusCode === 200) {
-          // 将arraybuffer转换为临时文件
-          const fs = wx.getFileSystemManager()
-          const tempFilePath = `${wx.env.USER_DATA_PATH}/tts_${Date.now()}.mp3`
-          
-          fs.writeFile({
-            filePath: tempFilePath,
-            data: res.data,
-            encoding: 'binary',
-            success: () => {
-              innerAudioContext.src = tempFilePath
-              innerAudioContext.play()
-              
-              innerAudioContext.onEnded(() => {
-                wx.hideLoading()
-                innerAudioContext.destroy()
-              })
-              
-              innerAudioContext.onError(() => {
-                wx.hideLoading()
-                wx.showToast({ title: '播放失败', icon: 'none' })
-                innerAudioContext.destroy()
-              })
-            },
-            fail: () => {
-              wx.hideLoading()
-              wx.showToast({ title: '音频保存失败', icon: 'none' })
-            }
-          })
-        } else {
-          wx.hideLoading()
-          this.fallbackTTS(word)
-        }
-      },
-      fail: () => {
-        wx.hideLoading()
-        this.fallbackTTS(word)
-      }
+    innerAudioContext.src = ttsUrl
+
+    innerAudioContext.onPlay(() => {
+      console.log('音频开始播放')
     })
-    
-    wx.hideLoading()
+
+    innerAudioContext.onEnded(() => {
+      console.log('音频播放结束')
+      innerAudioContext.destroy()
+    })
+
+    innerAudioContext.onError((err) => {
+      console.log('音频播放失败', err)
+      innerAudioContext.destroy()
+      this.fallbackTTS(word)
+    })
+
+    innerAudioContext.play()
   },
 
   // 备用TTS方案
-  fallbackTTS(word) {
-    // 显示单词提示
-    wx.showToast({ 
-      title: `🗣️ ${word}`, 
+  fallbackTTS(text) {
+    // 显示文字提示
+    wx.showToast({
+      title: `🗣️ ${text}`,
       icon: 'none',
       duration: 1500
     })
@@ -357,18 +322,35 @@ Page({
     const sentences = this.data.word.sentences
     if (sentences && sentences[index]) {
       const sentence = sentences[index].en
-      wx.showToast({
-        title: `📖 ${sentence}`,
-        icon: 'none',
-        duration: 2000
+
+      // 使用在线 TTS 服务
+      const ttsUrl = `https://fanyi.baidu.com/gettts?lan=en&text=${encodeURIComponent(sentence)}&spd=3&source=web`
+
+      const innerAudioContext = wx.createInnerAudioContext()
+      innerAudioContext.src = ttsUrl
+
+      innerAudioContext.onPlay(() => {
+        console.log('句子音频开始播放')
       })
+
+      innerAudioContext.onEnded(() => {
+        console.log('句子音频播放结束')
+        innerAudioContext.destroy()
+      })
+
+      innerAudioContext.onError((err) => {
+        console.log('句子音频播放失败', err)
+        innerAudioContext.destroy()
+        this.fallbackTTS(sentence)
+      })
+
+      innerAudioContext.play()
     }
   },
 
   // 上一个单词
   prevWord() {
     if (this.data.wordIndex > 0) {
-      wx.vibrateShort({ type: 'light' })
       const newIndex = this.data.wordIndex - 1
       this.setData({
         wordIndex: newIndex
@@ -384,8 +366,6 @@ Page({
 
   // 下一个单词
   nextWord() {
-    wx.vibrateShort({ type: 'light' })
-
     if (this.data.wordIndex < this.data.words.length - 1) {
       // 还有下一个单词
       const newIndex = this.data.wordIndex + 1

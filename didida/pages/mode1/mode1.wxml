@@ -37,8 +37,8 @@
         data-index="{{index}}"
       >
         <text class="sentence-number">{{index + 1}}</text>
-        <text class="sentence-text">{{item.en}} · {{item.cn}}</text>
-        <view class="audio-icon-small">🔉</view>
+        <text class="sentence-text" bindtap="playSentenceAudio" data-index="{{index}}">{{item.en}} · {{item.cn}}</text>
+        <view class="audio-icon-small" bindtap="playSentenceAudio" catchtap="playSentenceAudio" data-index="{{index}}">🔉</view>
       </view>
     </view>
   </view>
