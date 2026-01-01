@@ -57,9 +57,10 @@
   flex: 1;
   display: flex;
   flex-direction: column;
-  gap: 30rpx;
-  overflow-y: auto;
-  padding: 20rpx 30rpx 20rpx 30rpx;
+  gap: 20rpx;
+  padding: 20rpx 30rpx;
+  height: calc(100vh - 460rpx); /* 优化高度计算 */
+  min-height: 400rpx;
 }
 
 /* 单词图片容器 */
@@ -68,14 +69,16 @@
   align-items: center;
   justify-content: center;
   width: 100%;
+  height: 280rpx; /* 固定高度 */
   animation: scaleIn 0.5s ease;
+  flex-shrink: 0;
 }
 
 .word-image {
-  width: 600rpx;
-  height: 600rpx;
-  border-radius: 32rpx;
-  box-shadow: 0 12rpx 40rpx rgba(0, 0, 0, 0.1);
+  width: 280rpx; /* 缩小图片尺寸 */
+  height: 280rpx;
+  border-radius: 24rpx;
+  box-shadow: 0 8rpx 24rpx rgba(0, 0, 0, 0.08);
   transition: transform 0.3s ease;
 }
 
@@ -106,15 +109,15 @@
 }
 
 .word-english {
-  font-size: 96rpx;
+  font-size: 64rpx; /* 缩小字体 */
   font-weight: bold;
   color: #333;
-  letter-spacing: 2rpx;
+  letter-spacing: 1rpx;
   text-align: center;
 }
 
 .word-chinese {
-  font-size: 36rpx;
+  font-size: 28rpx; /* 缩小字体 */
   font-weight: normal;
   color: #666;
   text-align: center;
@@ -122,14 +125,14 @@
 
 .audio-icon {
   position: absolute;
-  top: 20rpx;
-  right: 20rpx;
-  width: 48rpx;
-  height: 48rpx;
+  top: 16rpx;
+  right: 16rpx;
+  width: 40rpx;
+  height: 40rpx;
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 36rpx;
+  font-size: 32rpx;
   color: #999;
   opacity: 0.6;
   animation: pulse 2s infinite;
@@ -154,14 +157,15 @@
 .sentence-item {
   display: flex;
   align-items: center;
-  gap: 16rpx;
-  padding: 25rpx 30rpx;
+  gap: 12rpx;
+  padding: 20rpx 24rpx; /* 减少内边距 */
   background: #F8F8F8;
-  border-radius: 20rpx;
+  border-radius: 16rpx;
   width: 100%;
-  border-left: 4rpx solid #FF9F43;
+  border-left: 3rpx solid #FF9F43;
   position: relative;
   transition: all 0.3s ease;
+  min-height: 80rpx; /* 设置最小高度 */
 }
 
 .sentence-item:active {
@@ -185,9 +189,9 @@
 
 .sentence-text {
   flex: 1;
-  font-size: 32rpx;
+  font-size: 26rpx; /* 缩小字体 */
   color: #333;
-  line-height: 1.8;
+  line-height: 1.5; /* 减少行高 */
 }
 
 .audio-icon-small {
@@ -212,18 +216,18 @@
 /* 底部操作栏 */
 .footer {
   display: flex;
-  gap: 24rpx;
-  padding: 40rpx 20rpx;
+  gap: 20rpx;
+  padding: 30rpx 20rpx; /* 减少内边距 */
   justify-content: center;
 }
 
 .btn-primary,
 .btn-secondary {
   flex: 1;
-  padding: 28rpx 0;
-  font-size: 34rpx;
+  padding: 24rpx 0; /* 减少内边距 */
+  font-size: 30rpx; /* 缩小字体 */
   font-weight: bold;
-  border-radius: 50rpx;
+  border-radius: 40rpx; /* 减少圆角 */
   border: none;
 }
 
@@ -272,47 +276,47 @@
 
 /* 幼儿阶段 */
 .kindergarten .word-image {
-  width: 650rpx;
-  height: 650rpx;
-  border-radius: 48rpx;
+  width: 300rpx; /* 缩小图片尺寸 */
+  height: 300rpx;
+  border-radius: 32rpx;
 }
 
 .kindergarten .word-english {
-  font-size: 110rpx;
+  font-size: 72rpx; /* 缩小字体 */
 }
 
 .kindergarten .word-chinese {
-  font-size: 42rpx;
+  font-size: 32rpx; /* 缩小字体 */
 }
 
 .kindergarten .sentence-text {
-  font-size: 38rpx;
+  font-size: 28rpx; /* 缩小字体 */
 }
 
 /* 小学阶段 */
 .primary .word-english {
-  font-size: 90rpx;
+  font-size: 68rpx; /* 缩小字体 */
 }
 
 .primary .word-chinese {
-  font-size: 34rpx;
+  font-size: 30rpx; /* 缩小字体 */
 }
 
 .primary .sentence-text {
-  font-size: 32rpx;
+  font-size: 26rpx; /* 缩小字体 */
 }
 
 /* 中学阶段 */
 .middle .word-english {
-  font-size: 80rpx;
+  font-size: 64rpx; /* 缩小字体 */
 }
 
 .middle .word-chinese {
-  font-size: 32rpx;
+  font-size: 28rpx; /* 缩小字体 */
 }
 
 .middle .sentence-text {
-  font-size: 30rpx;
+  font-size: 24rpx; /* 缩小字体 */
 }
 
 /* 阶段色彩主题 */
