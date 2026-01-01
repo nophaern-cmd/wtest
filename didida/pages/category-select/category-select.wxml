@@ -1,0 +1,65 @@
+<!-- pages/category-select/category-select.wxml -->
+<view class="container {{stage}}">
+  <!-- 顶部导航 -->
+  <view class="header">
+    <view class="header-back" bindtap="goBack">
+      <text class="back-icon">←</text>
+      <text>返回</text>
+    </view>
+    <text class="header-title">选择分类</text>
+  </view>
+
+  <!-- 学习统计 -->
+  <view class="stats-summary">
+    <view class="stat-item">
+      <text class="stat-num">{{totalWords}}</text>
+      <text class="stat-text">总词汇</text>
+    </view>
+    <view class="stat-divider"></view>
+    <view class="stat-item">
+      <text class="stat-num">{{learnedWords}}</text>
+      <text class="stat-text">已学习</text>
+    </view>
+    <view class="stat-divider"></view>
+    <view class="stat-item">
+      <text class="stat-num">{{masteredWords}}</text>
+      <text class="stat-text">已掌握</text>
+    </view>
+  </view>
+
+  <!-- 分类列表 -->
+  <view class="category-grid">
+    <view
+      class="category-card"
+      wx:for="{{categories}}"
+      wx:key="id"
+      bindtap="selectCategory"
+      data-category="{{item}}"
+    >
+      <view class="category-icon">{{item.icon}}</view>
+      <text class="category-name">{{item.name}}</text>
+      <view class="category-meta">
+        <text class="word-count">{{item.wordCount}}词</text>
+        <view class="progress-ring">
+          <text>{{item.progress}}%</text>
+        </view>
+      </view>
+      <view class="category-stars" wx:if="{{stage === 'primary' || stage === 'middle'}}">
+        <text wx:for="{{item.difficulty}}" wx:key="*this" class="star">⭐</text>
+      </view>
+    </view>
+  </view>
+
+  <!-- 筛选排序 -->
+  <view class="filter-bar">
+    <view class="filter-item {{filterType === 'all' ? 'active' : ''}}" bindtap="setFilter" data-filter="all">
+      全部
+    </view>
+    <view class="filter-item {{filterType === 'learning' ? 'active' : ''}}" bindtap="setFilter" data-filter="learning">
+      进行中
+    </view>
+    <view class="filter-item {{filterType === 'completed' ? 'active' : ''}}" bindtap="setFilter" data-filter="completed">
+      已完成
+    </view>
+  </view>
+</view>

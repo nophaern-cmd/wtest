@@ -1,0 +1,55 @@
+<!-- pages/mode1/mode1.wxml -->
+<view class="container {{stage}}">
+  <!-- 顶部信息栏 -->
+  <view class="top-bar">
+    <view class="word-progress">
+      <text class="progress-text">{{wordIndex + 1}}/{{words.length}}</text>
+      <view class="progress-bar">
+        <view class="progress-fill" style="width: {{(wordIndex + 1) / words.length * 100}}%"></view>
+      </view>
+    </view>
+    <view class="category-name">{{categoryName}}</view>
+  </view>
+
+  <!-- 学习内容区域 -->
+  <view class="learning-area">
+    <!-- 单词图片 -->
+    <view class="word-image-container">
+      <image class="word-image" src="{{word.image}}" mode="aspectFit" show-menu-by-longpress></image>
+    </view>
+
+    <!-- 英文单词 + 中文释义 -->
+    <view class="word-container" bindtap="playAudio">
+      <view class="word-row">
+        <text class="word-english">{{word.word}}</text>
+        <view class="audio-icon">🔉</view>
+      </view>
+      <text class="word-chinese">{{word.meaning}}</text>
+    </view>
+
+    <!-- 例句列表 -->
+    <view class="sentences-container">
+      <view
+        class="sentence-item"
+        wx:for="{{word.sentences}}"
+        wx:key="index"
+        bindtap="playSentenceAudio"
+        data-index="{{index}}"
+      >
+        <text class="sentence-number">{{index + 1}}</text>
+        <text class="sentence-text">{{item.en}} · {{item.cn}}</text>
+        <view class="audio-icon-small">🔉</view>
+      </view>
+    </view>
+  </view>
+
+  <!-- 底部操作栏 -->
+  <view class="footer">
+    <button class="btn-secondary" bindtap="prevWord" wx:if="{{wordIndex > 0}}">
+      ⬅️ 上一个
+    </button>
+    <button class="btn-primary" bindtap="nextWord">
+      {{wordIndex === words.length - 1 ? '✅ 完成' : '➡️ 下一个'}}
+    </button>
+  </view>
+</view>

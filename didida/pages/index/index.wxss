@@ -1,0 +1,162 @@
+/* pages/index/index.wxss */
+.container {
+  padding: 40rpx;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+.header {
+  text-align: center;
+  padding: 60rpx 0 40rpx;
+}
+
+.header-title {
+  display: block;
+  font-size: 56rpx;
+  font-weight: bold;
+  color: #333;
+  margin-bottom: 16rpx;
+}
+
+.header-subtitle {
+  display: block;
+  font-size: 28rpx;
+  color: #999;
+}
+
+.stage-list {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 30rpx;
+}
+
+.stage-card {
+  background: white;
+  border-radius: 32rpx;
+  padding: 40rpx;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  box-shadow: 0 4rpx 20rpx rgba(0, 0, 0, 0.08);
+  transition: all 0.3s ease;
+  position: relative;
+  border: 4rpx solid transparent;
+}
+
+.stage-card:active {
+  transform: scale(0.98);
+}
+
+.stage-card.active {
+  border-color: #FF9F43;
+  box-shadow: 0 8rpx 30rpx rgba(255, 159, 67, 0.3);
+}
+
+.stage-icon {
+  width: 120rpx;
+  height: 120rpx;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 64rpx;
+  background: linear-gradient(135deg, #FFF5F0, #FFE8D6);
+  border-radius: 60rpx;
+  margin-right: 32rpx;
+  flex-shrink: 0;
+}
+
+.stage-info {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+}
+
+.stage-name {
+  font-size: 36rpx;
+  font-weight: bold;
+  color: #333;
+  margin-bottom: 8rpx;
+}
+
+.stage-age {
+  font-size: 24rpx;
+  color: #FF9F43;
+  margin-bottom: 8rpx;
+  display: block;
+}
+
+.stage-desc {
+  font-size: 24rpx;
+  color: #999;
+}
+
+.stage-badge {
+  position: absolute;
+  top: 20rpx;
+  right: 20rpx;
+  background: linear-gradient(135deg, #FF9F43, #FFB875);
+  color: white;
+  padding: 8rpx 20rpx;
+  border-radius: 20rpx;
+  font-size: 20rpx;
+  font-weight: bold;
+}
+
+.footer {
+  padding: 40rpx 0;
+}
+
+.btn-large {
+  width: 100%;
+  height: 100rpx;
+  font-size: 36rpx;
+}
+
+/* 阶段差异化样式 */
+
+/* 幼儿阶段 */
+.kindergarten .stage-card {
+  border-radius: 48rpx;
+  padding: 50rpx;
+}
+
+.kindergarten .stage-icon {
+  width: 140rpx;
+  height: 140rpx;
+  font-size: 80rpx;
+  border-radius: 70rpx;
+}
+
+.kindergarten .stage-name {
+  font-size: 42rpx;
+}
+
+/* 小学阶段 */
+.primary .stage-card {
+  border-radius: 24rpx;
+}
+
+.primary .stage-icon {
+  width: 100rpx;
+  height: 100rpx;
+  border-radius: 50rpx;
+}
+
+/* 中学阶段 */
+.middle .stage-card {
+  border-radius: 16rpx;
+  padding: 30rpx;
+}
+
+.middle .stage-icon {
+  width: 80rpx;
+  height: 80rpx;
+  border-radius: 40rpx;
+  font-size: 48rpx;
+}
+
+.middle .stage-name {
+  font-size: 32rpx;
+}

@@ -1,0 +1,187 @@
+.container {
+  padding: 30rpx;
+  min-height: 100vh;
+}
+
+.header {
+  text-align: center;
+  margin-bottom: 40rpx;
+}
+
+.title {
+  display: block;
+  font-size: 40rpx;
+  font-weight: bold;
+  color: #4A90E2;
+  margin-bottom: 10rpx;
+}
+
+.subtitle {
+  display: block;
+  font-size: 28rpx;
+  color: #999;
+}
+
+/* 进度区域 */
+.progress-section {
+  margin-bottom: 40rpx;
+}
+
+.progress-card {
+  background: white;
+  border-radius: 20rpx;
+  padding: 30rpx;
+  box-shadow: 0 4rpx 12rpx rgba(0, 0, 0, 0.08);
+}
+
+.progress-title {
+  display: block;
+  font-size: 28rpx;
+  color: #666;
+  margin-bottom: 20rpx;
+}
+
+.progress-bar {
+  width: 100%;
+  height: 12rpx;
+  background: #E0E0E0;
+  border-radius: 6rpx;
+  overflow: hidden;
+  margin-bottom: 15rpx;
+}
+
+.progress-fill {
+  height: 100%;
+  background: linear-gradient(90deg, #4A90E2, #5BA3F5);
+  border-radius: 6rpx;
+  transition: width 0.3s ease;
+}
+
+.progress-text {
+  display: block;
+  text-align: right;
+  font-size: 24rpx;
+  color: #999;
+}
+
+/* 分类区域 */
+.categories-section {
+  margin-bottom: 40rpx;
+}
+
+.section-title {
+  display: block;
+  font-size: 36rpx;
+  font-weight: bold;
+  color: #333;
+  margin-bottom: 25rpx;
+}
+
+.category-scroll {
+  white-space: nowrap;
+  padding-bottom: 10rpx;
+}
+
+.category-item {
+  display: inline-flex;
+  flex-direction: column;
+  align-items: center;
+  background: white;
+  border-radius: 20rpx;
+  padding: 25rpx;
+  margin-right: 20rpx;
+  min-width: 140rpx;
+  box-shadow: 0 4rpx 12rpx rgba(0, 0, 0, 0.08);
+}
+
+.category-icon {
+  font-size: 60rpx;
+  margin-bottom: 15rpx;
+}
+
+.category-name {
+  font-size: 26rpx;
+  font-weight: bold;
+  color: #333;
+  margin-bottom: 8rpx;
+}
+
+.category-count {
+  font-size: 22rpx;
+  color: #999;
+}
+
+/* 模式区域 */
+.modes-section {
+  margin-bottom: 40rpx;
+}
+
+.mode-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 20rpx;
+}
+
+.mode-item {
+  background: white;
+  border-radius: 20rpx;
+  padding: 40rpx 30rpx;
+  text-align: center;
+  box-shadow: 0 4rpx 12rpx rgba(0, 0, 0, 0.08);
+  transition: all 0.3s ease;
+}
+
+.mode-item:active {
+  transform: scale(0.98);
+}
+
+.mode-icon {
+  display: block;
+  font-size: 80rpx;
+  margin-bottom: 15rpx;
+}
+
+.mode-name {
+  display: block;
+  font-size: 28rpx;
+  font-weight: bold;
+  color: #333;
+}
+
+/* 复习区域 */
+.review-section {
+  margin-bottom: 40rpx;
+}
+
+.review-card {
+  background: linear-gradient(135deg, #FAAD14, #FFC53D);
+  border-radius: 20rpx;
+  padding: 40rpx;
+  color: white;
+  text-align: center;
+  box-shadow: 0 8rpx 24rpx rgba(250, 173, 20, 0.3);
+}
+
+.review-title {
+  display: block;
+  font-size: 28rpx;
+  margin-bottom: 15rpx;
+}
+
+.review-count {
+  display: block;
+  font-size: 56rpx;
+  font-weight: bold;
+  margin-bottom: 30rpx;
+}
+
+.review-btn {
+  width: 200rpx;
+  height: 70rpx;
+  background: white;
+  color: #FAAD14;
+  border: none;
+  border-radius: 35rpx;
+  font-size: 28rpx;
+  font-weight: bold;
+}

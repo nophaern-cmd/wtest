@@ -1,0 +1,13 @@
+<!-- pages/mode3/mode3.wxml -->
+<view class="container">
+  <view class="header">
+    <view class="back-btn" bindtap="goBack">← 返回</view>
+    <text class="title">故事短文记忆</text>
+  </view>
+
+  <view class="placeholder">
+    <text class="placeholder-icon">📖</text>
+    <text class="placeholder-text">故事短文功能开发中</text>
+    <text class="placeholder-desc">包含幼儿故事、小学寓言、中学文章等内容</text>
+  </view>
+</view>

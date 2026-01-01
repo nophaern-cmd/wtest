@@ -1,0 +1,14 @@
+// pages/mode2/mode2.js
+Page({
+  data: {},
+
+  onLoad(options) {
+    if (options.stage) {
+      this.setData({ stage: options.stage })
+    }
+  },
+
+  goBack() {
+    wx.navigateBack()
+  }
+})

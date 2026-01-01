@@ -1,0 +1,141 @@
+<view class="container">
+  <!-- 模式4: 联想记忆 -->
+  <view class="header">
+    <text class="title">模式4: 联想记忆</text>
+    <text class="subtitle">通过联想技巧高效记忆</text>
+  </view>
+
+  <!-- 阶段选择 -->
+  <view class="level-selector">
+    <view
+      class="level-item {{currentLevel === 'kindergarten' ? 'active' : ''}}"
+      bindtap="selectLevel"
+      data-level="kindergarten"
+    >
+      <text class="level-icon">👶</text>
+      <text class="level-name">幼儿园</text>
+    </view>
+    <view
+      class="level-item {{currentLevel === 'primary' ? 'active' : ''}}"
+      bindtap="selectLevel"
+      data-level="primary"
+    >
+      <text class="level-icon">🎒</text>
+      <text class="level-name">小学</text>
+    </view>
+    <view
+      class="level-item {{currentLevel === 'junior' ? 'active' : ''}}"
+      bindtap="selectLevel"
+      data-level="junior"
+    >
+      <text class="level-icon">📚</text>
+      <text class="level-name">初中</text>
+    </view>
+  </view>
+
+  <!-- 联想类型选择 -->
+  <view class="type-section" wx:if="{{!currentAssociation}}">
+    <text class="section-title">选择联想类型</text>
+    <view class="type-grid">
+      <view
+        class="type-card"
+        wx:for="{{associationTypes}}"
+        wx:key="type"
+        bindtap="selectType"
+        data-type="{{type}}"
+      >
+        <view class="type-icon" style="background: {{item.color}}">{{item.icon}}</view>
+        <text class="type-name">{{type}}</text>
+        <text class="type-desc">{{item.description}}</text>
+        <text class="type-count">{{getAssociationCount(type)}} 个单词</text>
+      </view>
+    </view>
+  </view>
+
+  <!-- 联想列表 -->
+  <view class="list-section" wx:if="{{currentType && !currentAssociation}}">
+    <view class="section-header">
+      <text class="section-title">{{currentType}}记忆</text>
+      <text class="back-btn" bindtap="backToTypes">← 返回</text>
+    </view>
+    <view class="association-list">
+      <view
+        class="association-item"
+        wx:for="{{currentAssociations}}"
+        wx:key="id"
+        bindtap="viewDetail"
+        data-item="{{item}}"
+      >
+        <view class="item-icon" style="background: {{getAssociationTypeColor(item.type)}}">
+          {{getAssociationTypeIcon(item.type)}}
+        </view>
+        <view class="item-content">
+          <text class="item-word">{{item.word}}</text>
+          <text class="item-phonetic">{{item.phonetic}}</text>
+          <text class="item-meaning">{{item.meaning}}</text>
+        </view>
+        <text class="item-arrow">›</text>
+      </view>
+    </view>
+  </view>
+
+  <!-- 联想详情 -->
+  <view class="detail-section" wx:if="{{currentAssociation}}">
+    <view class="detail-header">
+      <text class="back-btn" bindtap="backToList">← 返回列表</text>
+      <text class="detail-type">{{currentAssociation.type}}</text>
+    </view>
+
+    <!-- 单词卡片 -->
+    <view class="word-card">
+      <view class="word-image">{{currentAssociation.image}}</view>
+      <view class="word-info">
+        <text class="word-english">{{currentAssociation.word}}</text>
+        <text class="word-phonetic">{{currentAssociation.phonetic}}</text>
+        <text class="word-meaning">{{currentAssociation.meaning}}</text>
+      </view>
+      <view class="audio-button" bindtap="playAudio">
+        <text class="audio-icon">🔊</text>
+        <text class="audio-text">播放发音</text>
+      </view>
+    </view>
+
+    <!-- 联想说明 -->
+    <view class="association-box">
+      <text class="box-title">💡 联想技巧</text>
+      <text class="box-content">{{currentAssociation.association}}</text>
+    </view>
+
+    <!-- 记忆提示 -->
+    <view class="memory-tip">
+      <text class="tip-title">🎯 记忆口诀</text>
+      <text class="tip-content">{{currentAssociation.memoryTip}}</text>
+    </view>
+
+    <!-- 相关单词 -->
+    <view class="related-section">
+      <text class="related-title">📚 相关单词</text>
+      <view class="related-words">
+        <view
+          class="related-word"
+          wx:for="{{currentAssociation.relatedWords}}"
+          wx:key="*this"
+          bindtap="viewRelatedWord"
+          data-word="{{item}}"
+        >
+          {{item}}
+        </view>
+      </view>
+    </view>
+
+    <!-- 操作按钮 -->
+    <view class="action-buttons">
+      <button class="btn-collect" bindtap="toggleCollect">
+        {{isCollected ? '⭐ 已收藏' : '☆ 收藏'}}
+      </button>
+      <button class="btn-next" bindtap="nextAssociation">
+        下一个 →
+      </button>
+    </view>
+  </view>
+</view>

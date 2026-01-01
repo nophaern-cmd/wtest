@@ -1,0 +1,188 @@
+/* pages/home/home.wxss */
+.container {
+  padding: 30rpx;
+  min-height: 100vh;
+  background: linear-gradient(to bottom, #FFF5F0, #FFFFFF);
+}
+
+/* 欢迎区域 */
+.welcome-section {
+  background: linear-gradient(135deg, #FF9F43, #FFB875);
+  border-radius: 32rpx;
+  padding: 40rpx;
+  margin-bottom: 30rpx;
+  box-shadow: 0 8rpx 30rpx rgba(255, 159, 67, 0.3);
+}
+
+.user-info {
+  margin-bottom: 30rpx;
+}
+
+.greeting {
+  display: block;
+  font-size: 44rpx;
+  font-weight: bold;
+  color: white;
+  margin-bottom: 12rpx;
+}
+
+.sub-greeting {
+  display: block;
+  font-size: 28rpx;
+  color: rgba(255, 255, 255, 0.9);
+}
+
+.today-stats {
+  display: flex;
+  gap: 20rpx;
+}
+
+.stat-badge {
+  flex: 1;
+  background: rgba(255, 255, 255, 0.2);
+  backdrop-filter: blur(10rpx);
+  border-radius: 20rpx;
+  padding: 24rpx 20rpx;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.stat-num {
+  font-size: 48rpx;
+  font-weight: bold;
+  color: white;
+  margin-bottom: 8rpx;
+}
+
+.stat-label {
+  font-size: 24rpx;
+  color: rgba(255, 255, 255, 0.9);
+}
+
+/* 快捷入口 */
+.quick-access {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 20rpx;
+  margin-bottom: 30rpx;
+}
+
+.access-item {
+  background: white;
+  border-radius: 24rpx;
+  padding: 32rpx;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  box-shadow: 0 4rpx 16rpx rgba(0, 0, 0, 0.08);
+  transition: all 0.3s ease;
+}
+
+.access-item:active {
+  transform: scale(0.98);
+  background: #FFF5F0;
+}
+
+.access-icon {
+  font-size: 64rpx;
+  margin-bottom: 16rpx;
+}
+
+.access-title {
+  font-size: 32rpx;
+  font-weight: bold;
+  color: #333;
+  margin-bottom: 8rpx;
+}
+
+.access-desc {
+  font-size: 24rpx;
+  color: #999;
+  text-align: center;
+}
+
+/* 进度区域 */
+.progress-section {
+  background: white;
+  border-radius: 24rpx;
+  padding: 32rpx;
+  box-shadow: 0 4rpx 16rpx rgba(0, 0, 0, 0.06);
+}
+
+.section-title {
+  display: block;
+  font-size: 32rpx;
+  font-weight: bold;
+  color: #333;
+  margin-bottom: 24rpx;
+}
+
+.progress-cards {
+  display: flex;
+  gap: 20rpx;
+}
+
+.progress-card {
+  flex: 1;
+  background: linear-gradient(135deg, #FFF5F0, #FFFFFF);
+  border-radius: 20rpx;
+  padding: 24rpx;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  border: 2rpx solid #FFE8D6;
+}
+
+.card-icon {
+  font-size: 48rpx;
+  margin-bottom: 12rpx;
+}
+
+.card-label {
+  font-size: 24rpx;
+  color: #999;
+  margin-bottom: 8rpx;
+}
+
+.card-value {
+  font-size: 40rpx;
+  font-weight: bold;
+  color: #FF9F43;
+}
+
+/* 阶段差异化 */
+
+/* 幼儿阶段 */
+.kindergarten .access-item {
+  border-radius: 32rpx;
+  padding: 40rpx;
+}
+
+.kindergarten .access-icon {
+  font-size: 80rpx;
+}
+
+.kindergarten .access-title {
+  font-size: 36rpx;
+}
+
+/* 小学阶段 */
+.primary .welcome-section {
+  border-radius: 24rpx;
+  padding: 32rpx;
+}
+
+/* 中学阶段 */
+.middle .access-item {
+  border-radius: 16rpx;
+  padding: 24rpx;
+}
+
+.middle .access-icon {
+  font-size: 56rpx;
+}
+
+.middle .access-title {
+  font-size: 28rpx;
+}

@@ -1,0 +1,13 @@
+<!-- pages/mode2/mode2.wxml -->
+<view class="container">
+  <view class="header">
+    <view class="back-btn" bindtap="goBack">← 返回</view>
+    <text class="title">联想记忆</text>
+  </view>
+
+  <view class="placeholder">
+    <text class="placeholder-icon">🧠</text>
+    <text class="placeholder-text">联想记忆功能开发中</text>
+    <text class="placeholder-desc">包含词根词缀、读音相似、拼写相似等联想方式</text>
+  </view>
+</view>

@@ -1,0 +1,66 @@
+<!-- pages/home/home.wxml -->
+<view class="container {{level}}">
+  <!-- 用户欢迎区域 -->
+  <view class="welcome-section">
+    <view class="user-info">
+      <text class="greeting">你好，学习者！</text>
+      <text class="sub-greeting">继续今天的单词学习吧</text>
+    </view>
+    <view class="today-stats">
+      <view class="stat-badge">
+        <text class="stat-num">{{todayWords}}</text>
+        <text class="stat-label">今日已学</text>
+      </view>
+      <view class="stat-badge">
+        <text class="stat-num">{{streakDays}}</text>
+        <text class="stat-label">连续天数</text>
+      </view>
+    </view>
+  </view>
+
+  <!-- 快捷入口 -->
+  <view class="quick-access">
+    <view class="access-item" bindtap="goToStage">
+      <text class="access-icon">🎯</text>
+      <text class="access-title">开始学习</text>
+      <text class="access-desc">选择阶段和模式</text>
+    </view>
+    <view class="access-item" bindtap="goToWordList">
+      <text class="access-icon">📚</text>
+      <text class="access-title">词汇本</text>
+      <text class="access-desc">管理已学单词</text>
+    </view>
+    <view class="access-item" bindtap="goToReview">
+      <text class="access-icon">🔄</text>
+      <text class="access-title">复习单词</text>
+      <text class="access-desc">巩固已学内容</text>
+    </view>
+    <view class="access-item" bindtap="goToProfile">
+      <text class="access-icon">👤</text>
+      <text class="access-title">我的</text>
+      <text class="access-desc">学习统计和设置</text>
+    </view>
+  </view>
+
+  <!-- 学习进度 -->
+  <view class="progress-section">
+    <text class="section-title">学习进度</text>
+    <view class="progress-cards">
+      <view class="progress-card">
+        <text class="card-icon">📊</text>
+        <text class="card-label">总词汇量</text>
+        <text class="card-value">{{totalWords}}</text>
+      </view>
+      <view class="progress-card">
+        <text class="card-icon">✅</text>
+        <text class="card-label">已掌握</text>
+        <text class="card-value">{{masteredWords}}</text>
+      </view>
+      <view class="progress-card">
+        <text class="card-icon">⏱️</text>
+        <text class="card-label">学习时长</text>
+        <text class="card-value">{{studyTime}}分</text>
+      </view>
+    </view>
+  </view>
+</view>

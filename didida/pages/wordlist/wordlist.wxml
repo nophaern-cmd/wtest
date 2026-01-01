@@ -1,0 +1,64 @@
+<!-- pages/wordlist/wordlist.wxml -->
+<view class="container">
+  <!-- 搜索框 -->
+  <view class="search-bar">
+    <input
+      class="search-input"
+      placeholder="搜索单词"
+      placeholder-class="search-placeholder"
+      bindconfirm="searchWord"
+    />
+    <text class="search-icon">🔍</text>
+  </view>
+
+  <!-- 分类标签 -->
+  <view class="category-tabs">
+    <view
+      class="tab-item {{activeTab === 'all' ? 'active' : ''}}"
+      bindtap="switchTab"
+      data-tab="all"
+    >
+      全部
+    </view>
+    <view
+      class="tab-item {{activeTab === 'learned' ? 'active' : ''}}"
+      bindtap="switchTab"
+      data-tab="learned"
+    >
+      已学习
+    </view>
+    <view
+      class="tab-item {{activeTab === 'mastered' ? 'active' : ''}}"
+      bindtap="switchTab"
+      data-tab="mastered"
+    >
+      已掌握
+    </view>
+  </view>
+
+  <!-- 单词列表 -->
+  <view class="word-list">
+    <view
+      class="word-item"
+      wx:for="{{wordList}}"
+      wx:key="id"
+      bindtap="viewWordDetail"
+      data-word="{{item}}"
+    >
+      <view class="word-main">
+        <text class="word-text">{{item.word}}</text>
+        <text class="word-phonetic" wx:if="{{item.phonetic}}">{{item.phonetic}}</text>
+      </view>
+      <view class="word-meaning">{{item.meaning}}</view>
+      <view class="word-status">
+        <view class="status-badge {{item.status}}">{{statusText[item.status]}}</view>
+      </view>
+    </view>
+  </view>
+
+  <!-- 空状态 -->
+  <view class="empty-state" wx:if="{{wordList.length === 0}}">
+    <text class="empty-icon">📚</text>
+    <text class="empty-text">暂无单词</text>
+  </view>
+</view>

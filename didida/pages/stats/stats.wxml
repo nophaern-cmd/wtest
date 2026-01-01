@@ -1,0 +1,12 @@
+<!-- pages/stats/stats.wxml -->
+<view class="container">
+  <view class="header">
+    <view class="back-btn" bindtap="goBack">← 返回</view>
+    <text class="title">学习统计</text>
+  </view>
+
+  <view class="placeholder">
+    <text class="placeholder-icon">📊</text>
+    <text class="placeholder-text">学习统计功能开发中</text>
+  </view>
+</view>

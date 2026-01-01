@@ -1,0 +1,213 @@
+/* pages/category-select/category-select.wxss */
+.container {
+  padding: 30rpx;
+  min-height: 100vh;
+}
+
+.header {
+  display: flex;
+  align-items: center;
+  margin-bottom: 30rpx;
+}
+
+.header-back {
+  display: flex;
+  align-items: center;
+  color: #666;
+  font-size: 28rpx;
+  margin-right: 20rpx;
+}
+
+.back-icon {
+  font-size: 40rpx;
+  margin-right: 8rpx;
+}
+
+.header-title {
+  flex: 1;
+  font-size: 44rpx;
+  font-weight: bold;
+  color: #333;
+  text-align: center;
+  margin-right: 60rpx;
+}
+
+/* 统计摘要 */
+.stats-summary {
+  display: flex;
+  align-items: center;
+  justify-content: space-around;
+  background: linear-gradient(135deg, #FF9F43, #FFB875);
+  border-radius: 24rpx;
+  padding: 32rpx 20rpx;
+  margin-bottom: 30rpx;
+  box-shadow: 0 4rpx 16rpx rgba(255, 159, 67, 0.3);
+}
+
+.stat-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  color: white;
+}
+
+.stat-num {
+  font-size: 40rpx;
+  font-weight: bold;
+  margin-bottom: 8rpx;
+}
+
+.stat-text {
+  font-size: 24rpx;
+  opacity: 0.9;
+}
+
+.stat-divider {
+  width: 2rpx;
+  height: 60rpx;
+  background: rgba(255, 255, 255, 0.3);
+}
+
+/* 分类网格 */
+.category-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 20rpx;
+  margin-bottom: 30rpx;
+}
+
+.category-card {
+  background: white;
+  border-radius: 20rpx;
+  padding: 24rpx 16rpx;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  box-shadow: 0 4rpx 12rpx rgba(0, 0, 0, 0.08);
+  transition: all 0.3s ease;
+}
+
+.category-card:active {
+  transform: scale(0.95);
+}
+
+.category-icon {
+  font-size: 56rpx;
+  margin-bottom: 12rpx;
+}
+
+.category-name {
+  font-size: 24rpx;
+  font-weight: bold;
+  color: #333;
+  margin-bottom: 12rpx;
+  text-align: center;
+}
+
+.category-meta {
+  display: flex;
+  align-items: center;
+  gap: 12rpx;
+  margin-bottom: 8rpx;
+}
+
+.word-count {
+  font-size: 20rpx;
+  color: #999;
+}
+
+.progress-ring {
+  background: #F5F5F5;
+  padding: 4rpx 12rpx;
+  border-radius: 12rpx;
+  font-size: 20rpx;
+  color: #FF9F43;
+  font-weight: bold;
+}
+
+.category-stars {
+  display: flex;
+  gap: 2rpx;
+  font-size: 20rpx;
+}
+
+.star {
+  color: #FFD700;
+}
+
+/* 筛选栏 */
+.filter-bar {
+  display: flex;
+  background: white;
+  border-radius: 40rpx;
+  padding: 8rpx;
+  box-shadow: 0 4rpx 12rpx rgba(0, 0, 0, 0.08);
+  position: sticky;
+  top: 20rpx;
+  z-index: 10;
+}
+
+.filter-item {
+  flex: 1;
+  text-align: center;
+  padding: 16rpx 20rpx;
+  font-size: 28rpx;
+  color: #666;
+  border-radius: 32rpx;
+  transition: all 0.3s ease;
+}
+
+.filter-item.active {
+  background: linear-gradient(135deg, #FF9F43, #FFB875);
+  color: white;
+  font-weight: bold;
+}
+
+/* 阶段差异化样式 */
+
+/* 幼儿阶段 */
+.kindergarten .category-grid {
+  grid-template-columns: repeat(3, 1fr);
+  gap: 24rpx;
+}
+
+.kindergarten .category-card {
+  border-radius: 32rpx;
+  padding: 32rpx 20rpx;
+}
+
+.kindergarten .category-icon {
+  font-size: 72rpx;
+}
+
+.kindergarten .category-name {
+  font-size: 28rpx;
+}
+
+/* 小学阶段 */
+.primary .category-grid {
+  grid-template-columns: repeat(4, 1fr);
+}
+
+.primary .category-card {
+  border-radius: 20rpx;
+}
+
+/* 中学阶段 */
+.middle .category-grid {
+  grid-template-columns: repeat(5, 1fr);
+  gap: 16rpx;
+}
+
+.middle .category-card {
+  border-radius: 16rpx;
+  padding: 20rpx 12rpx;
+}
+
+.middle .category-icon {
+  font-size: 48rpx;
+}
+
+.middle .category-name {
+  font-size: 22rpx;
+}

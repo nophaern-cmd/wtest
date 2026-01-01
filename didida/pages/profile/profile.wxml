@@ -1,0 +1,70 @@
+<!-- pages/profile/profile.wxml -->
+<view class="container {{level}}">
+  <!-- 用户信息卡片 -->
+  <view class="user-card">
+    <view class="user-avatar">👤</view>
+    <view class="user-info">
+      <text class="user-name">学习达人</text>
+      <text class="user-level">{{levelText}}</text>
+    </view>
+  </view>
+
+  <!-- 学习统计 -->
+  <view class="stats-section">
+    <view class="stats-grid">
+      <view class="stat-item">
+        <text class="stat-value">{{studyStats.totalWords}}</text>
+        <text class="stat-label">总词汇量</text>
+      </view>
+      <view class="stat-item">
+        <text class="stat-value">{{studyStats.masteredWords}}</text>
+        <text class="stat-label">已掌握</text>
+      </view>
+      <view class="stat-item">
+        <text class="stat-value">{{studyStats.streakDays}}</text>
+        <text class="stat-label">连续天数</text>
+      </view>
+      <view class="stat-item">
+        <text class="stat-value">{{studyStats.studyTime}}</text>
+        <text class="stat-label">学习时长(分)</text>
+      </view>
+    </view>
+  </view>
+
+  <!-- 功能菜单 -->
+  <view class="menu-section">
+    <view class="menu-item" bindtap="goToWrongWords">
+      <text class="menu-icon">📝</text>
+      <text class="menu-text">错题本</text>
+      <text class="menu-arrow">→</text>
+    </view>
+    <view class="menu-item" bindtap="goToFavoriteWords">
+      <text class="menu-icon">⭐</text>
+      <text class="menu-text">生词本</text>
+      <text class="menu-arrow">→</text>
+    </view>
+    <view class="menu-item" bindtap="goToStats">
+      <text class="menu-icon">📊</text>
+      <text class="menu-text">学习统计</text>
+      <text class="menu-arrow">→</text>
+    </view>
+    <view class="menu-item" bindtap="goToSettings">
+      <text class="menu-icon">⚙️</text>
+      <text class="menu-text">设置</text>
+      <text class="menu-arrow">→</text>
+    </view>
+  </view>
+
+  <!-- 学习记录 -->
+  <view class="calendar-section">
+    <text class="section-title">学习日历</text>
+    <view class="calendar-grid">
+      <view class="calendar-day {{day.learned ? 'learned' : ''}}"
+            wx:for="{{last7Days}}"
+            wx:key="date">
+        <text class="day-text">{{item.day}}</text>
+        <text class="date-text">{{item.date}}</text>
+      </view>
+    </view>
+  </view>
+</view>

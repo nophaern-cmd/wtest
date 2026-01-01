@@ -1,0 +1,100 @@
+<!-- pages/mode-select/mode-select.wxml -->
+<view class="container {{stage}}">
+  <!-- 顶部信息 -->
+  <view class="header">
+    <view class="header-back" bindtap="goBack">
+      <text class="back-icon">←</text>
+      <text>返回</text>
+    </view>
+    <text class="header-title">选择学习模式</text>
+  </view>
+
+  <!-- 学习统计信息 -->
+  <view class="stats-bar">
+    <view class="stat-item">
+      <text class="stat-value">{{studyStats.totalWords}}</text>
+      <text class="stat-label">已学单词</text>
+    </view>
+    <view class="stat-item">
+      <text class="stat-value">{{studyStats.streakDays}}</text>
+      <text class="stat-label">连续天数</text>
+    </view>
+    <view class="stat-item">
+      <text class="stat-value">{{studyStats.studyTime}}</text>
+      <text class="stat-label">学习时长(分)</text>
+    </view>
+  </view>
+
+  <!-- 模式列表 -->
+  <view class="mode-list">
+    <!-- 模式1: 五步学习法 -->
+    <view
+      class="mode-card mode-1"
+      bindtap="selectMode"
+      data-mode="1"
+    >
+      <view class="mode-icon">
+        <text>📷</text>
+        <text>🔊</text>
+        <text>📝</text>
+      </view>
+      <view class="mode-info">
+        <text class="mode-name">图-听-英-汉-拼-句</text>
+        <text class="mode-desc">五步学习法，从感知到应用，包含分类记忆</text>
+      </view>
+      <view class="mode-progress">
+        <text>{{modeProgress.mode1}}%</text>
+      </view>
+    </view>
+
+    <!-- 模式2: 联想记忆 -->
+    <view
+      class="mode-card mode-2"
+      bindtap="selectMode"
+      data-mode="2"
+    >
+      <view class="mode-icon">
+        <text>🧠</text>
+        <text>⚡</text>
+        <text>🔗</text>
+      </view>
+      <view class="mode-info">
+        <text class="mode-name">联想记忆</text>
+        <text class="mode-desc">词根、读音、拼写联想，举一反三</text>
+      </view>
+      <view class="mode-progress">
+        <text>{{modeProgress.mode2}}%</text>
+      </view>
+    </view>
+
+    <!-- 模式3: 故事短文记忆 -->
+    <view
+      class="mode-card mode-3"
+      bindtap="selectMode"
+      data-mode="3"
+    >
+      <view class="mode-icon">
+        <text>📖</text>
+        <text>✨</text>
+      </view>
+      <view class="mode-info">
+        <text class="mode-name">故事短文记忆</text>
+        <text class="mode-desc">故事语境，自然习得</text>
+      </view>
+      <view class="mode-progress">
+        <text>{{modeProgress.mode3}}%</text>
+      </view>
+    </view>
+  </view>
+
+  <!-- 今日学习目标 -->
+  <view class="daily-goal">
+    <view class="goal-header">
+      <text class="goal-title">今日学习目标</text>
+      <text class="goal-progress">{{todayLearned}}/{{dailyGoal}}</text>
+    </view>
+    <view class="goal-bar">
+      <view class="goal-fill" style="width: {{(todayLearned/dailyGoal)*100}}%"></view>
+    </view>
+  </view>
+</view>

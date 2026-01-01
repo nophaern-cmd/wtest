@@ -1,0 +1,351 @@
+/* pages/mode1/mode1.wxss */
+.container {
+  padding: 20rpx;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  background: linear-gradient(to bottom, #FFF5F0, #FFFFFF);
+}
+
+/* 顶部信息栏 */
+.top-bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 20rpx 0;
+  margin-bottom: 20rpx;
+}
+
+.word-progress {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  gap: 20rpx;
+}
+
+.progress-text {
+  font-size: 28rpx;
+  color: #666;
+  font-weight: bold;
+}
+
+.progress-bar {
+  flex: 1;
+  height: 12rpx;
+  background: #E0E0E0;
+  border-radius: 6rpx;
+  overflow: hidden;
+}
+
+.progress-fill {
+  height: 100%;
+  background: linear-gradient(135deg, #FF9F43, #FFB875);
+  border-radius: 6rpx;
+  transition: width 0.3s ease;
+}
+
+.category-name {
+  font-size: 28rpx;
+  color: #999;
+  padding: 8rpx 16rpx;
+  background: #F5F5F5;
+  border-radius: 16rpx;
+}
+
+/* 学习内容区域 */
+.learning-area {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 30rpx;
+  overflow-y: auto;
+  padding: 20rpx 30rpx 20rpx 30rpx;
+}
+
+/* 单词图片容器 */
+.word-image-container {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  animation: scaleIn 0.5s ease;
+}
+
+.word-image {
+  width: 600rpx;
+  height: 600rpx;
+  border-radius: 32rpx;
+  box-shadow: 0 12rpx 40rpx rgba(0, 0, 0, 0.1);
+  transition: transform 0.3s ease;
+}
+
+.word-image:active {
+  transform: scale(0.98);
+}
+
+/* 单词容器 */
+.word-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 16rpx;
+  padding: 40rpx;
+  background: white;
+  border-radius: 24rpx;
+  box-shadow: 0 4rpx 16rpx rgba(0, 0, 0, 0.06);
+  width: 100%;
+  position: relative;
+}
+
+.word-row {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 16rpx;
+}
+
+.word-english {
+  font-size: 96rpx;
+  font-weight: bold;
+  color: #333;
+  letter-spacing: 2rpx;
+  text-align: center;
+}
+
+.word-chinese {
+  font-size: 36rpx;
+  font-weight: normal;
+  color: #666;
+  text-align: center;
+}
+
+.audio-icon {
+  position: absolute;
+  top: 20rpx;
+  right: 20rpx;
+  width: 48rpx;
+  height: 48rpx;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 36rpx;
+  color: #999;
+  opacity: 0.6;
+  animation: pulse 2s infinite;
+  transition: all 0.3s ease;
+}
+
+.audio-icon:active {
+  transform: scale(0.9);
+  opacity: 1;
+  color: #FF9F43;
+}
+
+/* 例句列表容器 */
+.sentences-container {
+  display: flex;
+  flex-direction: column;
+  gap: 20rpx;
+  width: 100%;
+}
+
+/* 单个例句 */
+.sentence-item {
+  display: flex;
+  align-items: center;
+  gap: 16rpx;
+  padding: 25rpx 30rpx;
+  background: #F8F8F8;
+  border-radius: 20rpx;
+  width: 100%;
+  border-left: 4rpx solid #FF9F43;
+  position: relative;
+  transition: all 0.3s ease;
+}
+
+.sentence-item:active {
+  background: #FFF5F0;
+  transform: scale(0.98);
+}
+
+.sentence-number {
+  width: 48rpx;
+  height: 48rpx;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #FF9F43, #FFB875);
+  color: white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 24rpx;
+  font-weight: bold;
+  flex-shrink: 0;
+}
+
+.sentence-text {
+  flex: 1;
+  font-size: 32rpx;
+  color: #333;
+  line-height: 1.8;
+}
+
+.audio-icon-small {
+  width: 40rpx;
+  height: 40rpx;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 32rpx;
+  color: #999;
+  opacity: 0.5;
+  flex-shrink: 0;
+  transition: all 0.3s ease;
+}
+
+.audio-icon-small:active {
+  transform: scale(0.9);
+  opacity: 1;
+  color: #FF9F43;
+}
+
+/* 底部操作栏 */
+.footer {
+  display: flex;
+  gap: 24rpx;
+  padding: 40rpx 20rpx;
+  justify-content: center;
+}
+
+.btn-primary,
+.btn-secondary {
+  flex: 1;
+  padding: 28rpx 0;
+  font-size: 34rpx;
+  font-weight: bold;
+  border-radius: 50rpx;
+  border: none;
+}
+
+.btn-primary {
+  background: linear-gradient(135deg, #FF9F43, #FFB875);
+  color: white;
+  box-shadow: 0 8rpx 24rpx rgba(255, 159, 67, 0.3);
+}
+
+.btn-secondary {
+  background: white;
+  color: #FF9F43;
+  border: 3rpx solid #FF9F43;
+  box-shadow: 0 4rpx 12rpx rgba(255, 159, 67, 0.1);
+}
+
+/* 动画 */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(20rpx);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes scaleIn {
+  from {
+    opacity: 0;
+    transform: scale(0.8);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+@keyframes pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.7; }
+}
+
+/* 阶段差异化样式 */
+
+/* 幼儿阶段 */
+.kindergarten .word-image {
+  width: 650rpx;
+  height: 650rpx;
+  border-radius: 48rpx;
+}
+
+.kindergarten .word-english {
+  font-size: 110rpx;
+}
+
+.kindergarten .word-chinese {
+  font-size: 42rpx;
+}
+
+.kindergarten .sentence-text {
+  font-size: 38rpx;
+}
+
+/* 小学阶段 */
+.primary .word-english {
+  font-size: 90rpx;
+}
+
+.primary .word-chinese {
+  font-size: 34rpx;
+}
+
+.primary .sentence-text {
+  font-size: 32rpx;
+}
+
+/* 中学阶段 */
+.middle .word-english {
+  font-size: 80rpx;
+}
+
+.middle .word-chinese {
+  font-size: 32rpx;
+}
+
+.middle .sentence-text {
+  font-size: 30rpx;
+}
+
+/* 阶段色彩主题 */
+.primary .progress-fill,
+.primary .play-btn,
+.primary .btn-primary {
+  background: linear-gradient(135deg, #54A0FF, #74b9ff);
+}
+
+.primary .word-pos {
+  background: #F0F8FF;
+  color: #54A0FF;
+}
+
+.primary .letter-slot:active,
+.primary .letter-card:active {
+  background: #F0F8FF;
+  border-color: #54A0FF;
+}
+
+.middle .progress-fill,
+.middle .play-btn,
+.middle .btn-primary {
+  background: linear-gradient(135deg, #5F27CD, #8854d0);
+}
+
+.middle .word-pos {
+  background: #F8F4FF;
+  color: #5F27CD;
+}
+
+.middle .letter-slot:active,
+.middle .letter-card:active {
+  background: #F8F4FF;
+  border-color: #5F27CD;
+}

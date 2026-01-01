@@ -1,0 +1,101 @@
+<view class="container">
+  <view class="header">
+    <text class="title">模式3: 联想记忆</text>
+    <text class="subtitle">通过联想技巧轻松记单词</text>
+  </view>
+
+  <!-- 联想类型选择 -->
+  <view class="type-section" wx:if="{{!currentAssociation}}">
+    <text class="section-title">选择联想方式</text>
+
+    <view class="type-grid">
+      <view
+        class="type-item"
+        wx:for="{{associationTypes}}"
+        wx:key="index"
+        bindtap="selectType"
+        data-type="{{item.type}}"
+      >
+        <text class="type-icon">{{item.icon}}</text>
+        <text class="type-name">{{item.name}}</text>
+        <text class="type-count">{{item.count}} 个</text>
+      </view>
+    </view>
+
+    <!-- 联想单词列表 -->
+    <text class="section-title" wx:if="{{selectedType}}">{{selectedTypeName}}</text>
+    <scroll-view scroll-y class="association-list" wx:if="{{selectedType}}">
+      <view
+        class="association-item"
+        wx:for="{{filteredAssociations}}"
+        wx:key="id"
+        bindtap="viewAssociation"
+        data-item="{{item}}"
+      >
+        <text class="assoc-icon">{{item.image}}</text>
+        <view class="assoc-info">
+          <text class="assoc-word">{{item.word}}</text>
+          <text class="assoc-meaning">{{item.meaning}}</text>
+          <text class="assoc-hint">{{item.association.substring(0, 30)}}...</text>
+        </view>
+        <text class="assoc-arrow">▶</text>
+      </view>
+    </scroll-view>
+  </view>
+
+  <!-- 联想详情 -->
+  <view class="association-detail" wx:if="{{currentAssociation}}">
+    <view class="detail-header">
+      <text class="back-btn" bindtap="backToList">← 返回</text>
+      <text class="detail-type">{{currentAssociation.type}}</text>
+    </view>
+
+    <!-- 单词展示 -->
+    <view class="word-display">
+      <text class="word-icon">{{currentAssociation.image}}</text>
+      <text class="word-english">{{currentAssociation.word}}</text>
+      <text class="word-phonetic">{{currentAssociation.phonetic}}</text>
+      <button class="audio-btn" bindtap="playAudio" data-word="{{currentAssociation.word}}">🔊 发音</button>
+    </view>
+
+    <!-- 联想记忆卡片 -->
+    <view class="memory-card">
+      <view class="memory-header">
+        <text class="memory-title">💡 联想记忆</text>
+        <text class="memory-type">{{getTypeName(currentAssociation.type)}}</text>
+      </view>
+
+      <view class="memory-content">
+        <text class="memory-association">{{currentAssociation.association}}</text>
+      </view>
+
+      <view class="memory-tip-section">
+        <text class="tip-label">📝 记忆口诀</text>
+        <text class="tip-text">{{currentAssociation.memoryTip}}</text>
+      </view>
+    </view>
+
+    <!-- 相关单词 -->
+    <view class="related-words">
+      <text class="related-title">🔗 相关单词</text>
+      <view class="related-list">
+        <view
+          class="related-item"
+          wx:for="{{currentAssociation.relatedWords}}"
+          wx:key="index"
+          bindtap="viewRelatedWord"
+          data-word="{{item}}"
+        >
+          <text class="related-word">{{item}}</text>
+        </view>
+      </view>
+    </view>
+
+    <!-- 操作按钮 -->
+    <view class="action-buttons">
+      <button class="prev-btn" bindtap="prevWord" disabled="{{currentIndex === 0}}">← 上一个</button>
+      <button class="mark-known" bindtap="markKnown">✓ 已掌握</button>
+      <button class="next-btn" bindtap="nextWord" disabled="{{currentIndex === filteredAssociations.length - 1}}">下一个 →</button>
+    </view>
+  </view>
+</view>

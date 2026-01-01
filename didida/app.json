@@ -1,0 +1,25 @@
+{
+  "pages": [
+    "pages/home/home",
+    "pages/index/index",
+    "pages/mode-select/mode-select",
+    "pages/category-select/category-select",
+    "pages/mode1/mode1",
+    "pages/mode2/mode2",
+    "pages/mode3/mode3",
+    "pages/mode3-detail/mode3-detail",
+    "pages/profile/profile",
+    "pages/wordlist/wordlist",
+    "pages/stats/stats",
+    "pages/settings/settings"
+  ],
+  "window": {
+    "backgroundTextStyle": "light",
+    "navigationBarBackgroundColor": "#FF9F43",
+    "navigationBarTitleText": "背单词",
+    "navigationBarTextStyle": "white",
+    "backgroundColor": "#FFF5F0"
+  },
+  "style": "v2",
+  "sitemapLocation": "sitemap.json"
+}

@@ -1,0 +1,28 @@
+<!-- pages/index/index.wxml -->
+<view class="container {{level}}">
+  <!-- 顶部信息 -->
+  <view class="header">
+    <text class="header-title">选择学习阶段</text>
+    <text class="header-subtitle">选择适合你的学习阶段</text>
+  </view>
+
+  <!-- 阶段卡片列表 -->
+  <view class="stage-list">
+    <!-- 幼儿阶段 -->
+    <view
+      class="stage-card"
+      bindtap="selectStage"
+      data-stage="kindergarten"
+    >
+      <view class="stage-icon">🐻</view>
+      <view class="stage-info">
+        <text class="stage-name">幼儿阶段</text>
+        <text class="stage-age">3-6岁</text>
+        <text class="stage-desc">趣味互动，快乐启蒙</text>
+      </view>
+      <view class="stage-badge" wx:if="{{currentStage === 'kindergarten'}}">
+        当前
+      </view>
+    </view>
+  </view>
+</view>

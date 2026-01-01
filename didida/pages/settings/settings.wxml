@@ -1,0 +1,12 @@
+<!-- pages/settings/settings.wxml -->
+<view class="container">
+  <view class="header">
+    <view class="back-btn" bindtap="goBack">← 返回</view>
+    <text class="title">设置</text>
+  </view>
+
+  <view class="placeholder">
+    <text class="placeholder-icon">⚙️</text>
+    <text class="placeholder-text">设置功能开发中</text>
+  </view>
+</view>

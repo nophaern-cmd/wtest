@@ -1,0 +1,147 @@
+/* pages/wordlist/wordlist.wxss */
+.container {
+  padding: 30rpx;
+  min-height: 100vh;
+  background: #F5F5F5;
+}
+
+/* 搜索框 */
+.search-bar {
+  display: flex;
+  align-items: center;
+  background: white;
+  border-radius: 50rpx;
+  padding: 20rpx 32rpx;
+  margin-bottom: 24rpx;
+  box-shadow: 0 4rpx 12rpx rgba(0, 0, 0, 0.06);
+}
+
+.search-input {
+  flex: 1;
+  font-size: 28rpx;
+  color: #333;
+}
+
+.search-placeholder {
+  color: #999;
+}
+
+.search-icon {
+  font-size: 32rpx;
+  color: #999;
+}
+
+/* 分类标签 */
+.category-tabs {
+  display: flex;
+  background: white;
+  border-radius: 50rpx;
+  padding: 8rpx;
+  margin-bottom: 30rpx;
+  box-shadow: 0 4rpx 12rpx rgba(0, 0, 0, 0.06);
+}
+
+.tab-item {
+  flex: 1;
+  text-align: center;
+  padding: 16rpx 20rpx;
+  font-size: 28rpx;
+  color: #666;
+  border-radius: 40rpx;
+  transition: all 0.3s ease;
+}
+
+.tab-item.active {
+  background: linear-gradient(135deg, #FF9F43, #FFB875);
+  color: white;
+  font-weight: bold;
+}
+
+/* 单词列表 */
+.word-list {
+  display: flex;
+  flex-direction: column;
+  gap: 20rpx;
+}
+
+.word-item {
+  background: white;
+  border-radius: 20rpx;
+  padding: 30rpx;
+  box-shadow: 0 4rpx 12rpx rgba(0, 0, 0, 0.06);
+  transition: all 0.3s ease;
+}
+
+.word-item:active {
+  transform: scale(0.98);
+}
+
+.word-main {
+  display: flex;
+  align-items: baseline;
+  margin-bottom: 12rpx;
+}
+
+.word-text {
+  font-size: 32rpx;
+  font-weight: bold;
+  color: #333;
+  margin-right: 16rpx;
+}
+
+.word-phonetic {
+  font-size: 24rpx;
+  color: #999;
+  font-family: 'Lucida Sans Unicode', 'Arial Unicode MS', sans-serif;
+}
+
+.word-meaning {
+  font-size: 26rpx;
+  color: #666;
+  margin-bottom: 16rpx;
+}
+
+.word-status {
+  display: flex;
+  justify-content: flex-end;
+}
+
+.status-badge {
+  padding: 8rpx 20rpx;
+  border-radius: 20rpx;
+  font-size: 22rpx;
+  font-weight: bold;
+}
+
+.status-badge.learned {
+  background: #E8F5E9;
+  color: #4CAF50;
+}
+
+.status-badge.mastered {
+  background: #FFF3E0;
+  color: #FF9F43;
+}
+
+.status-badge.unlearned {
+  background: #F5F5F5;
+  color: #999;
+}
+
+/* 空状态 */
+.empty-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 120rpx 0;
+}
+
+.empty-icon {
+  font-size: 120rpx;
+  margin-bottom: 24rpx;
+}
+
+.empty-text {
+  font-size: 28rpx;
+  color: #999;
+}

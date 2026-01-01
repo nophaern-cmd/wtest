@@ -1,0 +1,62 @@
+<view class="container">
+  <view class="header">
+    <text class="title">学习中心</text>
+    <text class="subtitle">系统化学习英语单词</text>
+  </view>
+
+  <!-- 学习进度 -->
+  <view class="progress-section">
+    <view class="progress-card">
+      <text class="progress-title">学习进度</text>
+      <view class="progress-bar">
+        <view class="progress-fill" style="width: {{progress}}%"></view>
+      </view>
+      <text class="progress-text">{{progressText}}</text>
+    </view>
+  </view>
+
+  <!-- 学习分类 -->
+  <view class="categories-section">
+    <text class="section-title">按分类学习</text>
+    <scroll-view scroll-x class="category-scroll">
+      <view class="category-item" wx:for="{{categories}}" wx:key="index" bindtap="studyCategory" data-category="{{item}}">
+        <text class="category-icon">{{categoryIcons[item]}}</text>
+        <text class="category-name">{{item}}</text>
+        <text class="category-count">{{getCategoryWordCount(item)}} 个</text>
+      </view>
+    </scroll-view>
+  </view>
+
+  <!-- 学习模式 -->
+  <view class="modes-section">
+    <text class="section-title">学习模式</text>
+    <view class="mode-grid">
+      <view class="mode-item" bindtap="goToMode" data-mode="mode1">
+        <text class="mode-icon">📚</text>
+        <text class="mode-name">全方位学习</text>
+      </view>
+      <view class="mode-item" bindtap="goToMode" data-mode="mode2">
+        <text class="mode-icon">📂</text>
+        <text class="mode-name">分类记忆</text>
+      </view>
+      <view class="mode-item" bindtap="goToMode" data-mode="mode3">
+        <text class="mode-icon">📖</text>
+        <text class="mode-name">故事记忆</text>
+      </view>
+      <view class="mode-item" bindtap="goToMode" data-mode="mode4">
+        <text class="mode-icon">🌳</text>
+        <text class="mode-name">词根记忆</text>
+      </view>
+    </view>
+  </view>
+
+  <!-- 复习区域 -->
+  <view class="review-section">
+    <text class="section-title">复习区</text>
+    <view class="review-card">
+      <text class="review-title">待复习单词</text>
+      <text class="review-count">{{reviewCount}} 个</text>
+      <button class="review-btn" bindtap="startReview">开始复习</button>
+    </view>
+  </view>
+</view>
