@@ -54,13 +54,13 @@ Page({
     const navigationBarColors = {
       kindergarten: '#FF9F43',
       primary: '#54A0FF',
-      middle: '#5F27CD'
+      junior: '#5F27CD'
     }
 
     const backgroundColors = {
       kindergarten: '#FFF5F0',
       primary: '#F0F7FF',
-      middle: '#F5F0FA'
+      junior: '#F5F0FA'
     }
 
     wx.setNavigationBarColor({

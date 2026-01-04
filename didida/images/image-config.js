@@ -13,6 +13,8 @@ const IMAGE_CONFIG = {
     '🩷': 'colors/pink.png',
     '🟣': 'colors/purple.png',
     '🟠': 'colors/orange.png',
+    '🎨': 'colors/w.png',
+    '👁️': 'colors/i.png',
   },
 
   // 动物类 - images/animals/

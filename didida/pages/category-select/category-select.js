@@ -35,22 +35,22 @@ Page({
     const categoryMaps = {
       kindergarten: [
         { id: '26字母', name: '26字母', icon: '🔤', wordCount: 26, difficulty: 1, progress: 0 },
-        { id: '颜色', name: '颜色', icon: '🌈', wordCount: 16, difficulty: 1, progress: 0 },
-        { id: '数字', name: '数字', icon: '🔢', wordCount: 27, difficulty: 1, progress: 0 },
-        { id: '动物', name: '动物', icon: '🦁', wordCount: 30, difficulty: 1, progress: 0 },
-        { id: '食物', name: '食物', icon: '🍎', wordCount: 16, difficulty: 1, progress: 0 },
-        { id: '身体', name: '身体部位', icon: '👤', wordCount: 15, difficulty: 1, progress: 0 },
-        { id: '动作', name: '动作', icon: '🏃', wordCount: 78, difficulty: 1, progress: 0 },
-        { id: '称呼', name: '称呼', icon: '👨‍👩‍👧', wordCount: 6, difficulty: 1, progress: 0 },
-        { id: '礼貌打招呼', name: '礼貌打招呼', icon: '👋', wordCount: 64, difficulty: 1, progress: 0 },
-        { id: '教室物品', name: '教室物品', icon: '📚', wordCount: 22, difficulty: 1, progress: 0 },
-        { id: '课堂指令', name: '课堂指令', icon: '📚', wordCount: 72, difficulty: 1, progress: 0 },
-        { id: '节日短语', name: '节日短语', icon: '🎉', wordCount: 8, difficulty: 1, progress: 0 },
-        { id: '评价与鼓励', name: '评价与鼓励', icon: '⭐', wordCount: 14, difficulty: 1, progress: 0 },
-        { id: '天气自然', name: '天气自然', icon: '🌤️', wordCount: 10, difficulty: 1, progress: 0 }
+        { id: '颜色', name: '颜色', icon: '🌈', wordCount: 9, difficulty: 1, progress: 0 },
+        { id: '数字', name: '数字', icon: '🔢', wordCount: 16, difficulty: 1, progress: 0 },
+        { id: '动物', name: '动物', icon: '🦁', wordCount: 15, difficulty: 1, progress: 0 },
+        { id: '食物', name: '食物', icon: '🍎', wordCount: 9, difficulty: 1, progress: 0 },
+        { id: '身体', name: '身体部位', icon: '👤', wordCount: 7, difficulty: 1, progress: 0 },
+        { id: '动作', name: '动作', icon: '🏃', wordCount: 37, difficulty: 1, progress: 0 },
+        { id: '称呼', name: '称呼', icon: '👨‍👩‍👧', wordCount: 3, difficulty: 1, progress: 0 },
+        { id: '礼貌打招呼', name: '礼貌打招呼', icon: '👋', wordCount: 29, difficulty: 1, progress: 0 },
+        { id: '教室物品', name: '教室物品', icon: '📚', wordCount: 14, difficulty: 1, progress: 0 },
+        { id: '课堂指令', name: '课堂指令', icon: '📚', wordCount: 37, difficulty: 1, progress: 0 },
+        { id: '节日短语', name: '节日短语', icon: '🎉', wordCount: 4, difficulty: 1, progress: 0 },
+        { id: '评价与鼓励', name: '评价与鼓励', icon: '⭐', wordCount: 6, difficulty: 1, progress: 0 },
+        { id: '天气自然', name: '天气自然', icon: '🌤️', wordCount: 5, difficulty: 1, progress: 0 }
       ],
       primary: [],
-      middle: []
+      junior: []
     }
 
     return categoryMaps[stage] || []
@@ -88,7 +88,7 @@ Page({
     const navigationBarColors = {
       kindergarten: '#FF9F43',
       primary: '#54A0FF',
-      middle: '#5F27CD'
+      junior: '#5F27CD'
     }
 
     wx.setNavigationBarColor({

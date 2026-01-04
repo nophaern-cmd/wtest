@@ -56,7 +56,7 @@ Page({
       allWords = wordsData.kindergartenWords
     } else if (this.data.stage === 'primary') {
       allWords = wordsData.primaryWords
-    } else if (this.data.stage === 'middle') {
+    } else if (this.data.stage === 'junior') {
       allWords = wordsData.juniorWords
     }
     
@@ -269,7 +269,7 @@ Page({
     const navigationBarColors = {
       kindergarten: '#FF9F43',
       primary: '#54A0FF',
-      middle: '#5F27CD'
+      junior: '#5F27CD'
     }
 
     wx.setNavigationBarColor({

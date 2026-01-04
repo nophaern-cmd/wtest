@@ -11,7 +11,7 @@ App({
     const userInfo = wx.getStorageSync('userInfo')
     if (!userInfo) {
       wx.setStorageSync('userInfo', {
-        level: 'kindergarten', // kindergarten:幼儿, primary:小学, middle:中学
+        level: 'kindergarten', // kindergarten:幼儿, primary:小学, junior:中学
         studiedWords: [],      // 已学单词
         favoriteWords: [],     // 收藏单词
         studyStats: {

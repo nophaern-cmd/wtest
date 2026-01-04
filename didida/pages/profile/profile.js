@@ -31,7 +31,7 @@ Page({
     const levelTextMap = {
       kindergarten: '幼儿阶段',
       primary: '小学阶段',
-      middle: '中学阶段'
+      junior: '中学阶段'
     }
 
     this.setData({
