@@ -31,7 +31,7 @@ Page({
   },
 
   // 根据阶段获取分类
-    getCategoriesByStage(stage) {
+  getCategoriesByStage(stage) {
     const categoryMaps = {
       kindergarten: [
         { id: '26字母', name: '26字母', icon: '🔤', wordCount: 26, difficulty: 1, progress: 0 },
@@ -47,7 +47,8 @@ Page({
         { id: '课堂指令', name: '课堂指令', icon: '📚', wordCount: 37, difficulty: 1, progress: 0 },
         { id: '节日短语', name: '节日短语', icon: '🎉', wordCount: 4, difficulty: 1, progress: 0 },
         { id: '评价与鼓励', name: '评价与鼓励', icon: '⭐', wordCount: 6, difficulty: 1, progress: 0 },
-        { id: '天气自然', name: '天气自然', icon: '🌤️', wordCount: 5, difficulty: 1, progress: 0 }
+        { id: '天气自然', name: '天气自然', icon: '🌤️', wordCount: 5, difficulty: 1, progress: 0 },
+        { id: '趣味游戏', name: '趣味游戏', icon: '🎮', wordCount: 0, difficulty: 1, progress: 0, isGame: true }
       ],
       primary: [],
       junior: []
@@ -116,6 +117,14 @@ Page({
     wx.vibrateShort({
       type: 'light'
     })
+
+    // 趣味游戏跳转到游戏页面
+    if (category.isGame) {
+      wx.navigateTo({
+        url: `/pages/game/game?stage=${this.data.stage}`
+      })
+      return
+    }
 
     // 跳转到学习页面
     wx.navigateTo({

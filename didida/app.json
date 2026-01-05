@@ -8,6 +8,7 @@
     "pages/mode2/mode2",
     "pages/mode3/mode3",
     "pages/mode3-detail/mode3-detail",
+    "pages/game/game",
     "pages/profile/profile",
     "pages/wordlist/wordlist",
     "pages/stats/stats",

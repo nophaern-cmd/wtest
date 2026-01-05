@@ -110,5 +110,18 @@ Page({
         })
         break
     }
+  },
+
+  // 开始游戏
+  startGame() {
+    // 震动反馈
+    wx.vibrateShort({
+      type: 'light'
+    })
+
+    // 跳转到游戏页面
+    wx.navigateTo({
+      url: `/pages/game/game?stage=${this.data.stage}`
+    })
   }
 })

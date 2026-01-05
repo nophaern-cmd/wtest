@@ -85,6 +85,25 @@
         <text>{{modeProgress.mode3}}%</text>
       </view>
     </view>
+
+    <!-- 趣味游戏 -->
+    <view
+      class="mode-card game-mode"
+      bindtap="startGame"
+    >
+      <view class="mode-icon">
+        <text>🎮</text>
+        <text>🎯</text>
+        <text>🏆</text>
+      </view>
+      <view class="mode-info">
+        <text class="mode-name">趣味游戏</text>
+        <text class="mode-desc">选择正确图片，挑战高分！支持错题优先</text>
+      </view>
+      <view class="mode-badge">
+        <text>游戏</text>
+      </view>
+    </view>
   </view>
 
   <!-- 今日学习目标 -->
