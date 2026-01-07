@@ -1,14 +1,80 @@
 <!--pages/game/game.wxml-->
 <view class="container">
-  <!-- 游戏开始界面 -->
-  <view wx:if="{{!gameStarted && !showSettings}}" class="start-screen">
+  <!-- 游戏选择界面 -->
+  <view wx:if="{{!gameStarted && !showSettings && !gameTypeSelected}}" class="game-select-screen">
     <view class="top-bar">
       <view class="back-btn" bindtap="goBack">←</view>
     </view>
 
     <view class="logo">🎮</view>
     <view class="title">趣味游戏</view>
-    <view class="subtitle">选择对应的图片，获得高分！</view>
+    <view class="subtitle">选择一个游戏开始学习！</view>
+
+    <!-- 游戏类型列表 -->
+    <view class="games-list">
+      <!-- 游戏1: 单词配对 -->
+      <view class="game-card" bindtap="selectGameType" data-type="pair">
+        <view class="game-icon">
+          <text>🎯</text>
+          <text>🖼️</text>
+        </view>
+        <view class="game-info">
+          <text class="game-name">单词配对</text>
+          <text class="game-desc">选择与单词对应的图片，挑战高分！</text>
+        </view>
+        <view class="game-badge">第1关</view>
+      </view>
+
+      <!-- 游戏2: 看图找词 -->
+      <view class="game-card" bindtap="selectGameType" data-type="findWord">
+        <view class="game-icon">
+          <text>🔍</text>
+          <text>🖼️</text>
+        </view>
+        <view class="game-info">
+          <text class="game-name">看图找词</text>
+          <text class="game-desc">在图片中找出隐藏的单词！</text>
+        </view>
+        <view class="game-badge">第2关</view>
+      </view>
+
+      <!-- 游戏3: 拼写挑战 -->
+      <view class="game-card" bindtap="selectGameType" data-type="spell">
+        <view class="game-icon">
+          <text>✏️</text>
+          <text>📝</text>
+        </view>
+        <view class="game-info">
+          <text class="game-name">拼写挑战</text>
+          <text class="game-desc">根据图片拼写单词，巩固记忆！</text>
+        </view>
+        <view class="game-badge">第3关</view>
+      </view>
+
+      <!-- 游戏4: 单词接龙 -->
+      <view class="game-card" bindtap="selectGameType" data-type="chain">
+        <view class="game-icon">
+          <text>🔗</text>
+          <text>➡️</text>
+        </view>
+        <view class="game-info">
+          <text class="game-name">单词接龙</text>
+          <text class="game-desc">首尾相接，锻炼词汇量！</text>
+        </view>
+        <view class="game-badge">第4关</view>
+      </view>
+    </view>
+  </view>
+
+  <!-- 游戏设置界面 -->
+  <view wx:if="{{!gameStarted && !showSettings && gameTypeSelected}}" class="start-screen">
+    <view class="top-bar">
+      <view class="back-btn" bindtap="backToGames">←</view>
+    </view>
+
+    <view class="logo">{{currentGameIcon}}</view>
+    <view class="title">{{currentGameName}}</view>
+    <view class="subtitle">{{currentGameDesc}}</view>
 
     <view class="mode-selector">
       <view class="mode-item {{wrongFirstMode ? 'active' : ''}}" bindtap="toggleWrongFirst">
@@ -23,8 +89,8 @@
     <button class="start-btn" bindtap="startGame">开始游戏</button>
   </view>
 
-  <!-- 游戏进行中 -->
-  <view wx:elif="{{gameStarted}}" class="game-screen">
+  <!-- 单词配对游戏进行中 -->
+  <view wx:elif="{{gameStarted && currentGameType === 'pair'}}" class="game-screen">
     <view class="score-board">
       <view class="score-item">
         <text class="label">进度</text>
@@ -90,6 +156,61 @@
           </view>
         </view>
       </scroll-view>
+    </view>
+  </view>
+
+  <!-- 看图找词游戏进行中 -->
+  <view wx:elif="{{gameStarted && currentGameType === 'findWord'}}" class="find-word-screen">
+    <view class="find-score-board">
+      <view class="find-score-item">
+        <text class="label">目标</text>
+        <text class="target-word">{{targetWord.word}}</text>
+      </view>
+      <view class="find-score-item">
+        <text class="label">得分</text>
+        <text class="score {{score >= 0 ? 'positive' : 'negative'}}">{{score}}</text>
+      </view>
+      <view class="find-score-item">
+        <text class="label">已找到</text>
+        <text class="score">{{foundWords.length}}/{{sceneWords.length}}</text>
+      </view>
+    </view>
+
+    <view class="find-game-area">
+      <!-- 场景图片 -->
+      <view
+        class="scene-image-container"
+        bindtap="clickScenePosition"
+        catchtouchmove="clickScenePosition"
+      >
+        <image class="scene-image" src="{{sceneImage}}" mode="aspectFill" />
+
+        <!-- 已找到的单词标记 -->
+        <view
+          wx:for="{{foundWordMarkers}}"
+          wx:key="word"
+          class="word-marker"
+          style="left: {{item.x}}%; top: {{item.y}}%;"
+        >
+          <view class="marker-box">
+            <text class="marker-emoji">{{item.emoji}}</text>
+          </view>
+        </view>
+      </view>
+    </view>
+
+    <!-- 选项区域 -->
+    <view class="find-options">
+      <view
+        wx:for="{{wordOptions}}"
+        wx:key="index"
+        class="find-option-card {{selectedPosition && targetWord.word === item.word ? 'highlight' : ''}}"
+        bindtap="selectFindWordOption"
+        data-index="{{index}}"
+      >
+        <image class="option-image" src="{{item.imageUrl}}" mode="aspectFit" />
+        <text class="option-text">{{item.text}}</text>
+      </view>
     </view>
   </view>
 
