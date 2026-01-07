@@ -3,13 +3,21 @@ const app = getApp()
 let imageConfigModule
 
 try {
-  imageConfigModule = require('../../images/image-config.js')
-  console.log('image-config 模块加载成功, keys:', Object.keys(imageConfigModule))
+  // 优先使用 emoji 配置（减小体积）
+  imageConfigModule = require('../../images/emoji-config.js')
+  console.log('emoji-config 模块加载成功')
 } catch (e) {
-  console.error('加载 image-config.js 失败:', e)
+  console.warn('加载 emoji-config.js 失败，尝试使用 image-config.js:', e)
+  try {
+    imageConfigModule = require('../../images/image-config.js')
+    console.log('image-config 模块加载成功')
+  } catch (e2) {
+    console.error('加载 image-config.js 失败:', e2)
+  }
 }
 
 const getImageUrl = imageConfigModule ? imageConfigModule.getImageUrl : null
+const getEmoji = imageConfigModule && imageConfigModule.getEmoji ? imageConfigModule.getEmoji : null
 
 Page({
   data: {

@@ -13,9 +13,10 @@
 
   <!-- 学习内容区域 -->
   <view class="learning-area">
-    <!-- 单词图片 -->
+    <!-- 单词图片/emoji -->
     <view class="word-image-container">
-      <image class="word-image" src="{{word.image}}" mode="aspectFit" show-menu-by-longpress></image>
+      <image wx:if="{{word.image}}" class="word-image" src="{{word.image}}" mode="aspectFit" show-menu-by-longpress></image>
+      <view wx:else class="word-emoji">{{word.imageEmoji}}</view>
     </view>
 
     <!-- 英文单词 + 中文释义 -->

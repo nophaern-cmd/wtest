@@ -127,7 +127,9 @@
           bindtap="selectOption"
           data-index="0"
         >
-          <image class="option-image" src="{{options[0].imageUrl}}" mode="aspectFit" />
+          <!-- 优先显示 emoji，如果没有图片URL -->
+          <view wx:if="{{!options[0].imageUrl}}" class="option-emoji">{{options[0].emoji}}</view>
+          <image wx:else class="option-image" src="{{options[0].imageUrl}}" mode="aspectFit" />
           <text class="option-text">{{options[0].text}}</text>
         </view>
         <view
@@ -135,7 +137,8 @@
           bindtap="selectOption"
           data-index="1"
         >
-          <image class="option-image" src="{{options[1].imageUrl}}" mode="aspectFit" />
+          <view wx:if="{{!options[1].imageUrl}}" class="option-emoji">{{options[1].emoji}}</view>
+          <image wx:else class="option-image" src="{{options[1].imageUrl}}" mode="aspectFit" />
           <text class="option-text">{{options[1].text}}</text>
         </view>
       </view>
@@ -151,7 +154,8 @@
             class="history-item {{item.correct ? 'correct' : 'wrong'}}"
           >
             <text class="history-word">{{item.word}}</text>
-            <image class="history-emoji" src="{{item.imageUrl}}" mode="aspectFit" />
+            <view wx:if="{{!item.imageUrl}}" class="history-emoji-text">{{item.emoji}}</view>
+            <image wx:else class="history-emoji" src="{{item.imageUrl}}" mode="aspectFit" />
             <text class="history-status">{{item.correct ? '✓' : '✗'}}</text>
           </view>
         </view>
@@ -208,7 +212,8 @@
         bindtap="selectFindWordOption"
         data-index="{{index}}"
       >
-        <image class="option-image" src="{{item.imageUrl}}" mode="aspectFit" />
+        <view wx:if="{{!item.imageUrl}}" class="option-emoji">{{item.emoji}}</view>
+        <image wx:else class="option-image" src="{{item.imageUrl}}" mode="aspectFit" />
         <text class="option-text">{{item.text}}</text>
       </view>
     </view>
@@ -238,7 +243,8 @@
           data-index="{{index}}"
         >
           <text class="wrong-word">{{item.word}}</text>
-          <image class="wrong-emoji" src="{{item.imageUrl}}" mode="aspectFit" />
+          <view wx:if="{{!item.imageUrl}}" class="wrong-emoji-text">{{item.emoji}}</view>
+          <image wx:else class="wrong-emoji" src="{{item.imageUrl}}" mode="aspectFit" />
           <text class="wrong-meaning">{{item.text}}</text>
           <text class="wrong-action">{{item.addedToBook ? '已添加' : '加入'}}</text>
         </view>

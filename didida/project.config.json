@@ -1,7 +1,41 @@
 {
   "description": "项目配置文件",
   "packOptions": {
-    "ignore": [],
+    "ignore": {
+      "type": "file",
+      "value": [
+        "venv/**",
+        "images/letters/**",
+        "images/animals/**",
+        "images/colors/**",
+        "images/food/**",
+        "images/body-people/**",
+        "images/actions/**",
+        "images/numbers/**",
+        "images/objects/**",
+        "images/weather/**",
+        "images/scenes/**",
+        "images/icons/**",
+        "images/*.py",
+        "images/*.sh",
+        "images/README.md",
+        "scripts/**",
+        "doc/**",
+        "test1/**",
+        "test2/**",
+        ".git/**",
+        ".gitignore",
+        "cdn-config.js",
+        "COS_UPLOAD_GUIDE.md",
+        "CDN_USAGE.md",
+        "UPLOAD_GUIDE.md",
+        "UPLOAD_README.md",
+        "QUICK_REFERENCE.md",
+        "MANUAL_STEPS.md",
+        "setup_and_upload.sh",
+        "update_cdn_url.sh"
+      ]
+    },
     "include": []
   },
   "setting": {

@@ -116,7 +116,8 @@ Page({
       pos: 'n.',
       meaning: word.meaning,
       sentences: sentences,
-      image: this.getImageUrl(word.image)
+      image: this.getImageUrl(word.image),
+      imageEmoji: word.image  // 保存原始 emoji
     }
 
     this.setData({ word: formattedWord })
@@ -247,12 +248,27 @@ Page({
     return sentences.slice(0, 3)
   },
 
-  // 获取图片URL
+  // 获取图片URL或emoji
   getImageUrl(emoji) {
-    // 引入图片配置
-    const { getImageUrl: configGetImageUrl } = require('../../images/image-config.js')
-    // 使用本地图片
-    return configGetImageUrl(emoji, true)
+    // 优先使用 emoji 配置（减小体积）
+    try {
+      const emojiConfig = require('../../images/emoji-config.js')
+      // emoji-config 返回空字符串，前端直接显示 emoji
+      if (emojiConfig.useEmojiOnly) {
+        return ''
+      }
+    } catch (e) {
+      console.warn('emoji-config 不存在，使用图片配置')
+    }
+
+    // 回退到图片配置
+    try {
+      const { getImageUrl: configGetImageUrl } = require('../../images/image-config.js')
+      return configGetImageUrl(emoji, true)
+    } catch (e) {
+      console.error('图片配置加载失败:', e)
+      return ''
+    }
   },
 
   // 打乱数组
