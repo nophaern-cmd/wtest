@@ -31,7 +31,18 @@
       { "type": "file", "value": "QUICK_REFERENCE.md" },
       { "type": "file", "value": "MANUAL_STEPS.md" },
       { "type": "file", "value": "setup_and_upload.sh" },
-      { "type": "file", "value": "update_cdn_url.sh" }
+      { "type": "file", "value": "update_cdn_url.sh" },
+      { "type": "folder", "value": "images/actions" },
+      { "type": "folder", "value": "images/animals" },
+      { "type": "folder", "value": "images/body-people" },
+      { "type": "folder", "value": "images/colors" },
+      { "type": "folder", "value": "images/food" },
+      { "type": "folder", "value": "images/icons" },
+      { "type": "folder", "value": "images/letters" },
+      { "type": "folder", "value": "images/numbers" },
+      { "type": "folder", "value": "images/objects" },
+      { "type": "folder", "value": "images/scenes" },
+      { "type": "folder", "value": "images/weather" }
     ],
     "include": []
   },
