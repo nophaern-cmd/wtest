@@ -46,6 +46,7 @@ Page({
     targetWord: null, // 当前要找的单词
     wordOptions: [], // 选项列表
     foundWords: [], // 已找到的单词
+    foundWordMarkers: [], // 已找到的单词标记（包含位置信息）
     selectedPosition: null, // 当前点击的位置
 
     // 已使用的单词（避免重复）
@@ -56,6 +57,11 @@ Page({
 
     // 错题本
     wrongWords: [],
+    wrongWordsByDiff: {
+      kindergarten: [],
+      primary: [],
+      middle: []
+    },
     currentWrongWords: [],
 
     // 单词库
@@ -153,7 +159,11 @@ Page({
 
   onShow() {
     // 每次显示页面时更新错题本
-    this.updateWrongWordsByDiff()
+    console.log('onShow 被调用')
+    // 只在gameStarted为false时更新，避免游戏中重复调用
+    if (!this.data.gameStarted) {
+      this.updateWrongWordsByDiff()
+    }
   },
 
   onUnload() {
