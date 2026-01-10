@@ -1,0 +1,49 @@
+{
+  "pages": [
+    "pages/index/index",
+    "pages/words/words",
+    "pages/sentences/sentences",
+    "pages/phonics/phonics",
+    "pages/songs/songs",
+    "pages/stories/stories",
+    "pages/quiz/quiz"
+  ],
+  "window": {
+    "backgroundTextStyle": "light",
+    "navigationBarBackgroundColor": "#4A90E2",
+    "navigationBarTitleText": "快乐英语学习",
+    "navigationBarTextStyle": "white",
+    "backgroundColor": "#F5F5F5"
+  },
+  "tabBar": {
+    "color": "#999999",
+    "selectedColor": "#4A90E2",
+    "backgroundColor": "#FFFFFF",
+    "borderStyle": "black",
+    "list": [
+      {
+        "pagePath": "pages/index/index",
+        "text": "首页"
+      },
+      {
+        "pagePath": "pages/words/words",
+        "text": "词汇"
+      },
+      {
+        "pagePath": "pages/quiz/quiz",
+        "text": "测试"
+      },
+      {
+        "pagePath": "pages/sentences/sentences",
+        "text": "句型"
+      },
+      {
+        "pagePath": "pages/songs/songs",
+        "text": "儿歌"
+      }
+    ]
+  },
+  "style": "v2",
+  "sitemapLocation": "sitemap.json",
+  "lazyCodeLoading": "requiredComponents"
+}

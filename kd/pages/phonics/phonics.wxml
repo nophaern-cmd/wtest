@@ -1,0 +1,40 @@
+<!--pages/phonics/phonics.wxml-->
+<view class="container">
+  <view class="header">
+    <view class="title">自然拼读学习</view>
+    <view class="subtitle">点击字母学习发音和词汇</view>
+  </view>
+
+  <view class="letters-grid">
+    <view class="letter-card {{selectedLetter === item.letter ? 'selected' : ''}}" wx:for="{{letters}}" wx:key="letter" bindtap="selectLetter" data-letter="{{item.letter}}">
+      <view class="letter-main">{{item.letter}}</view>
+      <view class="letter-count">{{item.count}}个词</view>
+    </view>
+  </view>
+
+  <view wx:if="{{selectedLetter}}" class="letter-detail">
+    <view class="detail-header">
+      <view class="letter-large">{{selectedLetter}}</view>
+      <button class="play-sound-btn" bindtap="playLetterSound">🔊 播放发音</button>
+    </view>
+
+    <view class="words-container">
+      <view class="words-title">相关词汇</view>
+      <view class="word-items">
+        <view class="word-item-card" wx:for="{{currentWords}}" wx:key="english" bindtap="playWordSound" data-word="{{item.english}}">
+          <view class="word-emoji">{{item.emoji}}</view>
+          <view class="word-info">
+            <view class="word-english">{{item.english}}</view>
+            <view class="word-chinese">{{item.chinese}}</view>
+          </view>
+          <view class="play-icon">🔊</view>
+        </view>
+      </view>
+    </view>
+  </view>
+</view>
+
+<!-- 字母动画弹窗 -->
+<view class="letter-animation {{showAnimation ? 'show' : ''}}">
+  <view class="animation-letter">{{animatingLetter}}</view>
+</view>

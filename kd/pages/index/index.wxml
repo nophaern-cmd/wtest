@@ -1,0 +1,107 @@
+<!--pages/index/index.wxml-->
+<view class="container">
+  <!-- 顶部欢迎区域 -->
+  <view class="header">
+    <view class="header-decoration">✨</view>
+    <view class="welcome-section">
+      <view class="greeting">你好，小朋友！</view>
+      <view class="app-title">快乐英语学习</view>
+    </view>
+    <view class="header-decoration">🌟</view>
+  </view>
+
+  <!-- 学习进度卡片 -->
+  <view class="progress-section">
+    <view class="section-header">
+      <view class="section-title">📊 学习进度</view>
+    </view>
+    <view class="stats-row">
+      <view class="stat-card">
+        <view class="stat-icon-wrapper words">📚</view>
+        <view class="stat-info">
+          <view class="stat-number">{{learnedWords}}</view>
+          <view class="stat-label">已学词汇</view>
+        </view>
+      </view>
+      <view class="stat-card">
+        <view class="stat-icon-wrapper sentences">💬</view>
+        <view class="stat-info">
+          <view class="stat-number">{{learnedSentences}}</view>
+          <view class="stat-label">已学句型</view>
+        </view>
+      </view>
+      <view class="stat-card">
+        <view class="stat-icon-wrapper quiz">🎯</view>
+        <view class="stat-info">
+          <view class="stat-number">{{quizScore}}</view>
+          <view class="stat-label">测试得分</view>
+        </view>
+      </view>
+    </view>
+  </view>
+
+  <!-- 快捷入口 -->
+  <view class="quick-access-section">
+    <view class="section-header">
+      <view class="section-title">🎓 快速开始</view>
+    </view>
+    <view class="quick-access-grid">
+      <view class="quick-card primary" catchtap="goToWords">
+        <view class="quick-icon">📚</view>
+        <view class="quick-title">词汇学习</view>
+        <view class="quick-badge">30词</view>
+      </view>
+      <view class="quick-card accent" catchtap="goToSentences">
+        <view class="quick-icon">💬</view>
+        <view class="quick-title">句型练习</view>
+        <view class="quick-badge">26句</view>
+      </view>
+    </view>
+  </view>
+
+  <!-- 功能菜单 -->
+  <view class="menu-section">
+    <view class="section-header">
+      <view class="section-title">🎮 更多功能</view>
+    </view>
+    <view class="menu-grid">
+      <view class="menu-card" catchtap="goToPhonics">
+        <view class="menu-icon-wrapper phonics">
+          <view class="menu-icon">🔤</view>
+        </view>
+        <view class="menu-title">自然拼读</view>
+        <view class="menu-arrow">›</view>
+      </view>
+      <view class="menu-card" catchtap="goToSongs">
+        <view class="menu-icon-wrapper songs">
+          <view class="menu-icon">🎶</view>
+        </view>
+        <view class="menu-title">英文儿歌</view>
+        <view class="menu-arrow">›</view>
+      </view>
+      <view class="menu-card" catchtap="goToStories">
+        <view class="menu-icon-wrapper stories">
+          <view class="menu-icon">📖</view>
+        </view>
+        <view class="menu-title">故事绘本</view>
+        <view class="menu-arrow">›</view>
+      </view>
+      <view class="menu-card" catchtap="goToQuiz">
+        <view class="menu-icon-wrapper quiz-menu">
+          <view class="menu-icon">🎯</view>
+        </view>
+        <view class="menu-title">测试复习</view>
+        <view class="menu-arrow">›</view>
+      </view>
+    </view>
+  </view>
+
+  <!-- 每日提示 -->
+  <view class="daily-tip-card">
+    <view class="tip-header">
+      <view class="tip-icon">💡</view>
+      <view class="tip-label">每日学习小贴士</view>
+    </view>
+    <view class="tip-content">{{dailyTip}}</view>
+  </view>
+</view>

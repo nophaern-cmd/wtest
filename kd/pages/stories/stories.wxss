@@ -1,0 +1,232 @@
+/* pages/stories/stories.wxss */
+.container {
+  padding: 20rpx;
+}
+
+.header {
+  text-align: center;
+  margin-bottom: 40rpx;
+}
+
+.title {
+  font-size: 44rpx;
+  font-weight: bold;
+  color: #333;
+  margin-bottom: 12rpx;
+}
+
+.subtitle {
+  font-size: 24rpx;
+  color: #999;
+}
+
+.stories-list {
+  margin-bottom: 30rpx;
+}
+
+.story-card {
+  display: flex;
+  background: #FFFFFF;
+  border-radius: 20rpx;
+  padding: 24rpx;
+  margin-bottom: 20rpx;
+  box-shadow: 0 4rpx 12rpx rgba(0, 0, 0, 0.08);
+  transition: transform 0.2s;
+}
+
+.story-card:active {
+  transform: scale(0.98);
+}
+
+.story-cover {
+  width: 120rpx;
+  height: 120rpx;
+  border-radius: 16rpx;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 64rpx;
+  margin-right: 24rpx;
+  flex-shrink: 0;
+}
+
+.story-info {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+
+.story-name {
+  font-size: 32rpx;
+  font-weight: bold;
+  color: #333;
+  margin-bottom: 8rpx;
+}
+
+.story-desc {
+  font-size: 24rpx;
+  color: #999;
+  margin-bottom: 12rpx;
+}
+
+.story-tag {
+  font-size: 22rpx;
+  color: #4A90E2;
+  background: rgba(74, 144, 226, 0.1);
+  padding: 4rpx 12rpx;
+  border-radius: 20rpx;
+  align-self: flex-start;
+}
+
+.tip-card {
+  background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+  border-radius: 16rpx;
+  padding: 24rpx;
+  color: #FFFFFF;
+}
+
+.tip-title {
+  font-size: 26rpx;
+  font-weight: bold;
+  margin-bottom: 12rpx;
+}
+
+.tip-content {
+  font-size: 24rpx;
+  line-height: 1.6;
+  opacity: 0.95;
+}
+
+/* 故事详情弹窗 */
+.modal {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.6);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  opacity: 0;
+  visibility: hidden;
+  transition: all 0.3s;
+  z-index: 999;
+}
+
+.modal.show {
+  opacity: 1;
+  visibility: visible;
+}
+
+.modal-content {
+  width: 85%;
+  max-height: 85%;
+  background: #FFFFFF;
+  border-radius: 24rpx;
+  padding: 40rpx;
+  overflow-y: auto;
+  transform: scale(0.8);
+  transition: transform 0.3s;
+}
+
+.modal.show .modal-content {
+  transform: scale(1);
+}
+
+.story-emoji-large {
+  font-size: 120rpx;
+  text-align: center;
+  margin-bottom: 24rpx;
+}
+
+.detail-name {
+  font-size: 40rpx;
+  font-weight: bold;
+  color: #333;
+  text-align: center;
+  margin-bottom: 12rpx;
+}
+
+.detail-desc {
+  font-size: 26rpx;
+  color: #999;
+  text-align: center;
+  margin-bottom: 16rpx;
+}
+
+.detail-tag {
+  font-size: 24rpx;
+  color: #4A90E2;
+  background: rgba(74, 144, 226, 0.1);
+  padding: 8rpx 16rpx;
+  border-radius: 20rpx;
+  display: inline-block;
+  margin: 0 auto 30rpx;
+  display: block;
+  text-align: center;
+}
+
+.content-section {
+  margin-top: 30rpx;
+  padding-top: 30rpx;
+  border-top: 2rpx solid #F0F0F0;
+}
+
+.section-title {
+  font-size: 28rpx;
+  font-weight: bold;
+  color: #333;
+  margin-bottom: 16rpx;
+}
+
+.content-text {
+  font-size: 26rpx;
+  color: #666;
+  line-height: 1.8;
+  padding: 24rpx;
+  background: #F8F9FA;
+  border-radius: 12rpx;
+}
+
+.learning-points {
+  margin-top: 24rpx;
+}
+
+.points-list {
+  padding-left: 16rpx;
+}
+
+.point-item {
+  font-size: 26rpx;
+  color: #666;
+  line-height: 1.8;
+  margin-bottom: 8rpx;
+}
+
+.read-btn,
+.mark-read-btn {
+  width: 100%;
+  padding: 24rpx;
+  border-radius: 50rpx;
+  font-size: 28rpx;
+  margin-top: 24rpx;
+  border: none;
+}
+
+.read-btn {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: #FFFFFF;
+}
+
+.mark-read-btn {
+  background: #F5F5F5;
+  color: #666;
+}
+
+.mark-read-btn.read {
+  background: linear-gradient(135deg, #4CAF50 0%, #45a049 100%);
+  color: #FFFFFF;
+}

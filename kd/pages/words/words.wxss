@@ -1,0 +1,216 @@
+/* pages/words/words.wxss */
+.container {
+  padding: 20rpx;
+}
+
+.tabs {
+  display: flex;
+  background: #FFFFFF;
+  border-radius: 16rpx;
+  padding: 8rpx;
+  margin-bottom: 20rpx;
+  box-shadow: 0 4rpx 12rpx rgba(0, 0, 0, 0.08);
+}
+
+.tab {
+  flex: 1;
+  text-align: center;
+  padding: 16rpx;
+  font-size: 28rpx;
+  color: #666;
+  border-radius: 12rpx;
+  transition: all 0.3s;
+}
+
+.tab.active {
+  background: #4A90E2;
+  color: #FFFFFF;
+  font-weight: bold;
+}
+
+/* 基础词汇列表 */
+.word-list {
+  padding-bottom: 20rpx;
+}
+
+.word-card {
+  display: flex;
+  align-items: center;
+  background: #FFFFFF;
+  border-radius: 16rpx;
+  padding: 24rpx;
+  margin-bottom: 16rpx;
+  box-shadow: 0 4rpx 12rpx rgba(0, 0, 0, 0.08);
+}
+
+.word-emoji {
+  font-size: 56rpx;
+  margin-right: 24rpx;
+}
+
+.word-content {
+  flex: 1;
+}
+
+.word-english {
+  font-size: 32rpx;
+  font-weight: bold;
+  color: #333;
+  margin-bottom: 8rpx;
+}
+
+.word-chinese {
+  font-size: 24rpx;
+  color: #999;
+}
+
+.word-status .status-icon {
+  width: 48rpx;
+  height: 48rpx;
+  border-radius: 50%;
+  background: #E0E0E0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #999;
+  font-size: 24rpx;
+}
+
+.word-status .status-icon.learned {
+  background: #4CAF50;
+  color: #FFFFFF;
+}
+
+/* 自然拼读列表 */
+.phonics-list {
+  padding-bottom: 20rpx;
+}
+
+.letter-card {
+  background: #FFFFFF;
+  border-radius: 16rpx;
+  margin-bottom: 16rpx;
+  overflow: hidden;
+  box-shadow: 0 4rpx 12rpx rgba(0, 0, 0, 0.08);
+}
+
+.letter-header {
+  display: flex;
+  align-items: center;
+  padding: 24rpx;
+  border-bottom: 1rpx solid #F0F0F0;
+}
+
+.letter-icon {
+  width: 80rpx;
+  height: 80rpx;
+  border-radius: 16rpx;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: #FFFFFF;
+  font-size: 36rpx;
+  font-weight: bold;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-right: 20rpx;
+}
+
+.letter-words-count {
+  flex: 1;
+  font-size: 26rpx;
+  color: #666;
+}
+
+.expand-icon {
+  font-size: 24rpx;
+  color: #999;
+}
+
+.letter-words {
+  padding: 0 24rpx 24rpx;
+}
+
+.word-item {
+  display: flex;
+  align-items: center;
+  padding: 16rpx 0;
+  border-bottom: 1rpx solid #F5F5F5;
+}
+
+.word-item:last-child {
+  border-bottom: none;
+}
+
+/* 单词详情弹窗 */
+.modal {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.6);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  opacity: 0;
+  visibility: hidden;
+  transition: all 0.3s;
+  z-index: 999;
+}
+
+.modal.show {
+  opacity: 1;
+  visibility: visible;
+}
+
+.modal-content {
+  width: 80%;
+  background: #FFFFFF;
+  border-radius: 24rpx;
+  padding: 40rpx;
+  text-align: center;
+  transform: scale(0.8);
+  transition: transform 0.3s;
+}
+
+.modal.show .modal-content {
+  transform: scale(1);
+}
+
+.detail-emoji {
+  font-size: 120rpx;
+  margin-bottom: 30rpx;
+}
+
+.detail-english {
+  font-size: 48rpx;
+  font-weight: bold;
+  color: #333;
+  margin-bottom: 16rpx;
+}
+
+.detail-chinese {
+  font-size: 32rpx;
+  color: #999;
+  margin-bottom: 40rpx;
+}
+
+.mark-learned-btn,
+.speak-btn {
+  width: 100%;
+  padding: 24rpx;
+  border-radius: 50rpx;
+  font-size: 28rpx;
+  margin-bottom: 16rpx;
+}
+
+.mark-learned-btn {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: #FFFFFF;
+  border: none;
+}
+
+.speak-btn {
+  background: #F5F5F5;
+  color: #666;
+}

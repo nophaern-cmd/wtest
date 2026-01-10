@@ -1,0 +1,60 @@
+<!--pages/words/words.wxml-->
+<view class="container">
+  <view class="tabs">
+    <view class="tab {{activeTab === 'basic' ? 'active' : ''}}" bindtap="switchTab" data-tab="basic">
+      基础词汇
+    </view>
+    <view class="tab {{activeTab === 'phonics' ? 'active' : ''}}" bindtap="switchTab" data-tab="phonics">
+      自然拼读
+    </view>
+  </view>
+
+  <!-- 基础词汇 -->
+  <view wx:if="{{activeTab === 'basic'}}" class="word-list">
+    <view class="word-card" wx:for="{{basicWords}}" wx:key="english" bindtap="showWordDetail" data-word="{{item}}">
+      <view class="word-emoji">{{item.emoji}}</view>
+      <view class="word-content">
+        <view class="word-english">{{item.english}}</view>
+        <view class="word-chinese">{{item.chinese}}</view>
+      </view>
+      <view class="word-status">
+        <view class="status-icon {{item.learned ? 'learned' : ''}}">
+          {{item.learned ? '✓' : ''}}
+        </view>
+      </view>
+    </view>
+  </view>
+
+  <!-- 自然拼读 -->
+  <view wx:if="{{activeTab === 'phonics'}}" class="phonics-list">
+    <view class="letter-card" wx:for="{{phonicsData}}" wx:key="letter" bindtap="toggleLetter" data-letter="{{item.letter}}">
+      <view class="letter-header">
+        <view class="letter-icon">{{item.letter}}</view>
+        <view class="letter-words-count">{{item.words.length}} 个词汇</view>
+        <view class="expand-icon">{{item.expanded ? '▲' : '▼'}}</view>
+      </view>
+      <view class="letter-words" wx:if="{{item.expanded}}">
+        <view class="word-item" wx:for="{{item.words}}" wx:for-item="word" wx:key="english" bindtap="showWordDetail" data-word="{{word}}" catchtap>
+          <view class="word-emoji">{{word.emoji}}</view>
+          <view class="word-content">
+            <view class="word-english">{{word.english}}</view>
+            <view class="word-chinese">{{word.chinese}}</view>
+          </view>
+        </view>
+      </view>
+    </view>
+  </view>
+</view>
+
+<!-- 单词详情弹窗 -->
+<view class="modal {{showDetail ? 'show' : ''}}" bindtap="hideWordDetail">
+  <view class="modal-content" catchtap>
+    <view class="detail-emoji">{{currentWord.emoji}}</view>
+    <view class="detail-english">{{currentWord.english}}</view>
+    <view class="detail-chinese">{{currentWord.chinese}}</view>
+    <button class="mark-learned-btn" bindtap="markAsLearned">
+      {{currentWord.learned ? '已掌握 ✓' : '标记为已掌握'}}
+    </button>
+    <button class="speak-btn" bindtap="speakWord">🔊 朗读单词</button>
+  </view>
+</view>

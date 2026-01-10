@@ -1,0 +1,52 @@
+<!--pages/stories/stories.wxml-->
+<view class="container">
+  <view class="header">
+    <view class="title">故事与绘本</view>
+    <view class="subtitle">阅读英文故事，提升理解能力</view>
+  </view>
+
+  <view class="stories-list">
+    <view class="story-card" wx:for="{{stories}}" wx:key="name" bindtap="showStoryDetail" data-story="{{item}}">
+      <view class="story-cover">{{item.emoji}}</view>
+      <view class="story-info">
+        <view class="story-name">{{item.name}}</view>
+        <view class="story-desc">{{item.description}}</view>
+        <view class="story-tag">{{item.type}}</view>
+      </view>
+    </view>
+  </view>
+
+  <view class="tip-card">
+    <view class="tip-title">📖 阅读建议</view>
+    <view class="tip-content">陪伴宝贝阅读RAZ分级绘本，加深内容理解。结合故事创编任务，培养孩子的想象力和表达能力。</view>
+  </view>
+</view>
+
+<!-- 故事详情弹窗 -->
+<view class="modal {{showDetail ? 'show' : ''}}" bindtap="hideStoryDetail">
+  <view class="modal-content" catchtap>
+    <view class="story-emoji-large">{{currentStory.emoji}}</view>
+    <view class="detail-name">{{currentStory.name}}</view>
+    <view class="detail-desc">{{currentStory.description}}</view>
+    <view class="detail-tag">{{currentStory.type}}</view>
+
+    <view class="content-section">
+      <view class="section-title">故事简介</view>
+      <view class="content-text">{{currentStory.content || '故事内容正在整理中...'}}</view>
+    </view>
+
+    <view class="learning-points" wx:if="{{currentStory.points && currentStory.points.length > 0}}">
+      <view class="section-title">学习要点</view>
+      <view class="points-list">
+        <view class="point-item" wx:for="{{currentStory.points}}" wx:key="*this">
+          • {{item}}
+        </view>
+      </view>
+    </view>
+
+    <button class="read-btn">📚 开始阅读</button>
+    <button class="mark-read-btn {{currentStory.read ? 'read' : ''}}" bindtap="markAsRead">
+      {{currentStory.read ? '✓ 已读' : '标记为已读'}}
+    </button>
+  </view>
+</view>
