@@ -144,36 +144,77 @@ Page({
     })
   },
 
+  // 快速朗读单词（从列表直接点击）
+  quickSpeak(e) {
+    const word = e.currentTarget.dataset.word.english
+    this.speakText(word)
+  },
+
   speakWord() {
     const word = this.data.currentWord.english
-    const that = this
+    this.speakText(word)
+  },
 
-    wx.showToast({
-      title: '正在朗读...',
-      icon: 'none'
+  // 朗读文本的通用方法
+  speakText(text) {
+    console.log('开始朗读:', text)
+    
+    // 方法1: 直接使用 wx.createInnerAudioContext 播放简单的在线音频
+    const testUrls = [
+      `https://dict.youdao.com/dictvoice?audio=${encodeURIComponent(text)}&type=1`,
+      `https://translate.google.com/translate_tts?ie=UTF-8&client=tw-ob&tl=en&q=${encodeURIComponent(text)}`
+    ]
+    
+    this.playAudio(testUrls[0], 0, testUrls)
+  },
+  
+  // 播放音频的递归方法
+  playAudio(url, index, urls) {
+    console.log(`尝试播放音频 ${index + 1}:`, url)
+    
+    const audioContext = wx.createInnerAudioContext()
+    audioContext.src = url
+    audioContext.autoplay = false
+    
+    audioContext.onCanplay(() => {
+      console.log('音频已就绪，开始播放')
+      wx.hideToast()
+      audioContext.play()
     })
-
-    // 使用微信语音合成
-    if (wx.createInnerAudioContext) {
-      // 使用文本转语音
-      if (typeof wx.createTtsContext === 'function') {
-        const tts = wx.createTtsContext()
-        tts.speak({
-          text: word,
-          lang: 'en-US',
-          success: () => {
-            console.log('朗读成功')
-          },
-          fail: (err) => {
-            console.log('朗读失败', err)
-          }
-        })
+    
+    audioContext.onPlay(() => {
+      console.log('音频正在播放')
+    })
+    
+    audioContext.onPause(() => {
+      console.log('音频暂停')
+    })
+    
+    audioContext.onStop(() => {
+      console.log('音频停止')
+      audioContext.destroy()
+    })
+    
+    audioContext.onEnded(() => {
+      console.log('音频播放结束')
+      audioContext.destroy()
+    })
+    
+    audioContext.onError((res) => {
+      console.log(`音频 ${index + 1} 播放失败:`, res)
+      audioContext.destroy()
+      
+      // 尝试下一个URL
+      if (index + 1 < urls.length) {
+        this.playAudio(urls[index + 1], index + 1, urls)
       } else {
-        wx.showToast({
-          title: '朗读功能暂不可用',
-          icon: 'none'
+        wx.hideToast()
+        wx.showModal({
+          title: '朗读失败',
+          content: '所有音频源都无法播放。建议在真机上测试，或检查网络连接。',
+          showCancel: false
         })
       }
-    }
-  }
+    })
+  },
 })

@@ -161,30 +161,49 @@ Page({
 
   speakSentence() {
     const sentence = this.data.currentSentence.english
+    this.speakText(sentence)
+  },
 
-    wx.showToast({
-      title: '正在朗读...',
-      icon: 'none'
+  // 快速朗读句子（从列表直接点击）
+  quickSpeak(e) {
+    const sentence = e.currentTarget.dataset.sentence.english
+    this.speakText(sentence)
+  },
+
+  // 朗读文本的通用方法
+  speakText(text) {
+    console.log('开始朗读句子:', text)
+    
+    // 使用有道词典的TTS服务
+    const audioUrl = `https://dict.youdao.com/dictvoice?audio=${encodeURIComponent(text)}&type=2`
+    
+    const audioContext = wx.createInnerAudioContext()
+    audioContext.src = audioUrl
+    audioContext.autoplay = false
+    
+    audioContext.onCanplay(() => {
+      console.log('音频已就绪，开始播放')
+      wx.hideToast()
+      audioContext.play()
     })
-
-    // 使用微信语音合成
-    if (typeof wx.createTtsContext === 'function') {
-      const tts = wx.createTtsContext()
-      tts.speak({
-        text: sentence,
-        lang: 'en-US',
-        success: () => {
-          console.log('朗读成功')
-        },
-        fail: (err) => {
-          console.log('朗读失败', err)
-        }
-      })
-    } else {
+    
+    audioContext.onPlay(() => {
+      console.log('音频正在播放')
+    })
+    
+    audioContext.onEnded(() => {
+      console.log('音频播放结束')
+      audioContext.destroy()
+    })
+    
+    audioContext.onError((res) => {
+      console.log('音频播放失败:', res)
+      audioContext.destroy()
+      wx.hideToast()
       wx.showToast({
-        title: '朗读功能暂不可用',
+        title: '朗读失败，请在真机测试',
         icon: 'none'
       })
-    }
+    })
   }
 })

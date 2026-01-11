@@ -11,15 +11,22 @@
 
   <!-- 基础词汇 -->
   <view wx:if="{{activeTab === 'basic'}}" class="word-list">
-    <view class="word-card" wx:for="{{basicWords}}" wx:key="english" bindtap="showWordDetail" data-word="{{item}}">
-      <view class="word-emoji">{{item.emoji}}</view>
-      <view class="word-content">
-        <view class="word-english">{{item.english}}</view>
-        <view class="word-chinese">{{item.chinese}}</view>
+    <view class="word-card" wx:for="{{basicWords}}" wx:key="english">
+      <view class="word-left" bindtap="showWordDetail" data-word="{{item}}">
+        <view class="word-emoji">{{item.emoji}}</view>
+        <view class="word-content">
+          <view class="word-english">{{item.english}}</view>
+          <view class="word-chinese">{{item.chinese}}</view>
+        </view>
       </view>
-      <view class="word-status">
-        <view class="status-icon {{item.learned ? 'learned' : ''}}">
-          {{item.learned ? '✓' : ''}}
+      <view class="word-actions">
+        <view class="word-status">
+          <view class="status-icon {{item.learned ? 'learned' : ''}}">
+            {{item.learned ? '✓' : ''}}
+          </view>
+        </view>
+        <view class="speak-btn" bindtap="quickSpeak" data-word="{{item}}">
+          🔊
         </view>
       </view>
     </view>
@@ -33,15 +40,20 @@
         <view class="letter-words-count">{{item.words.length}} 个词汇</view>
         <view class="expand-icon">{{item.expanded ? '▲' : '▼'}}</view>
       </view>
-      <view class="letter-words" wx:if="{{item.expanded}}">
-        <view class="word-item" wx:for="{{item.words}}" wx:for-item="word" wx:key="english" bindtap="showWordDetail" data-word="{{word}}" catchtap>
+    <view class="letter-words" wx:if="{{item.expanded}}">
+      <view class="word-item" wx:for="{{item.words}}" wx:for-item="word" wx:key="english">
+        <view class="word-item-left" bindtap="showWordDetail" data-word="{{word}}" catchtap>
           <view class="word-emoji">{{word.emoji}}</view>
           <view class="word-content">
             <view class="word-english">{{word.english}}</view>
             <view class="word-chinese">{{word.chinese}}</view>
           </view>
         </view>
+        <view class="word-item-speak" bindtap="quickSpeak" data-word="{{word}}">
+          🔊
+        </view>
       </view>
+    </view>
     </view>
   </view>
 </view>

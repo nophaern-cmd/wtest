@@ -19,14 +19,19 @@
   </view>
 
   <view class="sentence-list">
-    <view class="sentence-card" wx:for="{{filteredSentences}}" wx:key="english" bindtap="showSentenceDetail" data-sentence="{{item}}">
-      <view class="sentence-english">{{item.english}}</view>
-      <view class="sentence-chinese">{{item.chinese}}</view>
-      <view class="sentence-footer">
-        <view class="sentence-category">{{categories[item.category]}}</view>
-        <view class="learned-status {{item.learned ? 'learned' : ''}}">
-          {{item.learned ? '已掌握' : '未掌握'}}
+    <view class="sentence-card" wx:for="{{filteredSentences}}" wx:key="english">
+      <view class="sentence-content" bindtap="showSentenceDetail" data-sentence="{{item}}">
+        <view class="sentence-english">{{item.english}}</view>
+        <view class="sentence-chinese">{{item.chinese}}</view>
+        <view class="sentence-footer">
+          <view class="sentence-category">{{categories[item.category]}}</view>
+          <view class="learned-status {{item.learned ? 'learned' : ''}}">
+            {{item.learned ? '已掌握' : '未掌握'}}
+          </view>
         </view>
+      </view>
+      <view class="sentence-speak" bindtap="quickSpeak" data-sentence="{{item}}" catchtap>
+        🔊
       </view>
     </view>
   </view>

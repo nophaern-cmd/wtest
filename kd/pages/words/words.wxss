@@ -36,11 +36,18 @@
 .word-card {
   display: flex;
   align-items: center;
+  justify-content: space-between;
   background: #FFFFFF;
   border-radius: 16rpx;
   padding: 24rpx;
   margin-bottom: 16rpx;
   box-shadow: 0 4rpx 12rpx rgba(0, 0, 0, 0.08);
+}
+
+.word-left {
+  display: flex;
+  align-items: center;
+  flex: 1;
 }
 
 .word-emoji {
@@ -64,6 +71,12 @@
   color: #999;
 }
 
+.word-actions {
+  display: flex;
+  align-items: center;
+  gap: 16rpx;
+}
+
 .word-status .status-icon {
   width: 48rpx;
   height: 48rpx;
@@ -79,6 +92,23 @@
 .word-status .status-icon.learned {
   background: #4CAF50;
   color: #FFFFFF;
+}
+
+.speak-btn {
+  width: 60rpx;
+  height: 60rpx;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 32rpx;
+  box-shadow: 0 4rpx 12rpx rgba(102, 126, 234, 0.3);
+  transition: all 0.2s;
+}
+
+.speak-btn:active {
+  transform: scale(0.9);
 }
 
 /* 自然拼读列表 */
@@ -133,12 +163,36 @@
 .word-item {
   display: flex;
   align-items: center;
+  justify-content: space-between;
   padding: 16rpx 0;
   border-bottom: 1rpx solid #F5F5F5;
 }
 
 .word-item:last-child {
   border-bottom: none;
+}
+
+.word-item-left {
+  display: flex;
+  align-items: center;
+  flex: 1;
+}
+
+.word-item-speak {
+  width: 56rpx;
+  height: 56rpx;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 28rpx;
+  box-shadow: 0 4rpx 12rpx rgba(102, 126, 234, 0.3);
+  transition: all 0.2s;
+}
+
+.word-item-speak:active {
+  transform: scale(0.9);
 }
 
 /* 单词详情弹窗 */

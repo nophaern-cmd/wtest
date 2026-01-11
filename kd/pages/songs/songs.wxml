@@ -13,13 +13,18 @@
   </view>
 
   <view class="songs-list">
-    <view class="song-card" wx:for="{{filteredSongs}}" wx:key="name" bindtap="showSongDetail" data-song="{{item}}">
-      <view class="song-icon">🎵</view>
-      <view class="song-info">
-        <view class="song-name">{{item.name}}</view>
-        <view class="song-type">{{songTypes[item.type]}}</view>
+    <view class="song-card {{playingSong === item.name ? 'playing' : ''}}" wx:for="{{filteredSongs}}" wx:key="name">
+      <view class="song-left" bindtap="showSongDetail" data-song="{{item}}">
+        <view class="song-icon">🎵</view>
+        <view class="song-info">
+          <view class="song-name">{{item.name}}</view>
+          <view class="song-type">{{songTypes[item.type]}}</view>
+        </view>
       </view>
-      <view class="play-arrow">▶</view>
+      <view class="play-btn" bindtap="playSong">
+        <view wx:if="{{playingSong === item.name}}" class="pause-icon">⏸</view>
+        <view wx:else class="play-icon">▶</view>
+      </view>
     </view>
   </view>
 
@@ -35,6 +40,9 @@
     <view class="song-icon-large">🎵</view>
     <view class="detail-name">{{currentSong.name}}</view>
     <view class="detail-type">{{songTypes[currentSong.type]}}</view>
+    <view class="playing-status" wx:if="{{playingSong === currentSong.name}}">
+      🎵 正在播放中...
+    </view>
 
     <view class="lyrics-section">
       <view class="lyrics-title">歌词内容</view>
@@ -43,6 +51,9 @@
       </view>
     </view>
 
+    <button class="play-song-btn" bindtap="playSong">
+      {{playingSong === currentSong.name ? '⏸ 暂停播放' : '▶ 播放歌曲'}}
+    </button>
     <button class="favorite-btn {{currentSong.favorite ? 'favorited' : ''}}" bindtap="toggleFavorite">
       {{currentSong.favorite ? '❤️ 已收藏' : '🤍 收藏歌曲'}}
     </button>

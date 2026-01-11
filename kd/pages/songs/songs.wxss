@@ -35,21 +35,40 @@
 .song-card {
   display: flex;
   align-items: center;
+  justify-content: space-between;
   background: #FFFFFF;
   border-radius: 16rpx;
   padding: 24rpx;
   margin-bottom: 16rpx;
   box-shadow: 0 4rpx 12rpx rgba(0, 0, 0, 0.08);
-  transition: transform 0.2s;
+  transition: all 0.3s;
+  border: 3rpx solid transparent;
 }
 
-.song-card:active {
-  transform: scale(0.98);
+.song-card.playing {
+  border-color: #4A90E2;
+  background: linear-gradient(135deg, rgba(74, 144, 226, 0.05) 0%, rgba(118, 75, 162, 0.05) 100%);
+}
+
+.song-left {
+  display: flex;
+  align-items: center;
+  flex: 1;
 }
 
 .song-icon {
   font-size: 56rpx;
   margin-right: 24rpx;
+  animation: rotate 3s linear infinite;
+}
+
+.song-card.playing .song-icon {
+  animation: bounce 0.6s ease-in-out infinite;
+}
+
+@keyframes bounce {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-8rpx); }
 }
 
 .song-info {
@@ -68,9 +87,30 @@
   color: #999;
 }
 
-.play-arrow {
+.play-btn {
+  width: 80rpx;
+  height: 80rpx;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 4rpx 12rpx rgba(102, 126, 234, 0.3);
+  transition: all 0.2s;
+}
+
+.play-btn:active {
+  transform: scale(0.9);
+}
+
+.play-icon,
+.pause-icon {
   font-size: 32rpx;
-  color: #4A90E2;
+  color: #FFFFFF;
+}
+
+.song-card.playing .play-btn {
+  background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
 }
 
 .tip-card {
@@ -147,13 +187,23 @@
   font-size: 26rpx;
   color: #999;
   text-align: center;
-  margin-bottom: 30rpx;
+  margin-bottom: 16rpx;
   padding: 8rpx 16rpx;
   background: #F5F5F5;
   border-radius: 20rpx;
   display: inline-block;
   margin-left: 50%;
   transform: translateX(-50%);
+}
+
+.playing-status {
+  font-size: 24rpx;
+  color: #4A90E2;
+  text-align: center;
+  margin-bottom: 24rpx;
+  padding: 12rpx;
+  background: rgba(74, 144, 226, 0.1);
+  border-radius: 16rpx;
 }
 
 .lyrics-section {
@@ -197,6 +247,12 @@
 .favorite-btn.favorited {
   background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
   color: #FFFFFF;
+}
+
+.play-song-btn {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: #FFFFFF;
+  box-shadow: 0 6rpx 20rpx rgba(102, 126, 234, 0.3);
 }
 
 .watch-video-btn {
