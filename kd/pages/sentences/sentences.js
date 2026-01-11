@@ -173,37 +173,58 @@ Page({
   // 朗读文本的通用方法
   speakText(text) {
     console.log('开始朗读句子:', text)
-    
-    // 使用有道词典的TTS服务
-    const audioUrl = `https://dict.youdao.com/dictvoice?audio=${encodeURIComponent(text)}&type=2`
-    
+
+    // 尝试多个TTS源
+    const audioUrls = [
+      // 有道TTS (type=2 是美式英语)
+      `https://dict.youdao.com/dictvoice?audio=${encodeURIComponent(text)}&type=2`,
+      // 备用: type=1 是英式英语
+      `https://dict.youdao.com/dictvoice?audio=${encodeURIComponent(text)}&type=1`,
+      // Google Translate TTS
+      `https://translate.google.com/translate_tts?ie=UTF-8&client=tw-ob&tl=en&q=${encodeURIComponent(text)}`
+    ]
+
+    this.playAudio(audioUrls[0], 0, audioUrls)
+  },
+
+  // 播放音频的递归方法
+  playAudio(url, index, urls) {
+    console.log(`尝试播放音频 ${index + 1}:`, url)
+
     const audioContext = wx.createInnerAudioContext()
-    audioContext.src = audioUrl
+    audioContext.src = url
     audioContext.autoplay = false
-    
+
     audioContext.onCanplay(() => {
       console.log('音频已就绪，开始播放')
       wx.hideToast()
       audioContext.play()
     })
-    
+
     audioContext.onPlay(() => {
       console.log('音频正在播放')
     })
-    
+
     audioContext.onEnded(() => {
       console.log('音频播放结束')
       audioContext.destroy()
     })
-    
+
     audioContext.onError((res) => {
-      console.log('音频播放失败:', res)
+      console.log(`音频 ${index + 1} 播放失败:`, res)
       audioContext.destroy()
-      wx.hideToast()
-      wx.showToast({
-        title: '朗读失败，请在真机测试',
-        icon: 'none'
-      })
+
+      // 尝试下一个URL
+      if (index + 1 < urls.length) {
+        this.playAudio(urls[index + 1], index + 1, urls)
+      } else {
+        wx.hideToast()
+        wx.showToast({
+          title: '朗读失败',
+          icon: 'none',
+          duration: 2000
+        })
+      }
     })
   }
 })

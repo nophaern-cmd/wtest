@@ -12,23 +12,18 @@
   <!-- 基础词汇 -->
   <view wx:if="{{activeTab === 'basic'}}" class="word-list">
     <view class="word-card" wx:for="{{basicWords}}" wx:key="english">
-      <view class="word-left" bindtap="showWordDetail" data-word="{{item}}">
-        <view class="word-emoji">{{item.emoji}}</view>
-        <view class="word-content">
-          <view class="word-english">{{item.english}}</view>
-          <view class="word-chinese">{{item.chinese}}</view>
-        </view>
-      </view>
       <view class="word-actions">
-        <view class="word-status">
-          <view class="status-icon {{item.learned ? 'learned' : ''}}">
-            {{item.learned ? '✓' : ''}}
-          </view>
-        </view>
-        <view class="speak-btn" bindtap="quickSpeak" data-word="{{item}}">
-          🔊
+        <view class="status-icon {{item.learned ? 'learned' : ''}}" bindtap="markAsLearnedDirect" data-word="{{item}}" catchtap>
+          {{item.learned ? '✓' : '○'}}
         </view>
       </view>
+      <view class="word-content" bindtap="showWordDetail" data-word="{{item}}">
+        <view class="word-text">
+          <text class="word-english">{{item.english}}</text>
+          <text class="word-chinese"> - {{item.chinese}}</text>
+        </view>
+      </view>
+      <view class="word-emoji" bindtap="quickSpeak" data-word="{{item}}" catchtap>{{item.emoji}}</view>
     </view>
   </view>
 
@@ -61,7 +56,12 @@
 <!-- 单词详情弹窗 -->
 <view class="modal {{showDetail ? 'show' : ''}}" bindtap="hideWordDetail">
   <view class="modal-content" catchtap>
-    <view class="detail-emoji">{{currentWord.emoji}}</view>
+    <view class="modal-close" bindtap="hideWordDetail">✕</view>
+    <view class="emoji-container">
+      <view class="nav-icon prev-icon" bindtap="prevWord">◀</view>
+      <view class="detail-emoji" bindtap="speakWord">{{currentWord.emoji}}</view>
+      <view class="nav-icon next-icon" bindtap="nextWord">▶</view>
+    </view>
     <view class="detail-english">{{currentWord.english}}</view>
     <view class="detail-chinese">{{currentWord.chinese}}</view>
     <button class="mark-learned-btn" bindtap="markAsLearned">

@@ -86,8 +86,10 @@ Page({
 
   showWordDetail(e) {
     const word = e.currentTarget.dataset.word
+    const index = this.data.basicWords.findIndex(w => w.english === word.english)
     this.setData({
       currentWord: word,
+      currentIndex: index,
       showDetail: true
     })
   },
@@ -95,6 +97,68 @@ Page({
   hideWordDetail() {
     this.setData({
       showDetail: false
+    })
+  },
+
+  // 上一个单词
+  prevWord() {
+    const newIndex = this.data.currentIndex > 0 ? this.data.currentIndex - 1 : this.data.basicWords.length - 1
+    this.setData({
+      currentWord: this.data.basicWords[newIndex],
+      currentIndex: newIndex
+    })
+  },
+
+  // 下一个单词
+  nextWord() {
+    const newIndex = this.data.currentIndex < this.data.basicWords.length - 1 ? this.data.currentIndex + 1 : 0
+    this.setData({
+      currentWord: this.data.basicWords[newIndex],
+      currentIndex: newIndex
+    })
+  },
+
+  // 直接标记为已掌握（从列表点击）
+  markAsLearnedDirect(e) {
+    const word = e.currentTarget.dataset.word
+    let learnedWords = this.data.learnedWords
+
+    if (word.learned) {
+      learnedWords = learnedWords.filter(w => w !== word.english)
+    } else {
+      learnedWords.push(word.english)
+    }
+
+    wx.setStorageSync('learnedWordsList', learnedWords)
+    wx.setStorageSync('learnedWords', learnedWords.length)
+
+    const basicWords = this.data.basicWords.map(item => {
+      if (item.english === word.english) {
+        return { ...item, learned: !item.learned }
+      }
+      return item
+    })
+
+    const phonicsData = this.data.phonicsData.map(letter => ({
+      ...letter,
+      words: letter.words.map(item => {
+        if (item.english === word.english) {
+          return { ...item, learned: !item.learned }
+        }
+        return item
+      })
+    }))
+
+    this.setData({
+      basicWords,
+      phonicsData,
+      learnedWords
+    })
+
+    wx.showToast({
+      title: word.learned ? '已取消标记' : '已标记为掌握',
+      icon: 'none',
+      duration: 1000
     })
   },
 
@@ -158,14 +222,59 @@ Page({
   // 朗读文本的通用方法
   speakText(text) {
     console.log('开始朗读:', text)
-    
-    // 方法1: 直接使用 wx.createInnerAudioContext 播放简单的在线音频
-    const testUrls = [
+
+    // 尝试多个TTS源
+    const audioUrls = [
+      // 有道TTS (type=2 是美式英语)
+      `https://dict.youdao.com/dictvoice?audio=${encodeURIComponent(text)}&type=2`,
+      // 备用: type=1 是英式英语
       `https://dict.youdao.com/dictvoice?audio=${encodeURIComponent(text)}&type=1`,
+      // Google Translate TTS
       `https://translate.google.com/translate_tts?ie=UTF-8&client=tw-ob&tl=en&q=${encodeURIComponent(text)}`
     ]
-    
-    this.playAudio(testUrls[0], 0, testUrls)
+
+    this.playAudio(audioUrls[0], 0, audioUrls)
+  },
+
+  // 播放音频的递归方法
+  playAudio(url, index, urls) {
+    console.log(`尝试播放音频 ${index + 1}:`, url)
+
+    const audioContext = wx.createInnerAudioContext()
+    audioContext.src = url
+    audioContext.autoplay = false
+
+    audioContext.onCanplay(() => {
+      console.log('音频已就绪，开始播放')
+      wx.hideToast()
+      audioContext.play()
+    })
+
+    audioContext.onPlay(() => {
+      console.log('音频正在播放')
+    })
+
+    audioContext.onEnded(() => {
+      console.log('音频播放结束')
+      audioContext.destroy()
+    })
+
+    audioContext.onError((res) => {
+      console.log(`音频 ${index + 1} 播放失败:`, res)
+      audioContext.destroy()
+
+      // 尝试下一个URL
+      if (index + 1 < urls.length) {
+        this.playAudio(urls[index + 1], index + 1, urls)
+      } else {
+        wx.hideToast()
+        wx.showToast({
+          title: '朗读失败',
+          icon: 'none',
+          duration: 2000
+        })
+      }
+    })
   },
   
   // 播放音频的递归方法
@@ -186,15 +295,6 @@ Page({
       console.log('音频正在播放')
     })
     
-    audioContext.onPause(() => {
-      console.log('音频暂停')
-    })
-    
-    audioContext.onStop(() => {
-      console.log('音频停止')
-      audioContext.destroy()
-    })
-    
     audioContext.onEnded(() => {
       console.log('音频播放结束')
       audioContext.destroy()
@@ -209,10 +309,10 @@ Page({
         this.playAudio(urls[index + 1], index + 1, urls)
       } else {
         wx.hideToast()
-        wx.showModal({
+        wx.showToast({
           title: '朗读失败',
-          content: '所有音频源都无法播放。建议在真机上测试，或检查网络连接。',
-          showCancel: false
+          icon: 'none',
+          duration: 2000
         })
       }
     })

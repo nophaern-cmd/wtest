@@ -8,6 +8,7 @@
     "bundle": false,
     "userConfirmedBundleSwitch": false,
     "urlCheck": false,
+    "ignoreUploadUnusedFiles": true,
     "scopeDataCheck": false,
     "coverView": true,
     "es6": true,

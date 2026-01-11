@@ -36,48 +36,53 @@
 .word-card {
   display: flex;
   align-items: center;
-  justify-content: space-between;
   background: #FFFFFF;
   border-radius: 16rpx;
   padding: 24rpx;
   margin-bottom: 16rpx;
   box-shadow: 0 4rpx 12rpx rgba(0, 0, 0, 0.08);
+  gap: 20rpx;
 }
 
-.word-left {
-  display: flex;
-  align-items: center;
-  flex: 1;
+.word-actions {
+  flex-shrink: 0;
 }
 
 .word-emoji {
-  font-size: 56rpx;
-  margin-right: 24rpx;
+  font-size: 112rpx;
+  cursor: pointer;
+  flex-shrink: 0;
+}
+
+.word-emoji:active {
+  transform: scale(0.9);
 }
 
 .word-content {
   flex: 1;
 }
 
-.word-english {
-  font-size: 32rpx;
+.word-text {
+  font-size: 72rpx;
   font-weight: bold;
   color: #333;
-  margin-bottom: 8rpx;
+}
+
+.word-english {
+  color: #333;
 }
 
 .word-chinese {
-  font-size: 24rpx;
-  color: #999;
+  font-size: 36rpx;
+  color: #666;
 }
 
 .word-actions {
   display: flex;
   align-items: center;
-  gap: 16rpx;
 }
 
-.word-status .status-icon {
+.status-icon {
   width: 48rpx;
   height: 48rpx;
   border-radius: 50%;
@@ -86,28 +91,17 @@
   align-items: center;
   justify-content: center;
   color: #999;
-  font-size: 24rpx;
-}
-
-.word-status .status-icon.learned {
-  background: #4CAF50;
-  color: #FFFFFF;
-}
-
-.speak-btn {
-  width: 60rpx;
-  height: 60rpx;
-  border-radius: 50%;
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-  display: flex;
-  align-items: center;
-  justify-content: center;
   font-size: 32rpx;
-  box-shadow: 0 4rpx 12rpx rgba(102, 126, 234, 0.3);
   transition: all 0.2s;
 }
 
-.speak-btn:active {
+.status-icon.learned {
+  background: #4CAF50;
+  color: #FFFFFF;
+  font-size: 28rpx;
+}
+
+.status-icon:active {
   transform: scale(0.9);
 }
 
@@ -202,7 +196,7 @@
   left: 0;
   width: 100%;
   height: 100%;
-  background: rgba(0, 0, 0, 0.6);
+  background: rgba(0, 0, 0, 0.9);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -218,44 +212,92 @@
 }
 
 .modal-content {
-  width: 80%;
+  width: 100%;
+  height: 100%;
   background: #FFFFFF;
-  border-radius: 24rpx;
-  padding: 40rpx;
-  text-align: center;
-  transform: scale(0.8);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 60rpx 40rpx;
+  transform: translateY(100%);
   transition: transform 0.3s;
+  position: relative;
 }
 
 .modal.show .modal-content {
-  transform: scale(1);
+  transform: translateY(0);
+}
+
+.modal-close {
+  position: absolute;
+  top: 40rpx;
+  right: 40rpx;
+  font-size: 60rpx;
+  color: #999;
+  padding: 10rpx;
+}
+
+.emoji-container {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 20rpx;
+  margin-bottom: 40rpx;
 }
 
 .detail-emoji {
-  font-size: 120rpx;
-  margin-bottom: 30rpx;
+  font-size: 500rpx;
+  cursor: pointer;
+  transition: transform 0.2s;
+  flex: 0 0 auto;
+}
+
+.detail-emoji:active {
+  transform: scale(0.95);
+}
+
+.nav-icon {
+  font-size: 60rpx;
+  color: #666;
+  padding: 16rpx;
+  cursor: pointer;
+  transition: all 0.2s;
+  background: rgba(0, 0, 0, 0.05);
+  border-radius: 50%;
+  width: 100rpx;
+  height: 100rpx;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.nav-icon:active {
+  transform: scale(0.9);
+  background: rgba(0, 0, 0, 0.1);
 }
 
 .detail-english {
-  font-size: 48rpx;
+  font-size: 64rpx;
   font-weight: bold;
   color: #333;
-  margin-bottom: 16rpx;
+  margin-bottom: 24rpx;
 }
 
 .detail-chinese {
-  font-size: 32rpx;
-  color: #999;
-  margin-bottom: 40rpx;
+  font-size: 40rpx;
+  color: #666;
+  margin-bottom: 60rpx;
 }
 
 .mark-learned-btn,
 .speak-btn {
-  width: 100%;
-  padding: 24rpx;
+  width: 80%;
+  padding: 28rpx;
   border-radius: 50rpx;
-  font-size: 28rpx;
-  margin-bottom: 16rpx;
+  font-size: 32rpx;
+  margin-bottom: 24rpx;
 }
 
 .mark-learned-btn {
