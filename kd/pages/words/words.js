@@ -1,5 +1,7 @@
 // pages/words/words.js
 const app = getApp()
+const storage = require('../../utils/storage')
+const audio = require('../../utils/audio')
 
 Page({
   data: {
@@ -8,12 +10,23 @@ Page({
     phonicsData: [],
     showDetail: false,
     currentWord: {},
-    learnedWords: []
+    currentIndex: 0,
+    learnedWords: [],
+    audioPlayer: null
   },
 
   onLoad() {
+    this.setData({
+      audioPlayer: audio.createPlayer()
+    })
     this.loadWords()
     this.loadProgress()
+  },
+
+  onUnload() {
+    if (this.data.audioPlayer) {
+      this.data.audioPlayer.destroy()
+    }
   },
 
   loadWords() {
@@ -38,7 +51,7 @@ Page({
   },
 
   loadProgress() {
-    const learnedWords = wx.getStorageSync('learnedWordsList') || []
+    const learnedWords = storage.get(storage.STORAGE_KEYS.LEARNED_WORDS_LIST, [])
 
     const basicWords = this.data.basicWords.map(word => ({
       ...word,
@@ -62,26 +75,18 @@ Page({
 
   switchTab(e) {
     const tab = e.currentTarget.dataset.tab
-    this.setData({
-      activeTab: tab
-    })
+    this.setData({ activeTab: tab })
   },
 
   toggleLetter(e) {
     const letter = e.currentTarget.dataset.letter
     const phonicsData = this.data.phonicsData.map(item => {
       if (item.letter === letter) {
-        return {
-          ...item,
-          expanded: !item.expanded
-        }
+        return { ...item, expanded: !item.expanded }
       }
       return item
     })
-
-    this.setData({
-      phonicsData
-    })
+    this.setData({ phonicsData })
   },
 
   showWordDetail(e) {
@@ -95,12 +100,9 @@ Page({
   },
 
   hideWordDetail() {
-    this.setData({
-      showDetail: false
-    })
+    this.setData({ showDetail: false })
   },
 
-  // 上一个单词
   prevWord() {
     const newIndex = this.data.currentIndex > 0 ? this.data.currentIndex - 1 : this.data.basicWords.length - 1
     this.setData({
@@ -109,7 +111,6 @@ Page({
     })
   },
 
-  // 下一个单词
   nextWord() {
     const newIndex = this.data.currentIndex < this.data.basicWords.length - 1 ? this.data.currentIndex + 1 : 0
     this.setData({
@@ -118,23 +119,13 @@ Page({
     })
   },
 
-  // 直接标记为已掌握（从列表点击）
-  markAsLearnedDirect(e) {
-    const word = e.currentTarget.dataset.word
-    let learnedWords = this.data.learnedWords
-
-    if (word.learned) {
-      learnedWords = learnedWords.filter(w => w !== word.english)
-    } else {
-      learnedWords.push(word.english)
-    }
-
-    wx.setStorageSync('learnedWordsList', learnedWords)
-    wx.setStorageSync('learnedWords', learnedWords.length)
+  toggleWordLearned(word, showToast = true) {
+    const learnedWords = storage.updateWordProgress(word.english, !word.learned)
+    const learned = !word.learned
 
     const basicWords = this.data.basicWords.map(item => {
       if (item.english === word.english) {
-        return { ...item, learned: !item.learned }
+        return { ...item, learned }
       }
       return item
     })
@@ -143,7 +134,7 @@ Page({
       ...letter,
       words: letter.words.map(item => {
         if (item.english === word.english) {
-          return { ...item, learned: !item.learned }
+          return { ...item, learned }
         }
         return item
       })
@@ -155,60 +146,32 @@ Page({
       learnedWords
     })
 
-    wx.showToast({
-      title: word.learned ? '已取消标记' : '已标记为掌握',
-      icon: 'none',
-      duration: 1000
-    })
+    if (showToast) {
+      wx.showToast({
+        title: learned ? '已标记为掌握' : '已取消标记',
+        icon: learned ? 'success' : 'none'
+      })
+    }
+
+    return learned
+  },
+
+  markAsLearnedDirect(e) {
+    const word = e.currentTarget.dataset.word
+    this.toggleWordLearned(word)
   },
 
   markAsLearned() {
     const currentWord = this.data.currentWord
-    let learnedWords = this.data.learnedWords
-
-    if (currentWord.learned) {
-      learnedWords = learnedWords.filter(w => w !== currentWord.english)
-    } else {
-      learnedWords.push(currentWord.english)
-    }
-
-    wx.setStorageSync('learnedWordsList', learnedWords)
-    wx.setStorageSync('learnedWords', learnedWords.length)
-
-    const basicWords = this.data.basicWords.map(word => {
-      if (word.english === currentWord.english) {
-        return { ...word, learned: !word.learned }
-      }
-      return word
-    })
-
-    const phonicsData = this.data.phonicsData.map(letter => ({
-      ...letter,
-      words: letter.words.map(word => {
-        if (word.english === currentWord.english) {
-          return { ...word, learned: !word.learned }
-        }
-        return word
-      })
-    }))
-
+    const learned = this.toggleWordLearned(currentWord)
     this.setData({
-      basicWords,
-      phonicsData,
-      learnedWords,
       currentWord: {
         ...currentWord,
-        learned: !currentWord.learned
+        learned
       }
-    })
-
-    wx.showToast({
-      title: currentWord.learned ? '已取消标记' : '已标记为掌握',
-      icon: 'success'
     })
   },
 
-  // 快速朗读单词（从列表直接点击）
   quickSpeak(e) {
     const word = e.currentTarget.dataset.word.english
     this.speakText(word)
@@ -219,102 +182,55 @@ Page({
     this.speakText(word)
   },
 
-  // 朗读文本的通用方法
   speakText(text) {
     console.log('开始朗读:', text)
-
-    // 尝试多个TTS源
-    const audioUrls = [
-      // 有道TTS (type=2 是美式英语)
-      `https://dict.youdao.com/dictvoice?audio=${encodeURIComponent(text)}&type=2`,
-      // 备用: type=1 是英式英语
-      `https://dict.youdao.com/dictvoice?audio=${encodeURIComponent(text)}&type=1`,
-      // Google Translate TTS
-      `https://translate.google.com/translate_tts?ie=UTF-8&client=tw-ob&tl=en&q=${encodeURIComponent(text)}`
-    ]
-
-    this.playAudio(audioUrls[0], 0, audioUrls)
+    if (this.data.audioPlayer) {
+      this.data.audioPlayer.playText(text)
+    }
   },
 
-  // 播放音频的递归方法
-  playAudio(url, index, urls) {
-    console.log(`尝试播放音频 ${index + 1}:`, url)
-
-    const audioContext = wx.createInnerAudioContext()
-    audioContext.src = url
-    audioContext.autoplay = false
-
-    audioContext.onCanplay(() => {
-      console.log('音频已就绪，开始播放')
-      wx.hideToast()
-      audioContext.play()
-    })
-
-    audioContext.onPlay(() => {
-      console.log('音频正在播放')
-    })
-
-    audioContext.onEnded(() => {
-      console.log('音频播放结束')
-      audioContext.destroy()
-    })
-
-    audioContext.onError((res) => {
-      console.log(`音频 ${index + 1} 播放失败:`, res)
-      audioContext.destroy()
-
-      // 尝试下一个URL
-      if (index + 1 < urls.length) {
-        this.playAudio(urls[index + 1], index + 1, urls)
-      } else {
-        wx.hideToast()
-        wx.showToast({
-          title: '朗读失败',
-          icon: 'none',
-          duration: 2000
-        })
-      }
-    })
+  // 处理图片触摸滑动
+  handleImageTouchStart(e) {
+    this.touchStartX = e.touches[0].clientX
+    this.touchStartY = e.touches[0].clientY
+    this.touchStartTime = Date.now()
   },
-  
-  // 播放音频的递归方法
-  playAudio(url, index, urls) {
-    console.log(`尝试播放音频 ${index + 1}:`, url)
-    
-    const audioContext = wx.createInnerAudioContext()
-    audioContext.src = url
-    audioContext.autoplay = false
-    
-    audioContext.onCanplay(() => {
-      console.log('音频已就绪，开始播放')
-      wx.hideToast()
-      audioContext.play()
-    })
-    
-    audioContext.onPlay(() => {
-      console.log('音频正在播放')
-    })
-    
-    audioContext.onEnded(() => {
-      console.log('音频播放结束')
-      audioContext.destroy()
-    })
-    
-    audioContext.onError((res) => {
-      console.log(`音频 ${index + 1} 播放失败:`, res)
-      audioContext.destroy()
-      
-      // 尝试下一个URL
-      if (index + 1 < urls.length) {
-        this.playAudio(urls[index + 1], index + 1, urls)
-      } else {
-        wx.hideToast()
-        wx.showToast({
-          title: '朗读失败',
-          icon: 'none',
-          duration: 2000
-        })
-      }
-    })
-  },
+
+  handleImageTouchEnd(e) {
+    if (!this.touchStartX || !this.touchStartY) return
+
+    const touchEndX = e.changedTouches[0].clientX
+    const touchEndY = e.changedTouches[0].clientY
+    const touchEndTime = Date.now()
+
+    const deltaX = touchEndX - this.touchStartX
+    const deltaY = touchEndY - this.touchStartY
+    const deltaTime = touchEndTime - this.touchStartTime
+
+    // 判断是点击还是滑动
+    const isClick = Math.abs(deltaX) < 10 && Math.abs(deltaY) < 10 && deltaTime < 300
+    if (isClick) {
+      // 点击图片播放声音
+      this.speakWord()
+      return
+    }
+
+    // 滑动判断（水平或垂直滑动距离超过 30px）
+    if (Math.abs(deltaX) < 30 && Math.abs(deltaY) < 30) {
+      return
+    }
+
+    // 往上滑或者往左滑 -> 上一个单词
+    if (deltaY < 0 || deltaX < 0) {
+      this.prevWord()
+    }
+    // 往下滑或者往右滑 -> 下一个单词
+    else if (deltaY > 0 || deltaX > 0) {
+      this.nextWord()
+    }
+
+    this.touchStartX = null
+    this.touchStartY = null
+    this.touchStartTime = null
+  }
 })

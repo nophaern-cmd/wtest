@@ -1,0 +1,53 @@
+{
+  "version": "2",
+  "privacyVer": 1,
+  "open": true,
+  "privacyTextList": [
+    {
+      "title": "用户隐私保护指引",
+      "content": "欢迎使用\"快乐英语学习\"小程序。我们非常重视您的个人信息保护。\n\n一、我们收集的信息\n1. 学习进度数据: 包括您已学习的词汇数量、句型数量、测试成绩记录\n2. 学习偏好数据: 包括您收藏的歌曲、已读的故事记录\n3. 存储方式: 所有数据仅存储在您的本地设备上,不会上传至任何服务器\n\n二、信息使用方式\n1. 记录和展示您的学习进度\n2. 提供学习统计数据(如最高分、平均分)\n3. 优化您的学习体验\n\n三、信息保护\n1. 所有数据仅存储在本地设备,不会上传至服务器\n2. 您可以随时清除小程序数据删除所有信息\n3. 我们严格遵守《中华人民共和国个人信息保护法》等相关法律法规\n\n四、您的权利\n1. 查看学习进度和统计数据\n2. 清除学习数据\n3. 卸载小程序即可删除所有存储信息\n\n五、未成年人保护\n本小程序主要面向儿童用户,我们特别重视未成年人隐私保护。所有数据仅存储在家长控制的设备上,家长可以随时查看和清除孩子的学习数据。"
+    }
+  ],
+  "privacyKeyList": [
+    {
+      "privacyKey": "userGeneratedData",
+      "privacyText": "用户生成的数据"
+    },
+    {
+      "privacyKey": "deviceInfo",
+      "privacyText": "设备信息"
+    }
+  ],
+  "apiList": [
+    {
+      "apiName": "wx.getStorageSync",
+      "apiDesc": "获取本地存储数据",
+      "reason": "用于读取用户学习进度"
+    },
+    {
+      "apiName": "wx.setStorageSync",
+      "apiDesc": "设置本地存储数据",
+      "reason": "用于保存用户学习进度"
+    },
+    {
+      "apiName": "wx.createInnerAudioContext",
+      "apiDesc": "创建音频上下文",
+      "reason": "用于播放英文发音和音频"
+    },
+    {
+      "apiName": "wx.vibrateShort",
+      "apiDesc": "触发震动",
+      "reason": "用于答题反馈"
+    },
+    {
+      "apiName": "wx.navigateTo",
+      "apiDesc": "页面跳转",
+      "reason": "用于页面导航"
+    },
+    {
+      "apiName": "wx.switchTab",
+      "apiDesc": "切换Tab页",
+      "reason": "用于底部导航切换"
+    }
+  ]
+}

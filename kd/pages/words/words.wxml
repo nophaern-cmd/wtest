@@ -59,7 +59,9 @@
     <view class="modal-close" bindtap="hideWordDetail">✕</view>
     <view class="emoji-container">
       <view class="nav-icon prev-icon" bindtap="prevWord">◀</view>
-      <view class="detail-emoji" bindtap="speakWord">{{currentWord.emoji}}</view>
+      <view class="detail-emoji"
+            bindtouchstart="handleImageTouchStart"
+            bindtouchend="handleImageTouchEnd">{{currentWord.emoji}}</view>
       <view class="nav-icon next-icon" bindtap="nextWord">▶</view>
     </view>
     <view class="detail-english">{{currentWord.english}}</view>

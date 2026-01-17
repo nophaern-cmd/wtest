@@ -1,5 +1,8 @@
 <!--pages/index/index.wxml-->
 <view class="container">
+  <!-- 隐私弹窗 -->
+  <privacy-popup bind:agree="onPrivacyAgreed"></privacy-popup>
+
   <!-- Loading -->
   <view wx:if="{{loading}}" class="loading-container">
     <view class="loading-spinner"></view>

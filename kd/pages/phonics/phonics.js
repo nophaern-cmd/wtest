@@ -1,5 +1,6 @@
 // pages/phonics/phonics.js
 const app = getApp()
+const audio = require('../../utils/audio')
 
 Page({
   data: {
@@ -20,16 +21,12 @@ Page({
       letter,
       count: phonicsData[letter].length
     }))
-
-    this.setData({
-      letters
-    })
+    this.setData({ letters })
   },
 
   selectLetter(e) {
     const letter = e.currentTarget.dataset.letter
-    const phonicsData = app.globalData.words.phonics
-    const currentWords = phonicsData[letter]
+    const currentWords = app.globalData.words.phonics[letter]
 
     this.setData({
       selectedLetter: letter,
@@ -38,19 +35,19 @@ Page({
       showAnimation: true
     })
 
-    // 自动播放字母发音
     this.playLetterSound()
 
-    // 动画1秒后关闭
     setTimeout(() => {
-      this.setData({
-        showAnimation: false
-      })
+      this.setData({ showAnimation: false })
     }, 1000)
   },
 
   playLetterSound() {
     const letter = this.data.selectedLetter
+    const letterName = {
+      'Aa': 'A', 'Bb': 'B', 'Cc': 'C', 'Dd': 'D', 'Ee': 'E',
+      'Hh': 'H', 'Ii': 'I', 'Rr': 'R', 'Ss': 'S'
+    }[letter] || letter[0]
 
     wx.showToast({
       title: `播放字母 ${letter}`,
@@ -58,30 +55,7 @@ Page({
       duration: 1000
     })
 
-    // 使用微信语音合成播放字母发音
-    if (typeof wx.createTtsContext === 'function') {
-      const tts = wx.createTtsContext()
-      const letterName = {
-        'Aa': 'A', 'Bb': 'B', 'Cc': 'C', 'Dd': 'D', 'Ee': 'E',
-        'Hh': 'H', 'Ii': 'I', 'Rr': 'R', 'Ss': 'S'
-      }[letter] || letter[0]
-
-      tts.speak({
-        text: letterName,
-        lang: 'en-US',
-        success: () => {
-          console.log('播放成功')
-        },
-        fail: (err) => {
-          console.log('播放失败', err)
-        }
-      })
-    } else {
-      wx.showToast({
-        title: '语音功能暂不可用',
-        icon: 'none'
-      })
-    }
+    audio.speakTTS(letterName, { lang: 'en-US' })
   },
 
   playWordSound(e) {
@@ -93,24 +67,6 @@ Page({
       duration: 1000
     })
 
-    // 使用微信语音合成播放单词
-    if (typeof wx.createTtsContext === 'function') {
-      const tts = wx.createTtsContext()
-      tts.speak({
-        text: word,
-        lang: 'en-US',
-        success: () => {
-          console.log('播放成功')
-        },
-        fail: (err) => {
-          console.log('播放失败', err)
-        }
-      })
-    } else {
-      wx.showToast({
-        title: '语音功能暂不可用',
-        icon: 'none'
-      })
-    }
+    audio.speakTTS(word, { lang: 'en-US' })
   }
 })
