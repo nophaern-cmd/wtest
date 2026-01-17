@@ -1,6 +1,13 @@
 <!--pages/index/index.wxml-->
 <view class="container">
-  <!-- 顶部欢迎区域 -->
+  <!-- Loading -->
+  <view wx:if="{{loading}}" class="loading-container">
+    <view class="loading-spinner"></view>
+    <view class="loading-text">加载中...</view>
+  </view>
+
+  <!-- 内容区域 -->
+  <view wx:else>
   <view class="header">
     <view class="header-decoration">✨</view>
     <view class="welcome-section">
@@ -103,5 +110,6 @@
       <view class="tip-label">每日学习小贴士</view>
     </view>
     <view class="tip-content">{{dailyTip}}</view>
+  </view>
   </view>
 </view>

@@ -6,7 +6,8 @@
     "pages/phonics/phonics",
     "pages/songs/songs",
     "pages/stories/stories",
-    "pages/quiz/quiz"
+    "pages/quiz/quiz",
+    "pages/test/test"
   ],
   "window": {
     "backgroundTextStyle": "light",

@@ -6,12 +6,24 @@ Page({
     learnedWords: 0,
     learnedSentences: 0,
     quizScore: 0,
-    dailyTip: ''
+    dailyTip: '',
+    loading: false
   },
 
   onLoad() {
-    this.loadProgress()
-    this.setDailyTip()
+    this.setData({ loading: true })
+    try {
+      this.loadProgress()
+      this.setDailyTip()
+      this.setData({ loading: false })
+    } catch (err) {
+      console.error('首页加载失败:', err)
+      this.setData({ loading: false })
+      wx.showToast({
+        title: '加载失败，请重试',
+        icon: 'none'
+      })
+    }
   },
 
   onShow() {
