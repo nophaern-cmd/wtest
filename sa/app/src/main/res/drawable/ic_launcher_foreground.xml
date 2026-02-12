@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="utf-8"?>
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="108dp"
+    android:height="108dp"
+    android:viewportWidth="108"
+    android:viewportHeight="108">
+    
+    <!-- 背景圆 -->
+    <path
+        android:fillColor="#FDF5E6"
+        android:pathData="M54,54m-40,0a40,40 0,1 1,80 0a40,40 0,1 1,-80 0"/>
+    
+    <!-- 书本图标 -->
+    <path
+        android:fillColor="#8B4513"
+        android:pathData="M30,35 L30,75 L54,68 L54,28 Z"/>
+    <path
+        android:fillColor="#A0522D"
+        android:pathData="M54,28 L54,68 L78,75 L78,35 Z"/>
+    
+    <!-- 书脊 -->
+    <path
+        android:fillColor="#5D2E0A"
+        android:pathData="M52,28 L56,28 L56,68 L52,68 Z"/>
+    
+    <!-- 文字装饰线 -->
+    <path
+        android:strokeColor="#FDF5E6"
+        android:strokeWidth="2"
+        android:pathData="M35,42 L48,39"/>
+    <path
+        android:strokeColor="#FDF5E6"
+        android:strokeWidth="2"
+        android:pathData="M35,50 L48,47"/>
+    <path
+        android:strokeColor="#FDF5E6"
+        android:strokeWidth="2"
+        android:pathData="M35,58 L48,55"/>
+    
+    <path
+        android:strokeColor="#FDF5E6"
+        android:strokeWidth="2"
+        android:pathData="M60,39 L73,42"/>
+    <path
+        android:strokeColor="#FDF5E6"
+        android:strokeWidth="2"
+        android:pathData="M60,47 L73,50"/>
+    <path
+        android:strokeColor="#FDF5E6"
+        android:strokeWidth="2"
+        android:pathData="M60,55 L73,58"/>
+</vector>

@@ -40,11 +40,33 @@ function init() {
   currentData = data.getData()
   lessonData = currentData.sanzijing
   
+  // 接入侧边栏复访能力
+  initSidebarRevisit()
+  
   // 绘制主菜单
   drawMenu()
   
   // 注册触摸事件
   registerTouchEvents()
+}
+
+// 初始化侧边栏复访能力
+function initSidebarRevisit() {
+  // 检查是否支持侧边栏复访
+  if (tt.navigateToScene) {
+    // 调用侧边栏复访能力
+    tt.navigateToScene({
+      scene: 'sidebar',
+      success: function(res) {
+        console.log('侧边栏复访接入成功', res)
+      },
+      fail: function(res) {
+        console.log('侧边栏复访接入失败', res)
+      }
+    })
+  } else {
+    console.log('当前环境不支持侧边栏复访能力')
+  }
 }
 
 // 绘制主菜单
