@@ -1,0 +1,89 @@
+<view class="container" bindtouchstart="touchStart" bindtouchend="touchEnd">
+  <view class="top-bar">
+    <view class="icon-btn" bindtap="toggleSettings">
+      <text class="icon-text">⚙</text>
+    </view>
+    <view class="icon-btn {{currentLesson === 0 ? 'disabled' : ''}}" bindtap="prevLesson">
+      <text class="icon-text">‹</text>
+    </view>
+    <view class="lesson-header">
+      <text class="lesson-title">{{lesson.title}}</text>
+      <text class="lesson-author" wx:if="{{lesson.author}}">{{lesson.author}}</text>
+    </view>
+    <view class="icon-btn {{currentLesson === totalLessons - 1 ? 'disabled' : ''}}" bindtap="nextLesson">
+      <text class="icon-text">›</text>
+    </view>
+    <view class="icon-btn {{isPlaying ? 'playing' : ''}}" bindtap="playContent">
+      <text class="icon-text">🔊</text>
+    </view>
+  </view>
+
+  <!-- 设置弹窗 -->
+  <view class="settings-mask {{showSettings ? 'show' : ''}}" bindtap="toggleSettings"></view>
+  <view class="settings-panel {{showSettings ? 'show' : ''}}">
+    <view class="settings-header">
+      <text class="settings-title">设置</text>
+      <view class="settings-close" bindtap="toggleSettings">✕</view>
+    </view>
+
+    <view class="settings-section">
+      <view class="settings-item" bindtap="toggleNotes">
+        <text class="settings-item-text">显示注释解释</text>
+        <view class="switch {{showNotes ? 'on' : ''}}">
+          <view class="switch-handle"></view>
+        </view>
+      </view>
+    </view>
+    
+    <view class="settings-section">
+      <text class="settings-label">内容分类</text>
+      <view class="category-nav">
+        <view class="category-btn {{category === 'sanzijing' ? 'active' : ''}}" bindtap="switchCategory" data-category="sanzijing">
+          <text class="category-text">三字经</text>
+        </view>
+        <view class="category-btn {{category === 'poems' ? 'active' : ''}}" bindtap="switchCategory" data-category="poems">
+          <text class="category-text">古诗词</text>
+        </view>
+      </view>
+    </view>
+
+    <view class="settings-section catalog-section">
+      <text class="settings-label">目录</text>
+      <scroll-view class="catalog-list" scroll-y>
+        <view wx:for="{{catalogList}}" wx:key="index" 
+              class="catalog-item {{currentLesson === index ? 'active' : ''}}"
+              bindtap="selectLesson" data-index="{{index}}">
+          <text class="catalog-index">{{index + 1}}</text>
+          <text class="catalog-title">{{item.title}}</text>
+          <text class="catalog-author" wx:if="{{item.author}}">{{item.author}}</text>
+        </view>
+      </scroll-view>
+    </view>
+  </view>
+
+  <view class="lesson-content">
+    <view class="content-box">
+      <view wx:for="{{lessonGroups}}" wx:key="index" class="content-group">
+        <view class="content-row">
+          <view wx:for="{{item}}" wx:for-item="line" wx:for-index="lineIndex" wx:key="lineIndex"
+                class="content-line">
+            <text class="main-text">{{line.text}}</text>
+            <text class="note-text {{showNotes ? '' : 'hidden'}}">{{line.note}}</text>
+          </view>
+        </view>
+      </view>
+    </view>
+  </view>
+
+  <view class="lesson-explanation">
+    <view class="explanation-title">📖 解读</view>
+    <text class="explanation-text">{{lesson.explanation}}</text>
+  </view>
+
+  <view class="progress">
+    <text class="progress-text">{{currentLesson + 1}} / {{totalLessons}}</text>
+    <view class="progress-bar">
+      <view class="progress-fill" style="width: {{(currentLesson + 1) / totalLessons * 100}}%"></view>
+    </view>
+  </view>
+</view>
