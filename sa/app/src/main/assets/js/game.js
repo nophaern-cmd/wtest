@@ -86,6 +86,7 @@
     let touchStartY = 0;
     let touchStartX = 0;
     let lastTouchY = 0;
+    let lastTouchTime = 0;
     let velocity = 0;
     let isScrolling = false;
 
@@ -174,6 +175,7 @@
         touchStartX = touch.clientX;
         touchStartY = touch.clientY;
         lastTouchY = touch.clientY;
+        lastTouchTime = Date.now();
         velocity = 0;
         isScrolling = false;
     }
@@ -181,7 +183,9 @@
     function handleTouchMove(e) {
         e.preventDefault();
         const touch = e.touches[0];
+        const now = Date.now();
         const deltaY = lastTouchY - touch.clientY;
+        const deltaTime = now - lastTouchTime || 16;
         
         if (Math.abs(touch.clientY - touchStartY) > 10) {
             isScrolling = true;
@@ -189,11 +193,13 @@
         
         if (isScrolling && maxScrollY > 0) {
             scrollY = Math.max(0, Math.min(maxScrollY, scrollY + deltaY));
-            velocity = deltaY;
+            // 计算速度（像素/毫秒），用于惯性 - 增强响应性
+            velocity = deltaY / deltaTime * 25;
             render();
         }
         
         lastTouchY = touch.clientY;
+        lastTouchTime = now;
     }
 
     function handleTouchEnd(e) {
@@ -202,11 +208,16 @@
         const deltaX = touch.clientX - touchStartX;
         const deltaY = touch.clientY - touchStartY;
         
+        // 结束滚动状态，让惯性生效
+        isScrolling = false;
+        
         // 判断是点击还是滑动
         if (Math.abs(deltaX) < 20 && Math.abs(deltaY) < 20) {
             handleClick(touch.clientX, touch.clientY);
+            velocity = 0;  // 点击时清除速度
         } else if (Math.abs(deltaX) > 50 && Math.abs(deltaX) > Math.abs(deltaY)) {
             // 左右滑动切换
+            velocity = 0;  // 左右滑动时清除速度
             if (deltaX > 0) {
                 navigatePrev();
             } else {
@@ -833,9 +844,11 @@
     // ============ 游戏循环 ============
     function gameLoop() {
         // 惯性滚动
-        if (Math.abs(velocity) > 0.5 && !isScrolling) {
-            scrollY = Math.max(0, Math.min(maxScrollY, scrollY + velocity));
-            velocity *= 0.95;
+        if (Math.abs(velocity) > 0.1 && !isScrolling) {
+            // 根据滑动速度增强惯性效果
+            const boostFactor = Math.min(2.5, 1 + Math.abs(velocity) / 30); // 最大增强2.5倍
+            scrollY = Math.max(0, Math.min(maxScrollY, scrollY + velocity * boostFactor));
+            velocity *= 0.85;  // 更慢的衰减，维持更久惯性
             render();
         }
         
