@@ -243,9 +243,14 @@ public class MainActivity extends AppCompatActivity {
 
     @Override
     public boolean onKeyDown(int keyCode, KeyEvent event) {
-        // 处理返回键
-        if (keyCode == KeyEvent.KEYCODE_BACK && webView.canGoBack()) {
-            webView.goBack();
+        // 处理返回键 - 调用 JavaScript 的返回函数
+        if (keyCode == KeyEvent.KEYCODE_BACK) {
+            webView.evaluateJavascript("window.handleAndroidBack && window.handleAndroidBack()", result -> {
+                // 如果 JavaScript 返回 false，则退出应用
+                if ("false".equals(result)) {
+                    finish();
+                }
+            });
             return true;
         }
         return super.onKeyDown(keyCode, event);

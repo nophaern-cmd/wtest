@@ -16,15 +16,35 @@
         STUDY: 'study',
         POEM: 'poem',
         STUDY_LIST: 'studyList',
-        POEM_LIST: 'poemList'
+        POEM_LIST: 'poemList',
+        SETTINGS: 'settings'
     };
 
     let currentState = AppState.STUDY;
+    let previousState = AppState.STUDY;  // 记录设置前的状态
     let currentIndex = 0;
     let currentData = studyData;  // 默认三字经
     let scrollY = 0;
     let maxScrollY = 0;
     let isSpeaking = false;
+    
+    // 设置配置
+    const settings = {
+        // 显示设置
+        showExplanation: false,    // 句子解释
+        showNotes: false,          // 关键字解释（注释）
+        // 播放内容
+        playContent: true,         // 正文
+        playExplanation: false,    // 解释
+        playNotes: false,          // 注解
+        // 播放模式: 'single', 'chapterLoop', 'allOnce', 'allLoop'
+        playMode: 'single',
+        // 自动停止: 0=不停止, 10, 20, 30, 60(分钟)
+        autoStop: 0
+    };
+    
+    let autoStopTimer = null;
+    let playStartTime = 0;
     let touchStartY = 0;
     let touchStartX = 0;
     let lastTouchY = 0;
@@ -170,6 +190,9 @@
             case AppState.POEM_LIST:
                 handleListClick(x, y);
                 break;
+            case AppState.SETTINGS:
+                handleSettingsClick(x, y);
+                break;
         }
     }
 
@@ -206,20 +229,32 @@
     function handleContentClick(x, y) {
         const footerY = screenHeight - 80;
         
-        // 底部栏：目录(左)、进度(中)、播放(右)
+        // 底部栏4列：目录、设置、进度、播放
         if (y > footerY) {
-            if (x < 80) {
-                // 目录按钮
-                if (currentState === AppState.STUDY) {
-                    currentState = AppState.STUDY_LIST;
-                } else {
-                    currentState = AppState.POEM_LIST;
-                }
-                scrollY = 0;
-                render();
-            } else if (x > screenWidth - 80) {
-                // 播放按钮
-                toggleSpeech();
+            const btnWidth = screenWidth / 4;
+            const btnIndex = Math.floor(x / btnWidth);
+            
+            switch (btnIndex) {
+                case 0: // 目录
+                    if (currentState === AppState.STUDY) {
+                        currentState = AppState.STUDY_LIST;
+                    } else {
+                        currentState = AppState.POEM_LIST;
+                    }
+                    scrollY = 0;
+                    render();
+                    break;
+                case 1: // 进入设置页面
+                    previousState = currentState;
+                    currentState = AppState.SETTINGS;
+                    scrollY = 0;
+                    render();
+                    break;
+                case 2: // 进度（不响应）
+                    break;
+                case 3: // 播放
+                    toggleSpeech();
+                    break;
             }
             return;
         }
@@ -441,6 +476,9 @@
             case AppState.POEM_LIST:
                 renderList();
                 break;
+            case AppState.SETTINGS:
+                renderSettings();
+                break;
         }
     }
 
@@ -574,8 +612,8 @@
             y += 42;
         }
         
-        // 再整体显示解读
-        if (item.explanation) {
+        // 再整体显示解读（根据设置决定是否显示）
+        if (settings.showExplanation && item.explanation) {
             y += 15;
             ctx.fillStyle = colors.explanation;
             ctx.font = '14px "PingFang SC", sans-serif';
@@ -588,8 +626,8 @@
             });
         }
         
-        // 注释（小字，最下面）
-        if (item.notes) {
+        // 注释（小字，最下面，根据设置决定是否显示）
+        if (settings.showNotes && item.notes) {
             y += 30;
             
             // 分隔线
@@ -763,25 +801,30 @@
         ctx.lineTo(screenWidth, footerY);
         ctx.stroke();
         
-        // 布局：目录(左)、进度(中)、播放(右)
+        // 布局：目录、设置、进度、播放
         const iconY = footerY + 48;
+        const btnWidth = screenWidth / 4;
         
         ctx.textAlign = 'center';
+        ctx.font = '40px "PingFang SC", sans-serif';
         
-        // 1. 目录（左边）
-        ctx.font = '48px "PingFang SC", sans-serif';
+        // 1. 目录
         ctx.fillStyle = colors.primary;
-        ctx.fillText('📋', 55, iconY);
+        ctx.fillText('📋', btnWidth * 0.5, iconY);
         
-        // 2. 进度（中间）
-        ctx.font = '22px "PingFang SC", sans-serif';
+        // 2. 设置
+        ctx.fillStyle = (settings.showExplanation || settings.showNotes) ? colors.highlight : colors.textLight;
+        ctx.fillText('📝', btnWidth * 1.5, iconY);
+        
+        // 3. 进度
+        ctx.font = '20px "PingFang SC", sans-serif';
         ctx.fillStyle = colors.textLight;
-        ctx.fillText(`${currentIndex + 1} / ${currentData.length}`, screenWidth / 2, iconY);
+        ctx.fillText(`${currentIndex + 1} / ${currentData.length}`, btnWidth * 2.5, iconY);
         
-        // 3. 播放/暂停（右边）
-        ctx.font = '48px "PingFang SC", sans-serif';
+        // 4. 播放/暂停
+        ctx.font = '40px "PingFang SC", sans-serif';
         ctx.fillStyle = isSpeaking ? colors.highlight : colors.primary;
-        ctx.fillText(isSpeaking ? '⏸️' : '▶️', screenWidth - 55, iconY);
+        ctx.fillText(isSpeaking ? '⏸️' : '▶️', btnWidth * 3.5, iconY);
     }
 
     function drawTextCard(x, y, width, text, label, color) {
@@ -905,15 +948,15 @@
             height += 42; // 原文行高
         }
         
-        // 计算解读高度
-        if (item.explanation) {
+        // 计算解读高度（根据设置决定是否计算）
+        if (settings.showExplanation && item.explanation) {
             height += 15;
             const wrappedExp = wrapText(item.explanation, contentWidth - 20);
             height += wrappedExp.length * 22;
         }
         
-        // 注释
-        if (item.notes) {
+        // 注释（根据设置决定是否计算）
+        if (settings.showNotes && item.notes) {
             height += 45; // 分隔线和间距
             ctx.font = '13px "PingFang SC", sans-serif';
             const notesLines = wrapText(item.notes, contentWidth - 20);
@@ -958,6 +1001,291 @@
         return lines;
     }
 
+    // ============ 设置页面 ============
+    function renderSettings() {
+        const headerHeight = 45;
+        const padding = 12;
+        
+        // 背景
+        ctx.fillStyle = colors.background;
+        ctx.fillRect(0, 0, screenWidth, screenHeight);
+        
+        // 顶部标题栏
+        ctx.fillStyle = colors.primary;
+        ctx.fillRect(0, 0, screenWidth, headerHeight);
+        ctx.fillStyle = colors.white;
+        ctx.font = 'bold 16px "PingFang SC", sans-serif';
+        ctx.textAlign = 'center';
+        ctx.fillText('设置', screenWidth / 2, 28);
+        
+        // 返回按钮
+        ctx.font = '22px "PingFang SC", sans-serif';
+        ctx.textAlign = 'left';
+        ctx.fillText('‹', 12, 28);
+        
+        let y = headerHeight + padding - scrollY;
+        const itemHeight = 42;
+        const sectionGap = 12;
+        
+        // ===== 显示设置 =====
+        ctx.fillStyle = colors.textLight;
+        ctx.font = '12px "PingFang SC", sans-serif';
+        ctx.textAlign = 'left';
+        ctx.fillText('显示设置', padding, y + 12);
+        y += 20;
+        
+        drawSettingSwitch(padding, y, '句子解释', settings.showExplanation);
+        y += itemHeight;
+        drawSettingSwitch(padding, y, '关键字注释', settings.showNotes);
+        y += itemHeight + sectionGap;
+        
+        // ===== 播放内容 =====
+        ctx.fillStyle = colors.textLight;
+        ctx.font = '12px "PingFang SC", sans-serif';
+        ctx.fillText('播放内容', padding, y + 12);
+        y += 20;
+        
+        drawSettingSwitch(padding, y, '正文', settings.playContent);
+        y += itemHeight;
+        drawSettingSwitch(padding, y, '解释', settings.playExplanation);
+        y += itemHeight;
+        drawSettingSwitch(padding, y, '注解', settings.playNotes);
+        y += itemHeight + sectionGap;
+        
+        // ===== 播放模式 =====
+        ctx.fillStyle = colors.textLight;
+        ctx.font = '12px "PingFang SC", sans-serif';
+        ctx.fillText('播放模式', padding, y + 12);
+        y += 20;
+        
+        // 播放模式横向排列
+        const modeWidth = (screenWidth - padding * 2) / 2;
+        const modes = [
+            { key: 'single', label: '单次' },
+            { key: 'chapterLoop', label: '单章循环' },
+            { key: 'allOnce', label: '全章一次' },
+            { key: 'allLoop', label: '全章循环' }
+        ];
+        
+        drawModeButton(padding, y, modeWidth - 4, 36, modes[0].label, settings.playMode === modes[0].key);
+        drawModeButton(padding + modeWidth, y, modeWidth - 4, 36, modes[1].label, settings.playMode === modes[1].key);
+        y += 40;
+        drawModeButton(padding, y, modeWidth - 4, 36, modes[2].label, settings.playMode === modes[2].key);
+        drawModeButton(padding + modeWidth, y, modeWidth - 4, 36, modes[3].label, settings.playMode === modes[3].key);
+        y += 40 + sectionGap;
+        
+        // ===== 自动停止 =====
+        ctx.fillStyle = colors.textLight;
+        ctx.font = '12px "PingFang SC", sans-serif';
+        ctx.fillText('定时停止', padding, y + 12);
+        y += 20;
+        
+        // 定时停止横向排列
+        const stopW = Math.floor((screenWidth - padding * 2 - 16) / 5);
+        const stops = [0, 10, 20, 30, 60];
+        const stopLabels = ['关', '10分', '20分', '30分', '1时'];
+        stops.forEach((val, i) => {
+            drawModeButton(padding + i * (stopW + 4), y, stopW, 36, stopLabels[i], settings.autoStop === val);
+        });
+        y += 40 + padding;
+        
+        // 更新滚动范围
+        maxScrollY = Math.max(0, y + scrollY - screenHeight + padding);
+    }
+    
+    function drawModeButton(x, y, width, height, label, isSelected) {
+        ctx.fillStyle = isSelected ? colors.highlight : colors.white;
+        ctx.beginPath();
+        ctx.roundRect(x, y, width, height, 6);
+        ctx.fill();
+        
+        if (!isSelected) {
+            ctx.strokeStyle = colors.border;
+            ctx.lineWidth = 1;
+            ctx.stroke();
+        }
+        
+        ctx.fillStyle = isSelected ? colors.white : colors.text;
+        ctx.font = '14px "PingFang SC", sans-serif';
+        ctx.textAlign = 'center';
+        ctx.fillText(label, x + width / 2, y + height / 2 + 5);
+    }
+    
+    function drawSettingSwitch(x, y, label, isOn, key) {
+        const width = screenWidth - x * 2;
+        const height = 50;
+        
+        // 背景
+        ctx.fillStyle = colors.white;
+        ctx.beginPath();
+        ctx.roundRect(x, y, width, height, 10);
+        ctx.fill();
+        
+        // 文字
+        ctx.fillStyle = colors.text;
+        ctx.font = '16px "PingFang SC", sans-serif';
+        ctx.textAlign = 'left';
+        ctx.fillText(label, x + 15, y + height / 2 + 5);
+        
+        // 开关
+        const switchW = 50;
+        const switchH = 28;
+        const switchX = x + width - switchW - 15;
+        const switchY = y + (height - switchH) / 2;
+        
+        ctx.fillStyle = isOn ? colors.highlight : '#ccc';
+        ctx.beginPath();
+        ctx.roundRect(switchX, switchY, switchW, switchH, switchH / 2);
+        ctx.fill();
+        
+        // 开关圆点
+        const dotR = switchH / 2 - 3;
+        const dotX = isOn ? switchX + switchW - dotR - 5 : switchX + dotR + 5;
+        ctx.fillStyle = colors.white;
+        ctx.beginPath();
+        ctx.arc(dotX, switchY + switchH / 2, dotR, 0, Math.PI * 2);
+        ctx.fill();
+    }
+    
+    function drawSettingRadio(x, y, label, isSelected, key, value) {
+        const width = screenWidth - x * 2;
+        const height = 50;
+        
+        // 背景
+        ctx.fillStyle = colors.white;
+        ctx.beginPath();
+        ctx.roundRect(x, y, width, height, 10);
+        ctx.fill();
+        
+        // 文字
+        ctx.fillStyle = colors.text;
+        ctx.font = '16px "PingFang SC", sans-serif';
+        ctx.textAlign = 'left';
+        ctx.fillText(label, x + 15, y + height / 2 + 5);
+        
+        // 选中标记
+        const checkX = x + width - 35;
+        const checkY = y + height / 2;
+        
+        if (isSelected) {
+            ctx.fillStyle = colors.highlight;
+            ctx.font = '24px "PingFang SC", sans-serif';
+            ctx.textAlign = 'center';
+            ctx.fillText('✓', checkX, checkY + 8);
+        }
+    }
+    
+    function handleSettingsClick(x, y) {
+        const headerHeight = 45;
+        const padding = 12;
+        
+        // 返回按钮
+        if (x < 60 && y < headerHeight) {
+            currentState = previousState;
+            scrollY = 0;
+            render();
+            return;
+        }
+        
+        const itemHeight = 42;
+        const sectionGap = 12;
+        const adjustedY = y + scrollY;
+        
+        let itemY = headerHeight + padding;
+        
+        // 显示设置标题
+        itemY += 20;
+        
+        // 句子解释
+        if (adjustedY > itemY && adjustedY < itemY + itemHeight) {
+            settings.showExplanation = !settings.showExplanation;
+            render();
+            return;
+        }
+        itemY += itemHeight;
+        
+        // 关键字注释
+        if (adjustedY > itemY && adjustedY < itemY + itemHeight) {
+            settings.showNotes = !settings.showNotes;
+            render();
+            return;
+        }
+        itemY += itemHeight + sectionGap;
+        
+        // 播放内容标题
+        itemY += 20;
+        
+        // 正文
+        if (adjustedY > itemY && adjustedY < itemY + itemHeight) {
+            settings.playContent = !settings.playContent;
+            render();
+            return;
+        }
+        itemY += itemHeight;
+        
+        // 解释
+        if (adjustedY > itemY && adjustedY < itemY + itemHeight) {
+            settings.playExplanation = !settings.playExplanation;
+            render();
+            return;
+        }
+        itemY += itemHeight;
+        
+        // 注解
+        if (adjustedY > itemY && adjustedY < itemY + itemHeight) {
+            settings.playNotes = !settings.playNotes;
+            render();
+            return;
+        }
+        itemY += itemHeight + sectionGap;
+        
+        // 播放模式标题
+        itemY += 20;
+        
+        // 播放模式 2x2 按钮
+        const modeWidth = (screenWidth - padding * 2) / 2;
+        const modes = ['single', 'chapterLoop', 'allOnce', 'allLoop'];
+        
+        // 第一行
+        if (adjustedY > itemY && adjustedY < itemY + 36) {
+            if (x < screenWidth / 2) {
+                settings.playMode = modes[0];
+            } else {
+                settings.playMode = modes[1];
+            }
+            render();
+            return;
+        }
+        itemY += 40;
+        
+        // 第二行
+        if (adjustedY > itemY && adjustedY < itemY + 36) {
+            if (x < screenWidth / 2) {
+                settings.playMode = modes[2];
+            } else {
+                settings.playMode = modes[3];
+            }
+            render();
+            return;
+        }
+        itemY += 40 + sectionGap;
+        
+        // 定时停止标题
+        itemY += 20;
+        
+        // 定时停止 5个横向按钮
+        if (adjustedY > itemY && adjustedY < itemY + 36) {
+            const stopW = (screenWidth - padding * 2) / 5;
+            const stops = [0, 10, 20, 30, 60];
+            const btnIndex = Math.floor((x - padding) / stopW);
+            if (btnIndex >= 0 && btnIndex < 5) {
+                settings.autoStop = stops[btnIndex];
+                render();
+            }
+            return;
+        }
+    }
+
     // roundRect polyfill
     if (!ctx.roundRect) {
         CanvasRenderingContext2D.prototype.roundRect = function(x, y, width, height, radius) {
@@ -978,6 +1306,39 @@
             this.closePath();
         };
     }
+
+    // Android 返回键处理
+    window.handleAndroidBack = function() {
+        switch (currentState) {
+            case AppState.SETTINGS:
+                // 设置页面 -> 返回之前的页面
+                currentState = previousState;
+                scrollY = 0;
+                render();
+                return true;
+            case AppState.STUDY_LIST:
+                // 目录页面 -> 返回内容页面
+                currentState = AppState.STUDY;
+                scrollY = 0;
+                render();
+                return true;
+            case AppState.POEM_LIST:
+                // 目录页面 -> 返回内容页面
+                currentState = AppState.POEM;
+                scrollY = 0;
+                render();
+                return true;
+            case AppState.MENU:
+                // 主菜单 -> 退出应用
+                return false;
+            case AppState.STUDY:
+            case AppState.POEM:
+                // 内容页面 -> 退出应用
+                return false;
+            default:
+                return false;
+        }
+    };
 
     // 启动应用
     init();
