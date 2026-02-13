@@ -27,23 +27,61 @@
     let scrollY = 0;
     let maxScrollY = 0;
     let isSpeaking = false;
+    let isPaused = false;       // 是否暂停状态
+    let lastPlayStrategy = '';  // 记录上次播放使用的策略
     
     // 设置配置
     const settings = {
         // 显示设置
-        showExplanation: false,    // 句子解释
-        showNotes: false,          // 关键字解释（注释）
+        showExplanation: true,     // 句子解释（默认显示）
+        showNotes: true,           // 关键字解释（默认显示）
+        showStories: true,         // 故事（默认显示）
+        // 播放策略: 'tts'=优先实时生成, 'mp3'=优先本地音频
+        playStrategy: 'mp3',
         // 播放内容
-        playContent: true,         // 正文
-        playExplanation: false,    // 解释
-        playNotes: false,          // 注解
+        playContent: true,         // 正文（默认播放）
+        playExplanation: true,     // 解释（默认播放）
+        playNotes: true,           // 注解（默认播放）
+        playStories: true,         // 故事（默认播放）
         // 播放模式: 'single', 'chapterLoop', 'allOnce', 'allLoop'
-        playMode: 'single',
+        playMode: 'chapterLoop',
         // 自动停止: 0=不停止, 10, 20, 30, 60(分钟)
         autoStop: 0
     };
     
+    // 从本地存储加载设置
+    function loadSettings() {
+        try {
+            const saved = localStorage.getItem('guoxue_settings');
+            if (saved) {
+                const parsed = JSON.parse(saved);
+                // 不恢复 autoStop（每次启动重置为0）
+                const savedAutoStop = settings.autoStop;
+                Object.assign(settings, parsed);
+                settings.autoStop = 0;  // 强制重置为关闭
+                console.log('设置已加载:', settings);
+            }
+        } catch (e) {
+            console.error('加载设置失败:', e);
+        }
+    }
+    
+    // 保存设置到本地存储
+    function saveSettings() {
+        try {
+            // 不保存 autoStop（每次启动重置为0）
+            const toSave = { ...settings };
+            delete toSave.autoStop;
+            localStorage.setItem('guoxue_settings', JSON.stringify(toSave));
+            console.log('设置已保存');
+        } catch (e) {
+            console.error('保存设置失败:', e);
+        }
+    }
+    
     let autoStopTimer = null;
+    let autoStopEndTime = 0;      // 自动停止结束时间戳
+    let countdownTimer = null;    // 倒计时更新定时器
     let playStartTime = 0;
     let touchStartY = 0;
     let touchStartX = 0;
@@ -69,6 +107,7 @@
 
     // ============ 初始化 ============
     function init() {
+        loadSettings();  // 加载本地设置
         resizeCanvas();
         bindEvents();
         render();
@@ -347,68 +386,398 @@
     // Android TTS 回调
     window.onTTSStart = function() {
         isSpeaking = true;
+        // 启动自动停止定时器
+        startAutoStopTimer();
         render();
     };
     
     window.onTTSEnd = function() {
         isSpeaking = false;
-        render();
+        // 根据播放模式处理下一步
+        handlePlayModeNext();
     };
     
     window.onTTSError = function() {
         isSpeaking = false;
         render();
     };
+    
+    // 启动自动停止定时器
+    function startAutoStopTimer() {
+        // 清除之前的定时器
+        if (autoStopTimer) {
+            clearTimeout(autoStopTimer);
+            autoStopTimer = null;
+        }
+        if (countdownTimer) {
+            clearInterval(countdownTimer);
+            countdownTimer = null;
+        }
+        
+        if (settings.autoStop > 0 && autoStopEndTime === 0) {
+            // 设置结束时间
+            autoStopEndTime = Date.now() + settings.autoStop * 60 * 1000;
+            
+            // 设置自动停止
+            autoStopTimer = setTimeout(() => {
+                console.log('自动停止播放');
+                stopSpeech();
+                autoStopEndTime = 0;
+                if (countdownTimer) {
+                    clearInterval(countdownTimer);
+                    countdownTimer = null;
+                }
+                render();
+            }, settings.autoStop * 60 * 1000);
+            
+            // 启动倒计时更新（每秒更新一次）
+            countdownTimer = setInterval(() => {
+                if (currentState === AppState.SETTINGS) {
+                    render();
+                }
+            }, 1000);
+        }
+    }
+    
+    // 获取剩余倒计时（秒）
+    function getCountdownSeconds() {
+        if (autoStopEndTime === 0) return 0;
+        const remaining = Math.max(0, autoStopEndTime - Date.now());
+        return Math.ceil(remaining / 1000);
+    }
+    
+    // 格式化倒计时显示
+    function formatCountdown(seconds) {
+        if (seconds <= 0) return '';
+        const min = Math.floor(seconds / 60);
+        const sec = seconds % 60;
+        return `${min}:${sec.toString().padStart(2, '0')}`;
+    }
+    
+    // 立即启动自动停止定时器（从设置页面调用）
+    function startAutoStopTimerNow(minutes) {
+        // 清除之前的定时器
+        clearAutoStopTimer();
+        
+        // 设置结束时间
+        autoStopEndTime = Date.now() + minutes * 60 * 1000;
+        
+        // 设置自动停止
+        autoStopTimer = setTimeout(() => {
+            console.log('定时停止：时间到');
+            stopSpeech();
+            autoStopEndTime = 0;
+            settings.autoStop = 0;  // 重置设置
+            if (countdownTimer) {
+                clearInterval(countdownTimer);
+                countdownTimer = null;
+            }
+            render();
+        }, minutes * 60 * 1000);
+        
+        // 启动倒计时更新（每秒更新一次）
+        countdownTimer = setInterval(() => {
+            render();  // 始终更新，不管在哪个页面
+        }, 1000);
+    }
+    
+    // 清除自动停止定时器
+    function clearAutoStopTimer() {
+        if (autoStopTimer) {
+            clearTimeout(autoStopTimer);
+            autoStopTimer = null;
+        }
+        if (countdownTimer) {
+            clearInterval(countdownTimer);
+            countdownTimer = null;
+        }
+        autoStopEndTime = 0;
+    }
+    
+    // 根据播放模式处理下一步
+    function handlePlayModeNext() {
+        switch (settings.playMode) {
+            case 'single':
+                // 单次播放：播放完成后停止
+                render();
+                break;
+                
+            case 'chapterLoop':
+                // 单章循环：重复播放当前章节
+                setTimeout(() => {
+                    if (!isSpeaking) {
+                        startSpeech();
+                    }
+                }, 500);
+                break;
+                
+            case 'allOnce':
+                // 全章一次：自动切换到下一章
+                if (currentIndex < currentData.length - 1) {
+                    currentIndex++;
+                    scrollY = 0;
+                    render();
+                    setTimeout(() => {
+                        startSpeech();
+                    }, 500);
+                } else {
+                    // 已到最后一章，停止
+                    render();
+                }
+                break;
+                
+            case 'allLoop':
+                // 全章循环：自动切换到下一章，最后一章后回到第一章
+                if (currentIndex < currentData.length - 1) {
+                    currentIndex++;
+                } else {
+                    currentIndex = 0;  // 回到第一章
+                }
+                scrollY = 0;
+                render();
+                setTimeout(() => {
+                    startSpeech();
+                }, 500);
+                break;
+        }
+    }
 
     function toggleSpeech() {
         if (isSpeaking) {
-            stopSpeech();
+            pauseSpeech();  // 改为暂停而不是停止
+        } else if (isPaused && lastPlayStrategy === settings.playStrategy) {
+            resumeSpeech();  // 继续播放（策略相同时）
         } else {
-            startSpeech();
+            startSpeech();  // 开始新的播放
         }
         render();
     }
+    
+    function pauseSpeech() {
+        if (audioPlayer) {
+            audioPlayer.pause();
+        }
+        if (typeof AndroidTTS !== 'undefined') {
+            AndroidTTS.stop();
+        }
+        if ('speechSynthesis' in window) {
+            speechSynthesis.pause();
+        }
+        isSpeaking = false;
+        isPaused = true;
+    }
+    
+    function resumeSpeech() {
+        if (audioPlayer && lastPlayStrategy === 'mp3') {
+            // 继续播放音频
+            audioPlayer.play().then(() => {
+                isSpeaking = true;
+                isPaused = false;
+                render();
+            }).catch(e => {
+                console.error('继续播放失败:', e);
+                isPaused = false;
+                startSpeech();  // 失败时重新开始
+            });
+        } else {
+            // TTS 不支持简单的恢复，需要重新开始
+            isPaused = false;
+            startSpeech();
+        }
+    }
 
-    function startSpeech() {
+    // 音频播放器
+    let audioPlayer = null;
+    let audioQueue = [];   // 待播放的音频队列
+    let audioIndex = 0;    // 当前播放索引
+    const audioExistsCache = {};  // 音频文件存在性缓存
+    
+    // 获取音频文件路径
+    function getAudioPath(type, index, name, contentType) {
+        const prefix = type === 'study' ? 'sanzi' : 'poem';
+        const num = String(index + 1).padStart(2, '0');
+        // 从标题中提取名字（去掉"第X章 "前缀）
+        const cleanName = name.replace(/^第[一二三四五六七八九十]+章\s*/, '');
+        return `js/data/audio/${prefix}_${num}_${cleanName}_${contentType}.mp3`;
+    }
+    
+    // 检查音频文件是否存在（使用缓存）
+    function checkAudioExists(path) {
+        // 使用缓存避免重复检查
+        if (path in audioExistsCache) {
+            return Promise.resolve(audioExistsCache[path]);
+        }
+        
+        return new Promise((resolve) => {
+            const audio = new Audio(path);
+            audio.addEventListener('canplaythrough', () => {
+                audioExistsCache[path] = true;
+                audio.src = '';  // 释放资源
+                resolve(true);
+            }, { once: true });
+            audio.addEventListener('error', () => {
+                audioExistsCache[path] = false;
+                resolve(false);
+            }, { once: true });
+            audio.load();
+        });
+    }
+    
+    // 播放音频队列
+    function playAudioQueue() {
+        if (audioIndex >= audioQueue.length) {
+            // 播放完成
+            isSpeaking = false;
+            audioQueue = [];
+            audioIndex = 0;
+            if (window.onTTSEnd) window.onTTSEnd();
+            render();
+            return;
+        }
+        
+        const audioPath = audioQueue[audioIndex];
+        console.log('播放音频:', audioPath);
+        
+        audioPlayer = new Audio(audioPath);
+        audioPlayer.volume = 1.0;  // 设置最大音量
+        audioPlayer.addEventListener('ended', () => {
+            audioIndex++;
+            // 延迟 300ms 再播放下一个
+            setTimeout(() => playAudioQueue(), 300);
+        });
+        audioPlayer.addEventListener('error', (e) => {
+            console.error('音频播放错误:', audioPath, e);
+            audioIndex++;
+            playAudioQueue();
+        });
+        audioPlayer.play().catch(e => {
+            console.error('音频播放失败:', e);
+            audioIndex++;
+            playAudioQueue();
+        });
+    }
+    
+    async function startSpeech() {
         stopSpeech();
         
         const item = currentData[currentIndex];
-        let text = '';
+        const type = currentState === AppState.STUDY ? 'study' : 'poem';
         
-        // 如果有拼音，优先使用拼音朗读（更准确）
-        if (item.pinyin) {
-            text = item.title + '。';
-            if (item.author) {
-                text += item.dynasty + '，' + item.author + '。';
+        // 每次播放都读取最新的播放策略
+        const currentStrategy = settings.playStrategy;
+        console.log('=== 开始播放 ===');
+        console.log('当前播放策略:', currentStrategy === 'mp3' ? '本地音频(男声)' : '实时生成(女声)');
+        console.log('当前章节:', item.title);
+        
+        // 根据设置构建要播放的内容列表
+        const contentTypes = [];
+        if (settings.playContent) contentTypes.push('正文');
+        if (settings.playExplanation) contentTypes.push('解释');
+        if (settings.playNotes) contentTypes.push('关键词');
+        if (settings.playStories) contentTypes.push('故事');
+        
+        if (contentTypes.length === 0) {
+            contentTypes.push('正文'); // 默认播放正文
+        }
+        console.log('播放内容:', contentTypes.join(', '));
+        
+        // 根据播放策略决定播放方式
+        if (currentStrategy === 'mp3') {
+            // 优先本地音频
+            const audioPaths = [];
+            let hasAudio = false;
+            
+            for (const ct of contentTypes) {
+                const path = getAudioPath(type, currentIndex, item.title, ct);
+                const exists = await checkAudioExists(path);
+                if (exists) {
+                    audioPaths.push(path);
+                    hasAudio = true;
+                }
             }
-            // 使用拼音作为内容
-            text += item.pinyin;
+            
+            // 如果有音频文件，使用音频播放
+            if (hasAudio && audioPaths.length > 0) {
+                console.log('播放策略: 优先本地音频, 使用音频播放:', audioPaths);
+                audioQueue = audioPaths;
+                audioIndex = 0;
+                isSpeaking = true;
+                isPaused = false;
+                lastPlayStrategy = 'mp3';  // 记录使用的策略
+                if (window.onTTSStart) window.onTTSStart();
+                render();
+                playAudioQueue();
+                return;
+            }
+            // 没有音频文件，降级到 TTS
+            console.log('播放策略: 优先本地音频, 但无音频文件, 降级到TTS');
         } else {
-            // 没有拼音则使用原文
-            text = item.title + '。';
-            if (item.author) {
-                text += item.dynasty + '，' + item.author + '。';
-            }
-            let content = item.content
-                .replace(/\n\n/g, '。')
-                .replace(/\n/g, '，');
-            text += content;
+            // 优先实时生成 (TTS)
+            console.log('播放策略: 优先实时生成');
         }
         
-        console.log('开始朗读:', text.substring(0, 50));
+        // 使用 TTS 播放
+        let text = '';
+        
+        // 根据设置构建 TTS 文本
+        if (settings.playContent) {
+            text += item.title + '。';
+            if (item.author) {
+                text += item.dynasty + '，' + item.author + '。';
+            }
+            if (item.pinyin) {
+                text += item.pinyin;
+            } else {
+                let content = item.content
+                    .replace(/\n\n/g, '。')
+                    .replace(/\n/g, '，');
+                text += content;
+            }
+        }
+        
+        if (settings.playExplanation && item.explanation) {
+            text += '。解释：' + item.explanation;
+        }
+        
+        if (settings.playNotes && item.notes) {
+            text += '。注释：' + item.notes;
+        }
+        
+        if (settings.playStories && item.stories && item.stories.length > 0) {
+            text += '。故事：';
+            item.stories.forEach((story, idx) => {
+                text += story.title + '。' + story.content;
+                if (idx < item.stories.length - 1) {
+                    text += '。';
+                }
+            });
+        }
+        
+        if (!text) {
+            // 如果没有选择任何内容，默认播放正文
+            text = item.title + '。';
+            if (item.pinyin) {
+                text += item.pinyin;
+            } else {
+                text += item.content.replace(/\n/g, '，');
+            }
+        }
+        
+        console.log('使用TTS朗读:', text.substring(0, 50));
         
         // 优先使用 Android TTS
         if (typeof AndroidTTS !== 'undefined') {
             console.log('AndroidTTS 存在, isReady:', AndroidTTS.isReady());
-            // 即使未完全准备好也尝试调用
             try {
                 AndroidTTS.speak(text);
                 isSpeaking = true;
+                isPaused = false;
+                lastPlayStrategy = 'tts';  // 记录使用的策略
                 console.log('AndroidTTS.speak 已调用');
             } catch (e) {
                 console.error('AndroidTTS 错误:', e);
             }
-        } 
+        }
         // 降级到 Web Speech API（浏览器调试用）
         else if ('speechSynthesis' in window) {
             console.log('使用 Web Speech API');
@@ -437,6 +806,14 @@
     }
 
     function stopSpeech() {
+        // 停止音频播放
+        if (audioPlayer) {
+            audioPlayer.pause();
+            audioPlayer = null;
+        }
+        audioQueue = [];
+        audioIndex = 0;
+        
         // 停止 Android TTS
         if (typeof AndroidTTS !== 'undefined') {
             AndroidTTS.stop();
@@ -446,6 +823,11 @@
             speechSynthesis.cancel();
         }
         isSpeaking = false;
+        isPaused = false;
+        lastPlayStrategy = '';
+        
+        // 注意：停止播放不清除定时停止倒计时
+        // 倒计时只有时间到了、手动关闭或重启才会停止
     }
 
     // ============ 游戏循环 ============
@@ -650,6 +1032,50 @@
             });
         }
         
+        // 故事（根据设置决定是否显示）
+        if (settings.showStories && item.stories && item.stories.length > 0) {
+            y += 30;
+            
+            // 分隔线
+            ctx.strokeStyle = colors.primary;
+            ctx.lineWidth = 2;
+            ctx.beginPath();
+            ctx.moveTo(padding, y);
+            ctx.lineTo(screenWidth - padding, y);
+            ctx.stroke();
+            
+            y += 20;
+            
+            // 故事标题
+            ctx.fillStyle = colors.primary;
+            ctx.font = 'bold 16px "PingFang SC", sans-serif';
+            ctx.textAlign = 'center';
+            ctx.fillText('📖 故事', screenWidth / 2, y + 10);
+            y += 30;
+            
+            // 显示每个故事
+            item.stories.forEach((story, idx) => {
+                // 故事小标题
+                ctx.fillStyle = colors.title;
+                ctx.font = 'bold 15px "PingFang SC", sans-serif';
+                ctx.textAlign = 'left';
+                ctx.fillText('【' + story.title + '】', padding + 10, y + 16);
+                y += 28;
+                
+                // 故事内容
+                ctx.fillStyle = colors.text;
+                ctx.font = '14px "PingFang SC", sans-serif';
+                
+                const storyLines = wrapText(story.content.replace(/\n\n/g, '\n'), contentWidth - 20);
+                storyLines.forEach(line => {
+                    ctx.fillText(line, padding + 10, y + 16);
+                    y += 22;
+                });
+                
+                y += 20; // 故事之间间距
+            });
+        }
+        
         ctx.restore();
         
         // 顶部导航栏
@@ -814,7 +1240,7 @@
         
         // 2. 设置
         ctx.fillStyle = (settings.showExplanation || settings.showNotes) ? colors.highlight : colors.textLight;
-        ctx.fillText('📝', btnWidth * 1.5, iconY);
+        ctx.fillText('⚙️', btnWidth * 1.5, iconY);
         
         // 3. 进度
         ctx.font = '20px "PingFang SC", sans-serif';
@@ -822,9 +1248,21 @@
         ctx.fillText(`${currentIndex + 1} / ${currentData.length}`, btnWidth * 2.5, iconY);
         
         // 4. 播放/暂停
-        ctx.font = '40px "PingFang SC", sans-serif';
-        ctx.fillStyle = isSpeaking ? colors.highlight : colors.primary;
-        ctx.fillText(isSpeaking ? '⏸️' : '▶️', btnWidth * 3.5, iconY);
+        // 如果有倒计时，在播放按钮上方显示
+        const countdown = getCountdownSeconds();
+        if (countdown > 0) {
+            ctx.font = '12px "PingFang SC", sans-serif';
+            ctx.fillStyle = colors.highlight;
+            ctx.fillText(formatCountdown(countdown), btnWidth * 3.5, footerY + 15);
+            // 有倒计时时播放按钮往下移
+            ctx.font = '36px "PingFang SC", sans-serif';
+            ctx.fillStyle = isSpeaking ? colors.highlight : colors.primary;
+            ctx.fillText(isSpeaking ? '⏸️' : '▶️', btnWidth * 3.5, iconY + 8);
+        } else {
+            ctx.font = '40px "PingFang SC", sans-serif';
+            ctx.fillStyle = isSpeaking ? colors.highlight : colors.primary;
+            ctx.fillText(isSpeaking ? '⏸️' : '▶️', btnWidth * 3.5, iconY);
+        }
     }
 
     function drawTextCard(x, y, width, text, label, color) {
@@ -963,6 +1401,19 @@
             height += notesLines.length * 22;
         }
         
+        // 故事（根据设置决定是否计算）
+        if (settings.showStories && item.stories && item.stories.length > 0) {
+            height += 50; // 分隔线和标题
+            ctx.font = '14px "PingFang SC", sans-serif';
+            
+            item.stories.forEach(story => {
+                height += 28; // 故事小标题
+                const storyLines = wrapText(story.content.replace(/\n\n/g, '\n'), contentWidth - 20);
+                height += storyLines.length * 22;
+                height += 20; // 故事之间间距
+            });
+        }
+        
         height += 20; // 底部间距
         
         return height;
@@ -1037,11 +1488,27 @@
         drawSettingSwitch(padding, y, '句子解释', settings.showExplanation);
         y += itemHeight;
         drawSettingSwitch(padding, y, '关键字注释', settings.showNotes);
+        y += itemHeight;
+        drawSettingSwitch(padding, y, '故事', settings.showStories);
         y += itemHeight + sectionGap;
+        
+        // ===== 播放策略 =====
+        ctx.fillStyle = colors.textLight;
+        ctx.font = '12px "PingFang SC", sans-serif';
+        ctx.textAlign = 'left';
+        ctx.fillText('播放策略', padding, y + 12);
+        y += 20;
+        
+        // 播放策略横向排列
+        const strategyWidth = (screenWidth - padding * 2) / 2;
+        drawModeButton(padding, y, strategyWidth - 4, 36, '本地音频(男声)', settings.playStrategy === 'mp3');
+        drawModeButton(padding + strategyWidth, y, strategyWidth - 4, 36, '实时生成(女声)', settings.playStrategy === 'tts');
+        y += 40 + sectionGap;
         
         // ===== 播放内容 =====
         ctx.fillStyle = colors.textLight;
         ctx.font = '12px "PingFang SC", sans-serif';
+        ctx.textAlign = 'left';
         ctx.fillText('播放内容', padding, y + 12);
         y += 20;
         
@@ -1050,6 +1517,8 @@
         drawSettingSwitch(padding, y, '解释', settings.playExplanation);
         y += itemHeight;
         drawSettingSwitch(padding, y, '注解', settings.playNotes);
+        y += itemHeight;
+        drawSettingSwitch(padding, y, '故事', settings.playStories);
         y += itemHeight + sectionGap;
         
         // ===== 播放模式 =====
@@ -1077,17 +1546,31 @@
         // ===== 自动停止 =====
         ctx.fillStyle = colors.textLight;
         ctx.font = '12px "PingFang SC", sans-serif';
+        ctx.textAlign = 'left';
         ctx.fillText('定时停止', padding, y + 12);
         y += 20;
         
-        // 定时停止横向排列
+        // 定时停止横向排列（与播放模式对齐）
         const stopW = Math.floor((screenWidth - padding * 2 - 16) / 5);
         const stops = [0, 10, 20, 30, 60];
         const stopLabels = ['关', '10分', '20分', '30分', '1时'];
         stops.forEach((val, i) => {
             drawModeButton(padding + i * (stopW + 4), y, stopW, 36, stopLabels[i], settings.autoStop === val);
         });
-        y += 40 + padding;
+        y += 40;
+        
+        // 显示倒计时（如果有）
+        const countdown = getCountdownSeconds();
+        if (countdown > 0) {
+            y += 8;
+            ctx.fillStyle = colors.highlight;
+            ctx.font = 'bold 18px "PingFang SC", sans-serif';
+            ctx.textAlign = 'center';
+            ctx.fillText('⏱ 剩余：' + formatCountdown(countdown), screenWidth / 2, y + 16);
+            y += 30;
+        }
+        
+        y += padding;
         
         // 更新滚动范围
         maxScrollY = Math.max(0, y + scrollY - screenHeight + padding);
@@ -1199,6 +1682,7 @@
         // 句子解释
         if (adjustedY > itemY && adjustedY < itemY + itemHeight) {
             settings.showExplanation = !settings.showExplanation;
+            saveSettings();
             render();
             return;
         }
@@ -1207,10 +1691,36 @@
         // 关键字注释
         if (adjustedY > itemY && adjustedY < itemY + itemHeight) {
             settings.showNotes = !settings.showNotes;
+            saveSettings();
+            render();
+            return;
+        }
+        itemY += itemHeight;
+        
+        // 故事
+        if (adjustedY > itemY && adjustedY < itemY + itemHeight) {
+            settings.showStories = !settings.showStories;
+            saveSettings();
             render();
             return;
         }
         itemY += itemHeight + sectionGap;
+        
+        // 播放策略标题
+        itemY += 20;
+        
+        // 播放策略按钮
+        if (adjustedY > itemY && adjustedY < itemY + 36) {
+            if (x < screenWidth / 2) {
+                settings.playStrategy = 'mp3';
+            } else {
+                settings.playStrategy = 'tts';
+            }
+            saveSettings();
+            render();
+            return;
+        }
+        itemY += 40 + sectionGap;
         
         // 播放内容标题
         itemY += 20;
@@ -1218,6 +1728,7 @@
         // 正文
         if (adjustedY > itemY && adjustedY < itemY + itemHeight) {
             settings.playContent = !settings.playContent;
+            saveSettings();
             render();
             return;
         }
@@ -1226,6 +1737,7 @@
         // 解释
         if (adjustedY > itemY && adjustedY < itemY + itemHeight) {
             settings.playExplanation = !settings.playExplanation;
+            saveSettings();
             render();
             return;
         }
@@ -1234,6 +1746,16 @@
         // 注解
         if (adjustedY > itemY && adjustedY < itemY + itemHeight) {
             settings.playNotes = !settings.playNotes;
+            saveSettings();
+            render();
+            return;
+        }
+        itemY += itemHeight;
+        
+        // 故事
+        if (adjustedY > itemY && adjustedY < itemY + itemHeight) {
+            settings.playStories = !settings.playStories;
+            saveSettings();
             render();
             return;
         }
@@ -1253,6 +1775,7 @@
             } else {
                 settings.playMode = modes[1];
             }
+            saveSettings();
             render();
             return;
         }
@@ -1265,6 +1788,7 @@
             } else {
                 settings.playMode = modes[3];
             }
+            saveSettings();
             render();
             return;
         }
@@ -1279,7 +1803,18 @@
             const stops = [0, 10, 20, 30, 60];
             const btnIndex = Math.floor((x - padding) / stopW);
             if (btnIndex >= 0 && btnIndex < 5) {
-                settings.autoStop = stops[btnIndex];
+                const newValue = stops[btnIndex];
+                settings.autoStop = newValue;
+                
+                // 立即启动或清除定时器
+                if (newValue > 0) {
+                    startAutoStopTimerNow(newValue);
+                } else {
+                    // 选择"关"时，清除定时器
+                    clearAutoStopTimer();
+                }
+                
+                saveSettings();
                 render();
             }
             return;
