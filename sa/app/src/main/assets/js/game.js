@@ -409,15 +409,15 @@
     
     window.onTTSEnd = function() {
         console.log('[onTTSEnd] 收到TTS结束回调, expectingTTSEnd=' + expectingTTSEnd);
-        // 只有正常播放结束才处理自动播放，手动暂停/停止时忽略
+        // 只有正常播放结束才处理，手动暂停/停止时忽略
         if (!expectingTTSEnd) {
             console.log('[onTTSEnd] 忽略（非正常结束）');
             return;
         }
         isSpeaking = false;
-        // 根据播放模式处理下一步
-        console.log('[onTTSEnd] 调用handlePlayModeNext');
-        handlePlayModeNext();
+        // TTS片段完成，播放下一个内容
+        console.log('[onTTSEnd] 调用onContentFinished');
+        onContentFinished();
     };
     
     window.onTTSError = function() {
@@ -520,6 +520,8 @@
     
     // 根据播放模式处理下一步
     function handlePlayModeNext() {
+        console.log('[handlePlayModeNext] 播放模式=' + settings.playMode + ', 当前章节=' + currentIndex + ', 策略=' + settings.playStrategy);
+        
         // 先清除之前的自动播放定时器
         if (autoPlayTimeout) {
             clearTimeout(autoPlayTimeout);
@@ -534,8 +536,10 @@
                 
             case 'chapterLoop':
                 // 单章循环：重复播放当前章节
+                console.log('[handlePlayModeNext] chapterLoop: 重复章节' + currentIndex);
                 autoPlayTimeout = setTimeout(() => {
                     autoPlayTimeout = null;
+                    console.log('[handlePlayModeNext] chapterLoop: 开始播放章节' + currentIndex);
                     if (!isSpeaking) {
                         startSpeech();
                     }
@@ -546,14 +550,17 @@
                 // 全章一次：自动切换到下一章
                 if (currentIndex < currentData.length - 1) {
                     currentIndex++;
+                    console.log('[handlePlayModeNext] allOnce: 切换到章节' + currentIndex);
                     scrollY = 0;
                     render();
                     autoPlayTimeout = setTimeout(() => {
                         autoPlayTimeout = null;
+                        console.log('[handlePlayModeNext] allOnce: 开始播放章节' + currentIndex);
                         startSpeech();
                     }, 500);
                 } else {
                     // 已到最后一章，停止
+                    console.log('[handlePlayModeNext] allOnce: 已到最后一章');
                     render();
                 }
                 break;
@@ -565,10 +572,12 @@
                 } else {
                     currentIndex = 0;  // 回到第一章
                 }
+                console.log('[handlePlayModeNext] allLoop: 切换到章节' + currentIndex);
                 scrollY = 0;
                 render();
                 autoPlayTimeout = setTimeout(() => {
                     autoPlayTimeout = null;
+                    console.log('[handlePlayModeNext] allLoop: 开始播放章节' + currentIndex);
                     startSpeech();
                 }, 500);
                 break;
@@ -577,30 +586,31 @@
 
     // 只停止当前播放（用于切换章节等）
     function stopCurrentPlayback() {
-        console.log('[stopCurrentPlayback] 开始, 当前 expectingTTSEnd=' + expectingTTSEnd + ', audioPlayer=' + (audioPlayer ? '有' : '无'));
-        // 标记为非正常结束，忽略后续的 onTTSEnd 回调
+        console.log('[stopCurrentPlayback] 开始');
+        // 标记为非正常结束，忽略后续回调
         expectingTTSEnd = false;
-        console.log('[stopCurrentPlayback] 设置 expectingTTSEnd=false');
         
         // 取消待处理的自动播放
         if (autoPlayTimeout) {
-            console.log('[stopCurrentPlayback] 清除autoPlayTimeout');
             clearTimeout(autoPlayTimeout);
             autoPlayTimeout = null;
         }
         
         // 停止音频播放
         if (audioPlayer) {
-            console.log('[stopCurrentPlayback] 停止音频播放');
             audioPlayer.pause();
             audioPlayer = null;
         }
         audioQueue = [];
         audioIndex = 0;
         
+        // 清除内容队列
+        contentQueue = [];
+        contentIndex = 0;
+        playedContentTypes = [];
+        
         // 停止 TTS
         if (typeof AndroidTTS !== 'undefined') {
-            console.log('[stopCurrentPlayback] 停止AndroidTTS');
             AndroidTTS.stop();
         }
         if ('speechSynthesis' in window) {
@@ -630,37 +640,37 @@
     }
     
     function pauseSpeech() {
+        console.log('[pauseSpeech] 暂停');
         // 标记为非正常结束，忽略后续的 onTTSEnd 回调
         expectingTTSEnd = false;
         
         if (audioPlayer) {
             audioPlayer.pause();
+            audioPlayer = null;  // 清除，恢复时用新策略
         }
         if (typeof AndroidTTS !== 'undefined') {
             AndroidTTS.stop();
         }
         if ('speechSynthesis' in window) {
-            speechSynthesis.pause();
+            speechSynthesis.cancel();
         }
         isSpeaking = false;
         isPaused = true;
+        // 注意：保留 contentQueue 和 contentIndex，恢复时继续
     }
     
     function resumeSpeech() {
-        if (audioPlayer && lastPlayStrategy === 'mp3') {
-            // 继续播放音频
-            audioPlayer.play().then(() => {
-                isSpeaking = true;
-                isPaused = false;
-                render();
-            }).catch(e => {
-                console.error('继续播放失败:', e);
-                isPaused = false;
-                startSpeech();  // 失败时重新开始
-            });
+        console.log('[resumeSpeech] 恢复播放');
+        isPaused = false;
+        expectingTTSEnd = true;
+        
+        // 恢复时使用新策略从当前内容继续
+        if (contentQueue.length > 0 && contentIndex < contentQueue.length) {
+            console.log('[resumeSpeech] 从内容队列恢复:', contentQueue[contentIndex]);
+            playNextContent();
         } else {
-            // TTS 不支持简单的恢复，需要重新开始
-            isPaused = false;
+            // 队列为空，重新开始
+            console.log('[resumeSpeech] 队列为空，重新开始');
             startSpeech();
         }
     }
@@ -670,6 +680,11 @@
     let audioQueue = [];   // 待播放的音频队列
     let audioIndex = 0;    // 当前播放索引
     const audioExistsCache = {};  // 音频文件存在性缓存
+    
+    // 片段级播放控制
+    let contentQueue = [];     // 待播放的内容类型队列 ['正文', '解释', '关键词', '故事']
+    let contentIndex = 0;      // 当前播放到第几个内容片段
+    let playedContentTypes = [];  // 本章已播放过的内容类型
     
     // 获取音频文件路径
     function getAudioPath(type, index, name, contentType) {
@@ -715,196 +730,248 @@
         });
     }
     
-    // 播放音频队列
-    function playAudioQueue() {
-        if (audioIndex >= audioQueue.length) {
-            // 播放完成
-            isSpeaking = false;
-            audioQueue = [];
-            audioIndex = 0;
-            if (window.onTTSEnd) window.onTTSEnd();
-            render();
-            return;
-        }
-        
-        const audioPath = audioQueue[audioIndex];
-        console.log('播放音频:', audioPath);
+    // 播放单个音频文件（用于片段级播放）
+    function playSingleAudio(audioPath) {
+        console.log('[playSingleAudio] 播放:', audioPath);
         
         audioPlayer = new Audio(audioPath);
-        audioPlayer.volume = 1.0;  // 设置最大音量
+        audioPlayer.volume = 1.0;
         audioPlayer.addEventListener('ended', () => {
-            audioIndex++;
-            // 延迟 300ms 再播放下一个
-            setTimeout(() => playAudioQueue(), 300);
+            console.log('[playSingleAudio] 播放完成');
+            isSpeaking = false;
+            audioPlayer = null;
+            // 片段完成，播放下一个内容
+            onContentFinished();
         });
         audioPlayer.addEventListener('error', (e) => {
-            console.error('音频播放错误:', audioPath, e);
-            audioIndex++;
-            playAudioQueue();
+            console.error('[playSingleAudio] 播放错误:', e);
+            isSpeaking = false;
+            audioPlayer = null;
+            onContentFinished();
         });
         audioPlayer.play().catch(e => {
-            console.error('音频播放失败:', e);
-            audioIndex++;
-            playAudioQueue();
+            console.error('[playSingleAudio] 播放失败:', e);
+            isSpeaking = false;
+            audioPlayer = null;
+            onContentFinished();
         });
     }
     
-    async function startSpeech() {
-        console.log('[startSpeech] 开始, 设置策略=' + settings.playStrategy);
-        console.log('[startSpeech] currentState=' + currentState + ', currentIndex=' + currentIndex);
-        stopCurrentPlayback();  // 停止当前播放
-        console.log('[startSpeech] stopCurrentPlayback完成');
+    // 当前内容片段播放完成
+    function onContentFinished() {
+        console.log('[onContentFinished] 片段完成, contentIndex=' + contentIndex + ', 队列长度=' + contentQueue.length);
         
+        if (!expectingTTSEnd) {
+            console.log('[onContentFinished] 非正常结束，忽略');
+            return;
+        }
+        
+        // 记录刚播放完的内容类型
+        if (contentIndex >= 0 && contentIndex < contentQueue.length) {
+            const justPlayed = contentQueue[contentIndex];
+            if (!playedContentTypes.includes(justPlayed)) {
+                playedContentTypes.push(justPlayed);
+            }
+        }
+        
+        contentIndex++;
+        
+        // 重新获取当前启用的内容类型
+        const enabledTypes = getEnabledContentTypes();
+        
+        // 构建新的待播放队列
+        const remaining = [];
+        
+        // 1. 原队列中剩余且仍启用的内容（未播放过）
+        for (let i = contentIndex; i < contentQueue.length; i++) {
+            const type = contentQueue[i];
+            if (enabledTypes.includes(type) && !playedContentTypes.includes(type)) {
+                remaining.push(type);
+            }
+        }
+        
+        // 2. 新启用的内容（不在原队列中，也没播放过）
+        for (const type of enabledTypes) {
+            if (!contentQueue.includes(type) && !playedContentTypes.includes(type)) {
+                remaining.push(type);
+            }
+        }
+        
+        console.log('[onContentFinished] 已播放:', playedContentTypes, ', 剩余待播放:', remaining);
+        
+        if (remaining.length > 0) {
+            // 更新队列，继续播放
+            contentQueue = remaining;
+            contentIndex = 0;
+            setTimeout(() => playNextContent(), 300);
+        } else {
+            // 本章所有片段播放完成
+            console.log('[onContentFinished] 本章播放完成');
+            contentQueue = [];
+            contentIndex = 0;
+            playedContentTypes = [];  // 清除已播放记录
+            handlePlayModeNext();
+        }
+    }
+    
+    // 获取当前设置启用的内容类型
+    function getEnabledContentTypes() {
+        const types = [];
+        if (settings.playContent) types.push('正文');
+        if (settings.playExplanation) types.push('解释');
+        if (settings.playNotes) types.push('关键词');
+        if (settings.playStories) types.push('故事');
+        if (types.length === 0) types.push('正文');
+        return types;
+    }
+    
+    // 播放下一个内容片段（使用最新策略）
+    async function playNextContent() {
+        // 重新获取启用的内容类型（用户可能已修改设置）
+        const enabledTypes = getEnabledContentTypes();
+        
+        // 找到下一个需要播放的内容
+        while (contentIndex < contentQueue.length) {
+            const currentType = contentQueue[contentIndex];
+            // 检查这个类型是否仍然启用
+            if (enabledTypes.includes(currentType)) {
+                break;
+            }
+            console.log('[playNextContent] 跳过已禁用的内容:', currentType);
+            contentIndex++;
+        }
+        
+        if (contentIndex >= contentQueue.length) {
+            console.log('[playNextContent] 没有更多内容');
+            onContentFinished();
+            return;
+        }
+        
+        const currentType = contentQueue[contentIndex];
         const item = currentData[currentIndex];
         const type = currentState === AppState.STUDY ? 'study' : 'poem';
+        const currentStrategy = settings.playStrategy;  // 使用最新策略
         
-        console.log('[startSpeech] type=' + type + ', item.title=' + item.title);
+        console.log('[playNextContent] 播放:', currentType, ', 策略:', currentStrategy);
         
-        // 每次播放都直接使用当前设置的策略
-        const currentStrategy = settings.playStrategy;
-        console.log('=== 开始播放 ===');
-        console.log('当前播放策略:', currentStrategy === 'mp3' ? '本地音频(男声)' : '实时生成(女声)');
-        console.log('当前章节:', item.title);
-        
-        // 根据设置构建要播放的内容列表
-        const contentTypes = [];
-        if (settings.playContent) contentTypes.push('正文');
-        if (settings.playExplanation) contentTypes.push('解释');
-        if (settings.playNotes) contentTypes.push('关键词');
-        if (settings.playStories) contentTypes.push('故事');
-        
-        if (contentTypes.length === 0) {
-            contentTypes.push('正文'); // 默认播放正文
-        }
-        console.log('播放内容:', contentTypes.join(', '));
-        
-        // 根据播放策略决定播放方式
         if (currentStrategy === 'mp3') {
-            // 优先本地音频
-            const audioPaths = [];
-            let hasAudio = false;
+            // MP3策略
+            const path = getAudioPath(type, currentIndex, item.title, currentType);
+            const exists = await checkAudioExists(path);
             
-            for (const ct of contentTypes) {
-                const path = getAudioPath(type, currentIndex, item.title, ct);
-                console.log('[startSpeech] 检查路径:', path);
-                const exists = await checkAudioExists(path);
-                console.log('[startSpeech] 路径存在:', exists, ', 缓存状态:', path in audioExistsCache ? audioExistsCache[path] : '无缓存');
-                if (exists) {
-                    audioPaths.push(path);
-                    hasAudio = true;
-                }
-            }
-            
-            // 如果有音频文件，使用音频播放
-            if (hasAudio && audioPaths.length > 0) {
-                console.log('[startSpeech] 使用MP3播放:', audioPaths.length, '个文件');
-                audioQueue = audioPaths;
-                audioIndex = 0;
+            if (exists) {
+                console.log('[playNextContent] 使用MP3:', path);
                 isSpeaking = true;
                 isPaused = false;
                 lastPlayStrategy = 'mp3';
-                expectingTTSEnd = true;  // 期待正常播放结束
-                console.log('[startSpeech] 设置 expectingTTSEnd=true, lastPlayStrategy=mp3');
                 if (window.onTTSStart) window.onTTSStart();
                 render();
-                playAudioQueue();
+                playSingleAudio(path);
                 return;
             }
-            // 没有音频文件，降级到 TTS
-            console.log('[startSpeech] MP3策略但无音频文件, 降级到TTS');
-        } else {
-            // 优先实时生成 (TTS)
-            console.log('播放策略: 优先实时生成');
+            console.log('[playNextContent] MP3不存在，降级到TTS');
         }
         
-        // 使用 TTS 播放
-        let text = '';
-        
-        // 根据设置构建 TTS 文本
-        if (settings.playContent) {
-            text += item.title + '。';
-            if (item.author) {
-                text += item.dynasty + '，' + item.author + '。';
-            }
-            if (item.pinyin) {
-                text += item.pinyin;
-            } else {
-                let content = item.content
-                    .replace(/\n\n/g, '。')
-                    .replace(/\n/g, '，');
-                text += content;
-            }
-        }
-        
-        if (settings.playExplanation && item.explanation) {
-            text += '。解释：' + item.explanation;
-        }
-        
-        if (settings.playNotes && item.notes) {
-            text += '。注释：' + item.notes;
-        }
-        
-        if (settings.playStories && item.stories && item.stories.length > 0) {
-            text += '。故事：';
-            item.stories.forEach((story, idx) => {
-                text += story.title + '。' + story.content;
-                if (idx < item.stories.length - 1) {
-                    text += '。';
-                }
-            });
-        }
-        
+        // TTS策略
+        const text = buildContentText(item, currentType);
         if (!text) {
-            // 如果没有选择任何内容，默认播放正文
-            text = item.title + '。';
-            if (item.pinyin) {
-                text += item.pinyin;
-            } else {
-                text += item.content.replace(/\n/g, '，');
-            }
+            console.log('[playNextContent] 内容为空，跳过');
+            contentIndex++;
+            playNextContent();
+            return;
         }
         
-        console.log('使用TTS朗读:', text.substring(0, 50));
-        
-        // 优先使用 Android TTS
+        console.log('[playNextContent] 使用TTS播放:', currentType);
+        speakText(text);
+    }
+    
+    // 构建单个内容类型的文本
+    function buildContentText(item, contentType) {
+        switch (contentType) {
+            case '正文':
+                let text = item.title + '。';
+                if (item.author) {
+                    text += item.dynasty + '，' + item.author + '。';
+                }
+                if (item.pinyin) {
+                    text += item.pinyin;
+                } else {
+                    text += item.content.replace(/\n\n/g, '。').replace(/\n/g, '，');
+                }
+                return text;
+            case '解释':
+                return item.explanation ? '解释：' + item.explanation : '';
+            case '关键词':
+                return item.notes ? '注释：' + item.notes : '';
+            case '故事':
+                if (!item.stories || item.stories.length === 0) return '';
+                let storyText = '故事：';
+                item.stories.forEach((story, idx) => {
+                    storyText += story.title + '。' + story.content;
+                    if (idx < item.stories.length - 1) storyText += '。';
+                });
+                return storyText;
+            default:
+                return '';
+        }
+    }
+    
+    // TTS朗读文本
+    function speakText(text) {
         if (typeof AndroidTTS !== 'undefined') {
-            console.log('[startSpeech] 使用AndroidTTS, isReady:', AndroidTTS.isReady());
+            console.log('[speakText] 使用AndroidTTS');
             try {
                 AndroidTTS.speak(text);
                 isSpeaking = true;
                 isPaused = false;
                 lastPlayStrategy = 'tts';
-                expectingTTSEnd = true;  // 期待正常播放结束
-                console.log('[startSpeech] 设置 expectingTTSEnd=true, lastPlayStrategy=tts');
+                if (window.onTTSStart) window.onTTSStart();
+                render();
             } catch (e) {
                 console.error('AndroidTTS 错误:', e);
+                onContentFinished();
             }
-        }
-        // 降级到 Web Speech API（浏览器调试用）
-        else if ('speechSynthesis' in window) {
-            console.log('使用 Web Speech API');
+        } else if ('speechSynthesis' in window) {
+            console.log('[speakText] 使用Web Speech API');
             const utterance = new SpeechSynthesisUtterance(text);
             utterance.lang = 'zh-CN';
             utterance.rate = 0.8;
-            utterance.pitch = 1;
-            
             utterance.onend = () => {
                 isSpeaking = false;
-                render();
+                onContentFinished();
             };
-            
-            utterance.onerror = (e) => {
-                console.error('Speech 错误:', e);
+            utterance.onerror = () => {
                 isSpeaking = false;
-                render();
+                onContentFinished();
             };
-            
             speechSynthesis.speak(utterance);
             isSpeaking = true;
+            isPaused = false;
+            lastPlayStrategy = 'tts';
+            render();
         } else {
-            console.log('语音合成不可用');
-            alert('语音功能暂不可用，请检查系统TTS设置');
+            console.log('[speakText] 语音不可用');
+            onContentFinished();
         }
+    }
+    
+    async function startSpeech() {
+        console.log('[startSpeech] 开始, 设置策略=' + settings.playStrategy);
+        stopCurrentPlayback();
+        
+        const item = currentData[currentIndex];
+        console.log('[startSpeech] 章节:', item.title);
+        
+        // 初始化内容队列
+        contentQueue = getEnabledContentTypes();
+        contentIndex = 0;
+        playedContentTypes = [];  // 新章节清除已播放记录
+        expectingTTSEnd = true;
+        
+        console.log('[startSpeech] 内容队列:', contentQueue.join(', '));
+        
+        // 开始播放第一个内容片段
+        playNextContent();
     }
 
     // 完全停止播放并清除所有策略状态（用于手动停止、返回等）
@@ -915,6 +982,20 @@
         
         // 注意：停止播放不清除定时停止倒计时
         // 倒计时只有时间到了、手动关闭或重启才会停止
+    }
+    
+    // 如果正在播放则重新开始（用于设置改变时）
+    function restartIfPlaying() {
+        if (isSpeaking || isPaused) {
+            restartPlayback();
+        }
+    }
+    
+    // 重新开始播放（用于设置改变后立即生效）
+    function restartPlayback() {
+        console.log('[restartPlayback] 重新开始播放');
+        stopCurrentPlayback();
+        startSpeech();
     }
 
     // ============ 游戏循环 ============
@@ -1806,6 +1887,8 @@
                 settings.playStrategy = 'tts';
             }
             saveSettings();
+            // 策略改变不中断当前播放，当前片段完成后自动使用新策略
+            console.log('[设置] 播放策略改为:', settings.playStrategy);
             render();
             return;
         }
@@ -1818,6 +1901,8 @@
         if (adjustedY > itemY && adjustedY < itemY + itemHeight) {
             settings.playContent = !settings.playContent;
             saveSettings();
+            // 内容设置改变不中断当前播放，当前片段完成后自动应用新设置
+            console.log('[设置] 正文播放:', settings.playContent);
             render();
             return;
         }
@@ -1827,6 +1912,7 @@
         if (adjustedY > itemY && adjustedY < itemY + itemHeight) {
             settings.playExplanation = !settings.playExplanation;
             saveSettings();
+            console.log('[设置] 解释播放:', settings.playExplanation);
             render();
             return;
         }
@@ -1836,6 +1922,7 @@
         if (adjustedY > itemY && adjustedY < itemY + itemHeight) {
             settings.playNotes = !settings.playNotes;
             saveSettings();
+            console.log('[设置] 注解播放:', settings.playNotes);
             render();
             return;
         }
@@ -1845,6 +1932,7 @@
         if (adjustedY > itemY && adjustedY < itemY + itemHeight) {
             settings.playStories = !settings.playStories;
             saveSettings();
+            console.log('[设置] 故事播放:', settings.playStories);
             render();
             return;
         }
