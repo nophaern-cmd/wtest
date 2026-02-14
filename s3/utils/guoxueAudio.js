@@ -212,12 +212,15 @@ function formatSize(bytes) {
  */
 function getCacheList() {
   const res = wx.getStorageInfoSync()
-  const keys = res.keys.filter(key => key.startsWith(CACHE_KEY_PREFIX))
+  const keys = res.keys.filter(key => 
+    key.startsWith(CACHE_KEY_PREFIX) && key !== CACHE_SIZE_KEY
+  )
   const list = []
   
   keys.forEach(key => {
     const cached = wx.getStorageSync(key)
-    if (cached) {
+    console.log('缓存记录:', key, cached) // 调试日志
+    if (cached && cached.path) {
       const fileName = key.replace(CACHE_KEY_PREFIX, '')
       list.push({
         fileName,
