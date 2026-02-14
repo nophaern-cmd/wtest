@@ -9,42 +9,57 @@
     </view>
   </view>
 
-  <!-- 学习模块入口 -->
-  <view class="modules-section">
-    <view class="module-card english-card" bindtap="navigateToEnglish">
-      <view class="module-icon-wrapper">
-        <text class="module-icon">📚</text>
+  <!-- 主要入口 - 国学学习 -->
+  <view class="main-entry">
+    <view class="main-card guoxue-main" bindtap="navigateToGuoxue">
+      <view class="main-icon-wrapper">
+        <text class="main-icon">📖</text>
       </view>
-      <view class="module-info">
-        <text class="module-title">英语学习</text>
-        <text class="module-desc">快乐英语，轻松学习</text>
-        <view class="module-stats">
-          <text class="stats-item">📝 {{wordsCount}} 个单词</text>
-          <text class="stats-item">💬 {{sentencesCount}} 个句型</text>
-        </view>
-      </view>
-      <view class="module-enter">
-        <text class="enter-icon">→</text>
-      </view>
-    </view>
-
-    <view class="module-card guoxue-card" bindtap="navigateToGuoxue">
-      <view class="module-icon-wrapper">
-        <text class="module-icon">📖</text>
-      </view>
-      <view class="module-info">
-        <text class="module-title">国学学习</text>
-        <text class="module-desc">传承经典，启迪智慧</text>
-        <view class="module-stats">
+      <view class="main-info">
+        <text class="main-title">国学学习</text>
+        <text class="main-desc">传承经典，启迪智慧</text>
+        <view class="main-stats">
           <text class="stats-item">📜 {{sanzijingCount}} 篇三字经</text>
           <text class="stats-item">🎋 {{poemsCount}} 首古诗词</text>
         </view>
       </view>
-      <view class="module-enter">
+      <view class="main-enter">
+        <text class="enter-text">开始学习</text>
         <text class="enter-icon">→</text>
       </view>
     </view>
   </view>
 
+  <!-- 其他入口 -->
+  <view class="other-section">
+    <text class="section-title">更多学习内容</text>
+    <view class="other-card english-card" bindtap="navigateToEnglish">
+      <view class="other-icon-wrapper">
+        <text class="other-icon">📚</text>
+      </view>
+      <view class="other-info">
+        <text class="other-title">英语学习</text>
+        <text class="other-desc">快乐英语，轻松学习</text>
+      </view>
+      <view class="other-enter">
+        <text class="enter-icon">→</text>
+      </view>
+    </view>
+  </view>
 
+  <!-- 快捷功能 -->
+  <view class="quick-section">
+    <view class="quick-item" bindtap="quickStart" data-type="sanzijing">
+      <text class="quick-icon">📜</text>
+      <text class="quick-text">三字经</text>
+    </view>
+    <view class="quick-item" bindtap="quickStart" data-type="poems">
+      <text class="quick-icon">🎋</text>
+      <text class="quick-text">古诗词</text>
+    </view>
+    <view class="quick-item" bindtap="quickStart" data-type="random">
+      <text class="quick-icon">🎲</text>
+      <text class="quick-text">随机学习</text>
+    </view>
+  </view>
 </view>

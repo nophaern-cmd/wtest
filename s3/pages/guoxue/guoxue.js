@@ -36,7 +36,7 @@ Page({
 
   onLoad(options) {
     this.loadSettings()
-    this.loadData()
+    this.loadData(options)
   },
 
   onShow() {
@@ -59,16 +59,24 @@ Page({
     }
   },
 
-  loadData() {
+  loadData(options = {}) {
     const data = app.globalData.guoxue
-    const currentType = this.data.currentType
+    let currentType = options.type || this.data.currentType
+    let currentIndex = parseInt(options.index) || 0
+    
     const list = currentType === 'sanzijing' ? data.sanzijing : data.poems
+    
+    // 确保 index 在有效范围内
+    if (currentIndex < 0) currentIndex = 0
+    if (currentIndex >= list.length) currentIndex = list.length - 1
     
     if (list && list.length > 0) {
       this.setData({
         guoxue: data,
-        currentLesson: list[0],
-        progress: `1 / ${list.length}`
+        currentType,
+        currentIndex,
+        currentLesson: list[currentIndex],
+        progress: `${currentIndex + 1} / ${list.length}`
       })
     }
   },

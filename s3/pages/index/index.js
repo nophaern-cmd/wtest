@@ -13,15 +13,19 @@ Page({
     this.loadCounts()
   },
 
+  onShow() {
+    this.loadCounts()
+  },
+
   // 加载数量统计
   loadCounts() {
     const data = app.globalData
     
     this.setData({
-      wordsCount: data.words.basic.length,
-      sentencesCount: data.sentences.length,
-      sanzijingCount: data.guoxue.sanzijing.length,
-      poemsCount: data.guoxue.poems.length
+      wordsCount: data.words?.basic?.length || 0,
+      sentencesCount: data.sentences?.length || 0,
+      sanzijingCount: data.guoxue?.sanzijing?.length || 0,
+      poemsCount: data.guoxue?.poems?.length || 0
     })
   },
 
@@ -37,5 +41,33 @@ Page({
     wx.navigateTo({
       url: '/pages/guoxue/guoxue'
     })
+  },
+
+  // 快速开始
+  quickStart(e) {
+    const type = e.currentTarget.dataset.type
+    const data = app.globalData.guoxue
+    
+    if (type === 'sanzijing') {
+      // 直接进入三字经第一章
+      wx.navigateTo({
+        url: '/pages/guoxue/guoxue?type=sanzijing&index=0'
+      })
+    } else if (type === 'poems') {
+      // 直接进入古诗第一首
+      wx.navigateTo({
+        url: '/pages/guoxue/guoxue?type=poems&index=0'
+      })
+    } else if (type === 'random') {
+      // 随机选择
+      const types = ['sanzijing', 'poems']
+      const randomType = types[Math.floor(Math.random() * types.length)]
+      const list = randomType === 'sanzijing' ? data.sanzijing : data.poems
+      const randomIndex = Math.floor(Math.random() * list.length)
+      
+      wx.navigateTo({
+        url: `/pages/guoxue/guoxue?type=${randomType}&index=${randomIndex}`
+      })
+    }
   }
 })

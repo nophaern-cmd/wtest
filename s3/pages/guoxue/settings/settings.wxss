@@ -56,3 +56,103 @@
   font-weight: bold;
   color: #B8860B;
 }
+
+/* 缓存管理 */
+.cache-section {
+  padding: 16rpx 24rpx;
+}
+
+.section-header {
+  display: flex;
+  align-items: center;
+  margin-bottom: 16rpx;
+}
+
+.section-header .section-label {
+  flex: 1;
+  margin-bottom: 0;
+}
+
+.cache-size {
+  font-size: 28rpx;
+  font-weight: bold;
+  color: #B8860B;
+  margin-right: 12rpx;
+}
+
+.toggle-icon {
+  font-size: 24rpx;
+  color: #888;
+}
+
+.cache-actions {
+  display: flex;
+  gap: 12rpx;
+  flex-wrap: wrap;
+}
+
+.cache-btn {
+  flex: 1;
+  min-width: 180rpx;
+  font-size: 26rpx;
+  padding: 16rpx 0;
+  background-color: #B8860B;
+  color: #FFFFFF;
+  border-radius: 8rpx;
+}
+
+.cache-btn.danger {
+  background-color: #DC143C;
+}
+
+.cache-btn[disabled] {
+  background-color: #CCC;
+  color: #888;
+}
+
+.cache-detail {
+  margin-top: 16rpx;
+  border-top: 1rpx solid #EEE;
+  padding-top: 12rpx;
+}
+
+.cache-item {
+  display: flex;
+  align-items: center;
+  padding: 12rpx 0;
+  border-bottom: 1rpx solid #F5F5F5;
+}
+
+.cache-info {
+  flex: 1;
+  overflow: hidden;
+}
+
+.cache-name {
+  display: block;
+  font-size: 24rpx;
+  color: #333;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.cache-meta {
+  display: block;
+  font-size: 22rpx;
+  color: #888;
+  margin-top: 4rpx;
+}
+
+.cache-delete {
+  padding: 8rpx 16rpx;
+  font-size: 32rpx;
+  color: #DC143C;
+}
+
+.cache-more, .cache-empty {
+  text-align: center;
+  padding: 20rpx;
+  font-size: 24rpx;
+  color: #888;
+}

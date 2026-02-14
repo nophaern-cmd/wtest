@@ -60,7 +60,46 @@
             data-minutes="60" bindtap="setAutoStop">1时</view>
     </view>
     <view class="countdown-display" wx:if="{{countdown > 0}}">
-      <text>⏱ 剩余：{{countdown}}秒</text>
+      <text>⏱ 剩余：{{countdownText}}</text>
+    </view>
+  </view>
+
+  <!-- 音频缓存管理 -->
+  <view class="settings-section cache-section">
+    <view class="section-header" bindtap="toggleCacheDetail">
+      <text class="section-label">音频缓存</text>
+      <text class="cache-size">{{cacheSizeText}}</text>
+      <text class="toggle-icon">{{showCacheDetail ? '▼' : '▶'}}</text>
+    </view>
+    
+    <view class="cache-actions">
+      <button class="cache-btn" bindtap="downloadCurrentChapter" disabled="{{downloading}}">
+        {{downloading ? downloadProgress : '下载当前章节'}}
+      </button>
+      <button class="cache-btn" bindtap="downloadAllChapters" disabled="{{downloading}}">
+        下载全部
+      </button>
+      <button class="cache-btn danger" bindtap="clearCache" disabled="{{cacheSize === 0}}">
+        清除缓存
+      </button>
+    </view>
+    
+    <!-- 缓存详情 -->
+    <view class="cache-detail" wx:if="{{showCacheDetail && cacheList.length > 0}}">
+      <view class="cache-item" wx:for="{{cacheList}}" wx:key="fileName">
+        <view class="cache-info">
+          <text class="cache-name">{{item.fileName}}</text>
+          <text class="cache-meta">{{item.sizeText}}</text>
+        </view>
+        <text class="cache-delete" data-file="{{item.fileName}}" bindtap="removeCacheItem">×</text>
+      </view>
+      <view class="cache-more" wx:if="{{cacheList.length >= 20}}">
+        <text>仅显示最近 20 条</text>
+      </view>
+    </view>
+    
+    <view class="cache-empty" wx:if="{{showCacheDetail && cacheList.length === 0}}">
+      <text>暂无缓存</text>
     </view>
   </view>
 </view>
