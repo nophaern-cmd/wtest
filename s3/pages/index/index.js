@@ -20,13 +20,20 @@ Page({
   // 加载数量统计
   loadCounts() {
     const data = app.globalData
+    console.log('index loadCounts - globalData:', data)
+    console.log('index loadCounts - guoxue:', data.guoxue)
+    console.log('index loadCounts - sanzijing:', data.guoxue?.sanzijing?.length)
+    console.log('index loadCounts - poems:', data.guoxue?.poems?.length)
     
-    this.setData({
+    const counts = {
       wordsCount: data.words?.basic?.length || 0,
       sentencesCount: data.sentences?.length || 0,
       sanzijingCount: data.guoxue?.sanzijing?.length || 0,
       poemsCount: data.guoxue?.poems?.length || 0
-    })
+    }
+    console.log('index loadCounts - setData:', counts)
+    
+    this.setData(counts)
   },
 
   // 跳转到英语学习

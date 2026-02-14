@@ -63,7 +63,7 @@ Component({
      */
     handleViewDetail() {
       wx.navigateTo({
-        url: '/pages/privacy/privacy'
+        url: '/pages/english/privacy/privacy'
       })
     },
 
