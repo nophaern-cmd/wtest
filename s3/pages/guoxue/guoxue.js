@@ -35,12 +35,12 @@ Page({
   autoPlayTimeout: null,
 
   onLoad(options) {
-    this.loadSettings()
+    this.initSettings()
     this.loadData(options)
   },
 
   onShow() {
-    this.loadSettings()
+    this.refreshSettings()
   },
 
   onUnload() {
@@ -48,7 +48,8 @@ Page({
     this.clearAutoStopTimers()
   },
 
-  loadSettings() {
+  // 首次加载时初始化设置（重置定时停止）
+  initSettings() {
     try {
       const saved = wx.getStorageSync('guoxueSettings')
       if (saved) {
@@ -59,10 +60,26 @@ Page({
           countdownText: ''
         })
       }
-      // 确保清除可能残留的定时器
+      // 首次加载时清除可能残留的定时器
       this.clearAutoStopTimers()
     } catch (e) {
       console.error('加载设置失败:', e)
+    }
+  },
+
+  // 从其他页面返回时刷新设置（保留定时停止状态）
+  refreshSettings() {
+    try {
+      const saved = wx.getStorageSync('guoxueSettings')
+      if (saved) {
+        // 保留当前的 autoStop 状态，只更新其他设置
+        const currentAutoStop = this.data.settings.autoStop
+        this.setData({ 
+          settings: { ...defaultSettings, ...saved, autoStop: currentAutoStop }
+        })
+      }
+    } catch (e) {
+      console.error('刷新设置失败:', e)
     }
   },
 
@@ -110,12 +127,27 @@ Page({
   // 从设置页面更新定时停止
   updateAutoStop(minutes) {
     this.clearAutoStopTimers()
+    
+    // 更新 settings.autoStop 的值
+    const newSettings = { ...this.data.settings, autoStop: minutes }
+    
     if (minutes > 0) {
       this.autoStopTimer = setTimeout(() => {
         this.stopAll()
-        this.setData({ countdown: 0 })
+        this.setData({ 
+          countdown: 0, 
+          countdownText: '',
+          settings: { ...this.data.settings, autoStop: 0 } 
+        })
       }, minutes * 60 * 1000)
       this.startCountdown(minutes * 60)
+      this.setData({ settings: newSettings })
+    } else {
+      this.setData({ 
+        countdown: 0, 
+        countdownText: '', 
+        settings: newSettings 
+      })
     }
   },
 

@@ -39,18 +39,26 @@ Page({
   },
 
   onShow() {
-    // 从主页面获取当前倒计时状态
-    const pages = getCurrentPages()
-    const prevPage = pages[pages.length - 2]
-    const countdown = prevPage?.data?.countdown || 0
-    this.setData({ countdown, countdownText: countdown > 0 ? this.formatTime(countdown) : '' })
+    this.syncCountdown()
     this.loadCacheInfo()
     this.loadDownloadingTasks()
     
-    // 定时刷新下载任务状态
+    // 定时刷新下载任务状态和倒计时
     this.taskTimer = setInterval(() => {
       this.loadDownloadingTasks()
+      this.syncCountdown()
     }, 1000)
+  },
+
+  // 同步主页面的倒计时状态
+  syncCountdown() {
+    const pages = getCurrentPages()
+    const prevPage = pages[pages.length - 2]
+    const countdown = prevPage?.data?.countdown || 0
+    this.setData({ 
+      countdown, 
+      countdownText: countdown > 0 ? this.formatTime(countdown) : '' 
+    })
   },
 
   onUnload() {
