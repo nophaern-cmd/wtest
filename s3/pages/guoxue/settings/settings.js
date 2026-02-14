@@ -31,15 +31,19 @@ Page({
   onLoad(options) {
     const savedSettings = wx.getStorageSync('guoxueSettings')
     if (savedSettings) {
-      this.setData({ settings: savedSettings })
+      // 重启后定时停止应该已经重置，这里也显示为0
+      this.setData({ settings: { ...savedSettings, autoStop: 0 } })
     }
     this.loadCacheInfo()
     this.loadDownloadingTasks()
   },
 
   onShow() {
-    const countdown = app.globalData.guoxueCountdown || 0
-    this.setData({ countdown, countdownText: this.formatTime(countdown) })
+    // 从主页面获取当前倒计时状态
+    const pages = getCurrentPages()
+    const prevPage = pages[pages.length - 2]
+    const countdown = prevPage?.data?.countdown || 0
+    this.setData({ countdown, countdownText: countdown > 0 ? this.formatTime(countdown) : '' })
     this.loadCacheInfo()
     this.loadDownloadingTasks()
     

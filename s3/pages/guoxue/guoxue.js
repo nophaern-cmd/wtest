@@ -52,8 +52,15 @@ Page({
     try {
       const saved = wx.getStorageSync('guoxueSettings')
       if (saved) {
-        this.setData({ settings: { ...defaultSettings, ...saved } })
+        // 重启后重置定时停止，不保留之前的设置
+        this.setData({ 
+          settings: { ...defaultSettings, ...saved, autoStop: 0 },
+          countdown: 0,
+          countdownText: ''
+        })
       }
+      // 确保清除可能残留的定时器
+      this.clearAutoStopTimers()
     } catch (e) {
       console.error('加载设置失败:', e)
     }
@@ -343,13 +350,15 @@ Page({
       }
     }
     
+    // 使用 setData 的回调确保数据更新后再播放
     this.setData({
       currentIndex: nextIndex,
       currentLesson: list[nextIndex],
       progress: `${nextIndex + 1} / ${list.length}`
+    }, () => {
+      // 数据更新完成后延迟播放
+      this.autoPlayTimeout = setTimeout(() => this.play(), 300)
     })
-    
-    this.autoPlayTimeout = setTimeout(() => this.play(), 500)
   },
 
   goBack() {
