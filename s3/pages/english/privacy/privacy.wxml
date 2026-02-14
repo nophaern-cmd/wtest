@@ -1,0 +1,154 @@
+<!--pages/privacy/privacy.wxml-->
+<view class="privacy-page">
+  <view class="privacy-header">
+    <view class="header-bg"></view>
+    <view class="header-content">
+      <view class="privacy-icon">🔒</view>
+      <view class="privacy-title">用户隐私保护指引</view>
+      <view class="privacy-subtitle">最后更新: 2026年1月17日</view>
+    </view>
+  </view>
+
+  <scroll-view class="privacy-body" scroll-y>
+    <!-- 引言 -->
+    <view class="privacy-section">
+      <view class="section-header">
+        <view class="section-icon">📜</view>
+        <view class="section-title">引言</view>
+      </view>
+      <view class="section-content">
+        <text class="content-text">欢迎使用"快乐英语学习"小程序。我们非常重视您的个人信息保护。本隐私保护指引将向您说明我们如何收集、使用、存储和保护您的个人信息。</text>
+      </view>
+    </view>
+
+    <!-- 收集的信息 -->
+    <view class="privacy-section">
+      <view class="section-header">
+        <view class="section-icon">📊</view>
+        <view class="section-title">一、我们收集的信息</view>
+      </view>
+      <view class="section-content">
+        <view class="content-item">
+          <view class="item-title">1. 学习进度数据</view>
+          <view class="item-content">包括您已学习的词汇数量、句型数量、测试成绩记录</view>
+          <view class="item-tag">存储方式: 本地设备</view>
+        </view>
+        <view class="content-item">
+          <view class="item-title">2. 学习偏好数据</view>
+          <view class="item-content">包括您收藏的歌曲、已读的故事记录</view>
+          <view class="item-tag">存储方式: 本地设备</view>
+        </view>
+        <view class="content-item">
+          <view class="item-title">3. 设备基础信息</view>
+          <view class="item-content">用于确保音频播放功能正常使用</view>
+          <view class="item-tag">存储方式: 临时存储</view>
+        </view>
+      </view>
+    </view>
+
+    <!-- 信息使用 -->
+    <view class="privacy-section">
+      <view class="section-header">
+        <view class="section-icon">🎯</view>
+        <view class="section-title">二、信息使用方式</view>
+      </view>
+      <view class="section-content">
+        <view class="content-item">
+          <view class="item-check">✓</view>
+          <view class="item-text">记录和展示您的学习进度</view>
+        </view>
+        <view class="content-item">
+          <view class="item-check">✓</view>
+          <view class="item-text">提供学习统计数据(如最高分、平均分)</view>
+        </view>
+        <view class="content-item">
+          <view class="item-check">✓</view>
+          <view class="item-text">优化您的学习体验</view>
+        </view>
+      </view>
+    </view>
+
+    <!-- 信息保护 -->
+    <view class="privacy-section">
+      <view class="section-header">
+        <view class="section-icon">🛡️</view>
+        <view class="section-title">三、信息保护</view>
+      </view>
+      <view class="section-content highlight">
+        <view class="content-item important">
+          <view class="item-icon">⚠️</view>
+          <view class="item-text">所有数据仅存储在本地设备,不会上传至服务器</view>
+        </view>
+        <view class="content-item">
+          <view class="item-text">您可以随时清除小程序数据删除所有信息</view>
+        </view>
+        <view class="content-item">
+          <view class="item-text">我们严格遵守《中华人民共和国个人信息保护法》等相关法律法规</view>
+        </view>
+      </view>
+    </view>
+
+    <!-- 用户权利 -->
+    <view class="privacy-section">
+      <view class="section-header">
+        <view class="section-icon">👤</view>
+        <view class="section-title">四、您的权利</view>
+      </view>
+      <view class="section-content">
+        <view class="content-item">
+          <view class="item-title">查看权</view>
+          <view class="item-content">您可以查看自己的学习进度和统计数据</view>
+        </view>
+        <view class="content-item">
+          <view class="item-title">更正权</view>
+          <view class="item-content">您可以清除学习进度,重新开始学习</view>
+        </view>
+        <view class="content-item">
+          <view class="item-title">删除权</view>
+          <view class="item-content">卸载小程序即可删除所有存储的个人信息</view>
+        </view>
+      </view>
+    </view>
+
+    <!-- 未成年人保护 -->
+    <view class="privacy-section">
+      <view class="section-header">
+        <view class="section-icon">👶</view>
+        <view class="section-title">五、未成年人保护</view>
+      </view>
+      <view class="section-content highlight">
+        <view class="content-item">
+          <view class="item-text">本小程序主要面向儿童用户,我们特别重视未成年人的个人信息保护</view>
+        </view>
+        <view class="content-item">
+          <view class="item-text">所有数据仅存储在家长控制的设备上</view>
+        </view>
+        <view class="content-item">
+          <view class="item-text">家长可以随时查看和清除孩子的学习数据</view>
+        </view>
+      </view>
+    </view>
+
+    <!-- 联系方式 -->
+    <view class="privacy-section">
+      <view class="section-header">
+        <view class="section-icon">📞</view>
+        <view class="section-title">六、联系我们</view>
+      </view>
+      <view class="section-content">
+        <view class="content-item">
+          <view class="item-title">小程序名称</view>
+          <view class="item-content">快乐英语学习</view>
+        </view>
+        <view class="content-item">
+          <view class="item-title">AppID</view>
+          <view class="item-content">wxe936752af84be780</view>
+        </view>
+      </view>
+    </view>
+  </scroll-view>
+
+  <view class="privacy-footer">
+    <button class="footer-btn" bindtap="handleBack">返回</button>
+  </view>
+</view>

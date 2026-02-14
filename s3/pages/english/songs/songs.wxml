@@ -1,0 +1,62 @@
+<!--pages/songs/songs.wxml-->
+<view class="container">
+  <view class="tabs">
+    <view class="tab {{activeTab === 'basic' ? 'active' : ''}}" bindtap="switchTab" data-tab="basic">
+      基础儿歌
+    </view>
+    <view class="tab {{activeTab === 'festival' ? 'active' : ''}}" bindtap="switchTab" data-tab="festival">
+      节日儿歌
+    </view>
+    <view class="tab {{activeTab === 'mc' ? 'active' : ''}}" bindtap="switchTab" data-tab="mc">
+      MC音乐
+    </view>
+  </view>
+
+  <view class="songs-list">
+    <view class="song-card {{playingSong === item.name ? 'playing' : ''}}" wx:for="{{filteredSongs}}" wx:key="name">
+      <view class="song-left" bindtap="showSongDetail" data-song="{{item}}">
+        <view class="song-icon">🎵</view>
+        <view class="song-info">
+          <view class="song-name">{{item.name}}</view>
+          <view class="song-type">{{songTypes[item.type]}}</view>
+        </view>
+      </view>
+      <view class="play-btn" bindtap="playSong">
+        <view wx:if="{{playingSong === item.name}}" class="pause-icon">⏸</view>
+        <view wx:else class="play-icon">▶</view>
+      </view>
+    </view>
+  </view>
+
+  <view class="tip-card">
+    <view class="tip-title">💡 学习建议</view>
+    <view class="tip-content">跟着英文歌曲和MC音乐与宝贝一起唱跳，提升学习兴趣。结合节日主题相关儿歌视频，巩固对应词汇与句型。</view>
+  </view>
+</view>
+
+<!-- 儿歌详情弹窗 -->
+<view class="modal {{showDetail ? 'show' : ''}}" bindtap="hideSongDetail">
+  <view class="modal-content" catchtap>
+    <view class="song-icon-large">🎵</view>
+    <view class="detail-name">{{currentSong.name}}</view>
+    <view class="detail-type">{{songTypes[currentSong.type]}}</view>
+    <view class="playing-status" wx:if="{{playingSong === currentSong.name}}">
+      🎵 正在播放中...
+    </view>
+
+    <view class="lyrics-section">
+      <view class="lyrics-title">歌词内容</view>
+      <view class="lyrics-content">
+        <text>{{currentSong.lyrics || '歌词内容正在整理中...'}}</text>
+      </view>
+    </view>
+
+    <button class="play-song-btn" bindtap="playSong">
+      {{playingSong === currentSong.name ? '⏸ 暂停播放' : '▶ 播放歌曲'}}
+    </button>
+    <button class="favorite-btn {{currentSong.favorite ? 'favorited' : ''}}" bindtap="toggleFavorite">
+      {{currentSong.favorite ? '❤️ 已收藏' : '🤍 收藏歌曲'}}
+    </button>
+    <button class="watch-video-btn">📹 观看视频</button>
+  </view>
+</view>

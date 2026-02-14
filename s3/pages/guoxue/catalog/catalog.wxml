@@ -1,0 +1,20 @@
+<view class="catalog-container">
+  <!-- Tab 切换 -->
+  <view class="tab-bar">
+    <view class="tab-item {{currentType === 'sanzijing' ? 'active' : ''}}" 
+          data-type="sanzijing" bindtap="switchType">三字经</view>
+    <view class="tab-item {{currentType === 'poems' ? 'active' : ''}}" 
+          data-type="poems" bindtap="switchType">古诗词</view>
+  </view>
+
+  <!-- 章节列表 -->
+  <scroll-view scroll-y class="catalog-list">
+    <view class="catalog-item {{currentIndex === index ? 'active' : ''}}" 
+          wx:for="{{list}}" wx:key="title"
+          data-index="{{index}}" bindtap="selectItem">
+      <view class="item-title">{{item.title}}</view>
+      <view class="item-author" wx:if="{{item.author}}">{{item.author}}</view>
+      <view class="current-badge" wx:if="{{currentIndex === index}}">当前</view>
+    </view>
+  </scroll-view>
+</view>

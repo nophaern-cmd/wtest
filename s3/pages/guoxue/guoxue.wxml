@@ -1,0 +1,75 @@
+<!-- 国学学习页面 -->
+<view class="guoxue-container">
+  <!-- 内容区域 - 支持滑动 -->
+  <swiper 
+    class="content-swiper" 
+    current="{{currentIndex}}" 
+    bindchange="onSwiperChange"
+    duration="200">
+    
+    <swiper-item wx:for="{{currentType === 'sanzijing' ? guoxue.sanzijing : guoxue.poems}}" wx:key="id">
+      <scroll-view scroll-y class="content-area" bindtap="onContentTap">
+        <!-- 标题 -->
+        <view class="title-section">
+          <text class="title">{{item.title}}</text>
+          <text class="author" wx:if="{{item.author}}">【{{item.dynasty}}】{{item.author}}</text>
+        </view>
+
+        <!-- 正文 -->
+        <view class="content-section">
+          <text class="content-text">{{item.content}}</text>
+        </view>
+
+        <!-- 解释 -->
+        <view class="explanation-section" wx:if="{{settings.showExplanation && item.explanation}}">
+          <view class="section-title">📖 解读</view>
+          <text class="explanation-text">{{item.explanation}}</text>
+        </view>
+
+        <!-- 注释 -->
+        <view class="notes-section" wx:if="{{settings.showNotes && item.notes}}">
+          <view class="section-title">📝 注释</view>
+          <text class="notes-text">{{item.notes}}</text>
+        </view>
+
+        <!-- 故事 -->
+        <view class="stories-section" wx:if="{{settings.showStories && item.stories && item.stories.length > 0}}">
+          <view class="section-title">📚 故事</view>
+          <view class="story-item" wx:for="{{item.stories}}" wx:for-item="story" wx:key="title">
+            <text class="story-title">【{{story.title}}】</text>
+            <text class="story-content">{{story.content}}</text>
+          </view>
+        </view>
+
+        <!-- 底部占位 -->
+        <view class="bottom-placeholder"></view>
+      </scroll-view>
+    </swiper-item>
+  </swiper>
+
+  <!-- 底部工具栏 -->
+  <view class="footer">
+    <!-- 目录按钮 -->
+    <view class="footer-btn" bindtap="goToCatalog">
+      <text class="btn-icon">📋</text>
+      <text class="btn-label">目录</text>
+    </view>
+    
+    <!-- 设置按钮 -->
+    <view class="footer-btn" bindtap="goToSettings">
+      <text class="btn-icon">⚙️</text>
+      <text class="btn-label">设置</text>
+    </view>
+    
+    <!-- 进度 -->
+    <view class="footer-btn">
+      <text class="progress-text">{{progress}}</text>
+    </view>
+    
+    <!-- 播放按钮 -->
+    <view class="footer-btn" bindtap="togglePlay">
+      <text class="btn-icon">{{isPlaying ? '⏸️' : '▶️'}}</text>
+      <text class="btn-label countdown-text" wx:if="{{countdown > 0}}">{{countdownText}}</text>
+    </view>
+  </view>
+</view>

@@ -1,0 +1,30 @@
+{
+  "pages": [
+    "pages/index/index",
+    "pages/english/index/index",
+    "pages/english/words/words",
+    "pages/english/sentences/sentences",
+    "pages/english/phonics/phonics",
+    "pages/english/songs/songs",
+    "pages/english/stories/stories",
+    "pages/english/quiz/quiz",
+    "pages/english/test/test",
+    "pages/english/privacy/privacy",
+    "pages/guoxue/guoxue",
+    "pages/guoxue/catalog/catalog",
+    "pages/guoxue/settings/settings"
+  ],
+  "window": {
+    "backgroundTextStyle": "light",
+    "navigationBarBackgroundColor": "#4A90E2",
+    "navigationBarTitleText": "学习大厅",
+    "navigationBarTextStyle": "white",
+    "backgroundColor": "#F5F5F5"
+  },
+  "style": "v2",
+  "sitemapLocation": "sitemap.json",
+  "lazyCodeLoading": "requiredComponents",
+  "usingComponents": {
+    "privacy-popup": "/components/privacy-popup/privacy-popup"
+  }
+}

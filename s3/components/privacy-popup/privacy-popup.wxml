@@ -1,0 +1,45 @@
+<!--components/privacy-popup/privacy-popup.wxml-->
+<view class="privacy-popup" wx:if="{{show}}">
+  <view class="privacy-mask" catchtap="handleDisagree"></view>
+  <view class="privacy-content">
+    <view class="privacy-header">
+      <text class="privacy-title">{{title}}</text>
+      <text class="privacy-subtitle">最后更新: 2026年1月17日</text>
+    </view>
+
+    <scroll-view class="privacy-body" scroll-y>
+      <view class="privacy-section">
+        <text class="privacy-section-title">一、我们收集的信息</text>
+        <text class="privacy-section-text">• 学习进度数据: 词汇学习数量、句型学习数量、测试成绩</text>
+        <text class="privacy-section-text">• 学习偏好: 收藏的歌曲、已读故事</text>
+        <text class="privacy-section-text">• 存储方式: 所有数据仅存储在您的本地设备上</text>
+      </view>
+
+      <view class="privacy-section">
+        <text class="privacy-section-title">二、信息使用方式</text>
+        <text class="privacy-section-text">• 记录和展示您的学习进度</text>
+        <text class="privacy-section-text">• 提供学习统计数据</text>
+        <text class="privacy-section-text">• 优化您的学习体验</text>
+      </view>
+
+      <view class="privacy-section">
+        <text class="privacy-section-title">三、信息保护</text>
+        <text class="privacy-section-text">• 所有数据仅存储在本地,不会上传至服务器</text>
+        <text class="privacy-section-text">• 您可以随时清除小程序数据删除所有信息</text>
+        <text class="privacy-section-text">• 我们严格遵守《个人信息保护法》等相关法规</text>
+      </view>
+
+      <view class="privacy-section">
+        <text class="privacy-section-title">四、您的权利</text>
+        <text class="privacy-section-text">• 查看学习进度和统计数据</text>
+        <text class="privacy-section-text">• 清除学习数据</text>
+        <text class="privacy-section-text">• 卸载小程序即可删除所有存储信息</text>
+      </view>
+    </scroll-view>
+
+    <view class="privacy-footer">
+      <button class="privacy-btn privacy-btn-detail" bindtap="handleViewDetail">查看完整指引</button>
+      <button class="privacy-btn privacy-btn-agree" bindtap="handleAgree">同意并继续</button>
+    </view>
+  </view>
+</view>

@@ -1,0 +1,312 @@
+/* pages/words/words.wxss */
+.container {
+  padding: 20rpx;
+}
+
+.tabs {
+  display: flex;
+  background: #FFFFFF;
+  border-radius: 16rpx;
+  padding: 8rpx;
+  margin-bottom: 20rpx;
+  box-shadow: 0 4rpx 12rpx rgba(0, 0, 0, 0.08);
+}
+
+.tab {
+  flex: 1;
+  text-align: center;
+  padding: 16rpx;
+  font-size: 28rpx;
+  color: #666;
+  border-radius: 12rpx;
+  transition: all 0.3s;
+}
+
+.tab.active {
+  background: #4A90E2;
+  color: #FFFFFF;
+  font-weight: bold;
+}
+
+/* 基础词汇列表 */
+.word-list {
+  padding-bottom: 20rpx;
+}
+
+.word-card {
+  display: flex;
+  align-items: center;
+  background: #FFFFFF;
+  border-radius: 16rpx;
+  padding: 24rpx;
+  margin-bottom: 16rpx;
+  box-shadow: 0 4rpx 12rpx rgba(0, 0, 0, 0.08);
+  gap: 20rpx;
+}
+
+.word-actions {
+  flex-shrink: 0;
+}
+
+.word-emoji {
+  font-size: 112rpx;
+  cursor: pointer;
+  flex-shrink: 0;
+}
+
+.word-emoji:active {
+  transform: scale(0.9);
+}
+
+.word-content {
+  flex: 1;
+}
+
+.word-text {
+  font-size: 72rpx;
+  font-weight: bold;
+  color: #333;
+}
+
+.word-english {
+  color: #333;
+}
+
+.word-chinese {
+  font-size: 36rpx;
+  color: #666;
+}
+
+.word-actions {
+  display: flex;
+  align-items: center;
+}
+
+.status-icon {
+  width: 48rpx;
+  height: 48rpx;
+  border-radius: 50%;
+  background: #E0E0E0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #999;
+  font-size: 32rpx;
+  transition: all 0.2s;
+}
+
+.status-icon.learned {
+  background: #4CAF50;
+  color: #FFFFFF;
+  font-size: 28rpx;
+}
+
+.status-icon:active {
+  transform: scale(0.9);
+}
+
+/* 自然拼读列表 */
+.phonics-list {
+  padding-bottom: 20rpx;
+}
+
+.letter-card {
+  background: #FFFFFF;
+  border-radius: 16rpx;
+  margin-bottom: 16rpx;
+  overflow: hidden;
+  box-shadow: 0 4rpx 12rpx rgba(0, 0, 0, 0.08);
+}
+
+.letter-header {
+  display: flex;
+  align-items: center;
+  padding: 24rpx;
+  border-bottom: 1rpx solid #F0F0F0;
+}
+
+.letter-icon {
+  width: 80rpx;
+  height: 80rpx;
+  border-radius: 16rpx;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: #FFFFFF;
+  font-size: 36rpx;
+  font-weight: bold;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-right: 20rpx;
+}
+
+.letter-words-count {
+  flex: 1;
+  font-size: 26rpx;
+  color: #666;
+}
+
+.expand-icon {
+  font-size: 24rpx;
+  color: #999;
+}
+
+.letter-words {
+  padding: 0 24rpx 24rpx;
+}
+
+.word-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 16rpx 0;
+  border-bottom: 1rpx solid #F5F5F5;
+}
+
+.word-item:last-child {
+  border-bottom: none;
+}
+
+.word-item-left {
+  display: flex;
+  align-items: center;
+  flex: 1;
+}
+
+.word-item-speak {
+  width: 56rpx;
+  height: 56rpx;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 28rpx;
+  box-shadow: 0 4rpx 12rpx rgba(102, 126, 234, 0.3);
+  transition: all 0.2s;
+}
+
+.word-item-speak:active {
+  transform: scale(0.9);
+}
+
+/* 单词详情弹窗 */
+.modal {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.9);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  opacity: 0;
+  visibility: hidden;
+  transition: all 0.3s;
+  z-index: 999;
+}
+
+.modal.show {
+  opacity: 1;
+  visibility: visible;
+}
+
+.modal-content {
+  width: 100%;
+  height: 100%;
+  background: #FFFFFF;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 60rpx 40rpx;
+  transform: translateY(100%);
+  transition: transform 0.3s;
+  position: relative;
+}
+
+.modal.show .modal-content {
+  transform: translateY(0);
+}
+
+.modal-close {
+  position: absolute;
+  top: 40rpx;
+  right: 40rpx;
+  font-size: 60rpx;
+  color: #999;
+  padding: 10rpx;
+}
+
+.emoji-container {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 20rpx;
+  margin-bottom: 40rpx;
+}
+
+.detail-emoji {
+  font-size: 500rpx;
+  cursor: pointer;
+  transition: transform 0.2s;
+  flex: 0 0 auto;
+}
+
+.detail-emoji:active {
+  transform: scale(0.95);
+}
+
+.nav-icon {
+  font-size: 60rpx;
+  color: #666;
+  padding: 16rpx;
+  cursor: pointer;
+  transition: all 0.2s;
+  background: rgba(0, 0, 0, 0.05);
+  border-radius: 50%;
+  width: 100rpx;
+  height: 100rpx;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.nav-icon:active {
+  transform: scale(0.9);
+  background: rgba(0, 0, 0, 0.1);
+}
+
+.detail-english {
+  font-size: 64rpx;
+  font-weight: bold;
+  color: #333;
+  margin-bottom: 24rpx;
+}
+
+.detail-chinese {
+  font-size: 40rpx;
+  color: #666;
+  margin-bottom: 60rpx;
+}
+
+.mark-learned-btn,
+.speak-btn {
+  width: 80%;
+  padding: 28rpx;
+  border-radius: 50rpx;
+  font-size: 32rpx;
+  margin-bottom: 24rpx;
+}
+
+.mark-learned-btn {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: #FFFFFF;
+  border: none;
+}
+
+.speak-btn {
+  background: #F5F5F5;
+  color: #666;
+}

@@ -1,0 +1,54 @@
+<!--pages/sentences/sentences.wxml-->
+<view class="container">
+  <view class="category-filter">
+    <view class="filter-item {{currentCategory === 'all' ? 'active' : ''}}" bindtap="filterCategory" data-category="all">
+      全部
+    </view>
+    <view class="filter-item {{currentCategory === 'size' ? 'active' : ''}}" bindtap="filterCategory" data-category="size">
+      大小
+    </view>
+    <view class="filter-item {{currentCategory === 'description' ? 'active' : ''}}" bindtap="filterCategory" data-category="description">
+      描述
+    </view>
+    <view class="filter-item {{currentCategory === 'greeting' ? 'active' : ''}}" bindtap="filterCategory" data-category="greeting">
+      问候
+    </view>
+    <view class="filter-item {{currentCategory === 'festival' ? 'active' : ''}}" bindtap="filterCategory" data-category="festival">
+      节日
+    </view>
+  </view>
+
+  <view class="sentence-list">
+    <view class="sentence-card" wx:for="{{filteredSentences}}" wx:key="english">
+      <view class="sentence-content" bindtap="showSentenceDetail" data-sentence="{{item}}">
+        <view class="sentence-english">{{item.english}}</view>
+        <view class="sentence-chinese">{{item.chinese}}</view>
+        <view class="sentence-footer">
+          <view class="sentence-category">{{categories[item.category]}}</view>
+          <view class="learned-status {{item.learned ? 'learned' : ''}}">
+            {{item.learned ? '已掌握' : '未掌握'}}
+          </view>
+        </view>
+      </view>
+      <view class="sentence-speak" bindtap="quickSpeak" data-sentence="{{item}}" catchtap>
+        🔊
+      </view>
+    </view>
+  </view>
+</view>
+
+<!-- 句型详情弹窗 -->
+<view class="modal {{showDetail ? 'show' : ''}}" bindtap="hideSentenceDetail">
+  <view class="modal-content" catchtap>
+    <view class="detail-label">英文句型</view>
+    <view class="detail-english">{{currentSentence.english}}</view>
+    <view class="detail-label">中文释义</view>
+    <view class="detail-chinese">{{currentSentence.chinese}}</view>
+    <view class="detail-label">分类</view>
+    <view class="detail-category">{{categories[currentSentence.category]}}</view>
+    <button class="mark-learned-btn" bindtap="markAsLearned">
+      {{currentSentence.learned ? '已掌握 ✓' : '标记为已掌握'}}
+    </button>
+    <button class="speak-btn" bindtap="speakSentence">🔊 朗读句型</button>
+  </view>
+</view>

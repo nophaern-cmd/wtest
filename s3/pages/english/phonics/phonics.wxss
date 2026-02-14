@@ -1,0 +1,185 @@
+/* pages/phonics/phonics.wxss */
+.container {
+  padding: 30rpx;
+}
+
+.header {
+  text-align: center;
+  margin-bottom: 40rpx;
+}
+
+.title {
+  font-size: 48rpx;
+  font-weight: bold;
+  color: #333;
+  margin-bottom: 12rpx;
+}
+
+.subtitle {
+  font-size: 26rpx;
+  color: #999;
+}
+
+.letters-grid {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  margin-bottom: 40rpx;
+}
+
+.letter-card {
+  width: 30%;
+  background: #FFFFFF;
+  border-radius: 20rpx;
+  padding: 30rpx 20rpx;
+  text-align: center;
+  margin-bottom: 20rpx;
+  box-shadow: 0 4rpx 12rpx rgba(0, 0, 0, 0.08);
+  border: 3rpx solid transparent;
+  transition: all 0.3s;
+}
+
+.letter-card.selected {
+  border-color: #4A90E2;
+  background: linear-gradient(135deg, rgba(74, 144, 226, 0.1) 0%, rgba(118, 75, 162, 0.1) 100%);
+}
+
+.letter-main {
+  font-size: 56rpx;
+  font-weight: bold;
+  color: #4A90E2;
+  margin-bottom: 8rpx;
+}
+
+.letter-count {
+  font-size: 22rpx;
+  color: #999;
+}
+
+.letter-detail {
+  background: #FFFFFF;
+  border-radius: 24rpx;
+  padding: 40rpx;
+  box-shadow: 0 4rpx 16rpx rgba(0, 0, 0, 0.1);
+}
+
+.detail-header {
+  text-align: center;
+  margin-bottom: 40rpx;
+  padding-bottom: 30rpx;
+  border-bottom: 2rpx solid #F0F0F0;
+}
+
+.letter-large {
+  font-size: 120rpx;
+  font-weight: bold;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  margin-bottom: 20rpx;
+}
+
+.play-sound-btn {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: #FFFFFF;
+  border-radius: 50rpx;
+  padding: 16rpx 32rpx;
+  font-size: 28rpx;
+  border: none;
+}
+
+.words-container {
+  padding-top: 20rpx;
+}
+
+.words-title {
+  font-size: 32rpx;
+  font-weight: bold;
+  color: #333;
+  margin-bottom: 24rpx;
+}
+
+.word-items {
+  display: flex;
+  flex-direction: column;
+  gap: 16rpx;
+}
+
+.word-item-card {
+  display: flex;
+  align-items: center;
+  background: #F8F9FA;
+  border-radius: 16rpx;
+  padding: 20rpx;
+  transition: all 0.2s;
+}
+
+.word-item-card:active {
+  background: #E8F4FD;
+  transform: scale(0.98);
+}
+
+.word-emoji {
+  font-size: 48rpx;
+  margin-right: 20rpx;
+}
+
+.word-info {
+  flex: 1;
+}
+
+.word-english {
+  font-size: 28rpx;
+  font-weight: bold;
+  color: #333;
+  margin-bottom: 4rpx;
+}
+
+.word-chinese {
+  font-size: 22rpx;
+  color: #999;
+}
+
+.play-icon {
+  font-size: 32rpx;
+  color: #4A90E2;
+}
+
+/* 字母动画 */
+.letter-animation {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.8);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  opacity: 0;
+  visibility: hidden;
+  transition: all 0.3s;
+  z-index: 999;
+}
+
+.letter-animation.show {
+  opacity: 1;
+  visibility: visible;
+}
+
+.animation-letter {
+  font-size: 300rpx;
+  font-weight: bold;
+  color: #FFFFFF;
+  animation: pulse 1s ease-in-out infinite;
+}
+
+@keyframes pulse {
+  0%, 100% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.2);
+  }
+}

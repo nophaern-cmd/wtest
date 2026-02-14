@@ -1,0 +1,50 @@
+<!-- 学习大厅首页 -->
+<view class="hall-container">
+  <!-- 顶部欢迎区域 -->
+  <view class="welcome-section">
+    <view class="welcome-bg"></view>
+    <view class="welcome-content">
+      <text class="welcome-title">🎓 学习大厅</text>
+      <text class="welcome-subtitle">开启智慧学习之旅</text>
+    </view>
+  </view>
+
+  <!-- 学习模块入口 -->
+  <view class="modules-section">
+    <view class="module-card english-card" bindtap="navigateToEnglish">
+      <view class="module-icon-wrapper">
+        <text class="module-icon">📚</text>
+      </view>
+      <view class="module-info">
+        <text class="module-title">英语学习</text>
+        <text class="module-desc">快乐英语，轻松学习</text>
+        <view class="module-stats">
+          <text class="stats-item">📝 {{wordsCount}} 个单词</text>
+          <text class="stats-item">💬 {{sentencesCount}} 个句型</text>
+        </view>
+      </view>
+      <view class="module-enter">
+        <text class="enter-icon">→</text>
+      </view>
+    </view>
+
+    <view class="module-card guoxue-card" bindtap="navigateToGuoxue">
+      <view class="module-icon-wrapper">
+        <text class="module-icon">📖</text>
+      </view>
+      <view class="module-info">
+        <text class="module-title">国学学习</text>
+        <text class="module-desc">传承经典，启迪智慧</text>
+        <view class="module-stats">
+          <text class="stats-item">📜 {{sanzijingCount}} 篇三字经</text>
+          <text class="stats-item">🎋 {{poemsCount}} 首古诗词</text>
+        </view>
+      </view>
+      <view class="module-enter">
+        <text class="enter-icon">→</text>
+      </view>
+    </view>
+  </view>
+
+
+</view>

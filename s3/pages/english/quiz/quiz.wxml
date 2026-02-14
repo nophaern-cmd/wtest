@@ -1,0 +1,99 @@
+<!--pages/quiz/quiz.wxml-->
+<view class="container" wx:if="{{!quizStarted}}">
+  <view class="header">
+    <view class="title">测试复习</view>
+    <view class="subtitle">检验你的学习成果</view>
+  </view>
+
+  <view class="quiz-types">
+    <view class="quiz-type-card" bindtap="startQuiz" data-type="words">
+      <view class="quiz-icon">📚</view>
+      <view class="quiz-type-title">词汇测试</view>
+      <view class="quiz-type-desc">测试单词掌握程度</view>
+    </view>
+
+    <view class="quiz-type-card" bindtap="startQuiz" data-type="sentences">
+      <view class="quiz-icon">💬</view>
+      <view class="quiz-type-title">句型测试</view>
+      <view class="quiz-type-desc">测试句型运用能力</view>
+    </view>
+
+    <view class="quiz-type-card" bindtap="startQuiz" data-type="mixed">
+      <view class="quiz-icon">🎯</view>
+      <view class="quiz-type-title">综合测试</view>
+      <view class="quiz-type-desc">混合题型全面测试</view>
+    </view>
+  </view>
+
+  <view class="stats-section">
+    <view class="stats-title">历史成绩</view>
+    <view class="stats-grid">
+      <view class="stat-item">
+        <view class="stat-value">{{highestScore}}</view>
+        <view class="stat-label">最高分</view>
+      </view>
+      <view class="stat-item">
+        <view class="stat-value">{{totalQuizzes}}</view>
+        <view class="stat-label">测试次数</view>
+      </view>
+      <view class="stat-item">
+        <view class="stat-value">{{avgScore}}</view>
+        <view class="stat-label">平均分</view>
+      </view>
+    </view>
+  </view>
+</view>
+
+<!-- 测试进行中 -->
+<view class="quiz-container" wx:if="{{quizStarted && !quizFinished}}">
+  <view class="quiz-progress">
+    <view class="progress-text">第 {{currentIndex + 1}}/{{totalQuestions}} 题</view>
+    <view class="progress-bar">
+      <view class="progress-fill" style="width: {{(currentIndex + 1) / totalQuestions * 100}}%"></view>
+    </view>
+  </view>
+
+  <view class="question-card">
+    <view class="question-icon">❓</view>
+    <view class="question-text">{{currentQuestion.question}}</view>
+
+    <view class="options-list">
+      <view class="option-item {{item.selected ? 'selected' : ''}} {{item.isCorrect === false && showResult ? 'wrong' : ''}} {{item.isCorrect === true && showResult ? 'correct' : ''}}"
+            wx:for="{{currentQuestion.options}}" wx:key="label"
+            bindtap="selectOption" data-index="{{index}}">
+        <view class="option-label">{{item.label}}</view>
+        <view class="option-emoji" wx:if="{{item.emoji}}">{{item.emoji}}</view>
+        <view class="option-text">{{item.text}}</view>
+        <view class="option-status" wx:if="{{showResult && (item.isCorrect || item.selected)}}">
+          {{item.isCorrect ? '✓' : '✗'}}
+        </view>
+      </view>
+    </view>
+
+    <button class="next-btn" bindtap="nextQuestion" wx:if="{{showResult}}">
+      {{currentIndex < totalQuestions - 1 ? '下一题' : '查看结果'}}
+    </button>
+  </view>
+</view>
+
+<!-- 测试结果 -->
+<view class="result-container" wx:if="{{quizFinished}}">
+  <view class="result-icon">{{resultEmoji}}</view>
+  <view class="result-title">{{resultTitle}}</view>
+  <view class="result-score">{{correctCount}}/{{totalQuestions}}</view>
+  <view class="result-desc">{{resultDesc}}</view>
+
+  <view class="score-breakdown">
+    <view class="breakdown-item">
+      <view class="breakdown-label">正确率</view>
+      <view class="breakdown-value">{{accuracy}}%</view>
+    </view>
+    <view class="breakdown-item">
+      <view class="breakdown-label">用时</view>
+      <view class="breakdown-value">{{timeUsed}}秒</view>
+    </view>
+  </view>
+
+  <button class="restart-btn" bindtap="restartQuiz">再测一次</button>
+  <button class="home-btn" bindtap="goHome">返回首页</button>
+</view>

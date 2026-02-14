@@ -1,0 +1,66 @@
+<view class="settings-container">
+  <!-- 显示设置 -->
+  <view class="settings-section">
+    <text class="section-label">显示设置</text>
+    <view class="mode-buttons">
+      <view class="mode-btn {{settings.showExplanation ? 'active' : ''}}" 
+            data-key="showExplanation" bindtap="toggleSetting">解释</view>
+      <view class="mode-btn {{settings.showNotes ? 'active' : ''}}" 
+            data-key="showNotes" bindtap="toggleSetting">注释</view>
+      <view class="mode-btn {{settings.showStories ? 'active' : ''}}" 
+            data-key="showStories" bindtap="toggleSetting">故事</view>
+    </view>
+  </view>
+
+  <!-- 播放内容 -->
+  <view class="settings-section">
+    <text class="section-label">播放内容</text>
+    <view class="mode-buttons">
+      <view class="mode-btn {{settings.playContent ? 'active' : ''}}" 
+            data-key="playContent" bindtap="toggleSetting">正文</view>
+      <view class="mode-btn {{settings.playExplanation ? 'active' : ''}}" 
+            data-key="playExplanation" bindtap="toggleSetting">解释</view>
+      <view class="mode-btn {{settings.playNotes ? 'active' : ''}}" 
+            data-key="playNotes" bindtap="toggleSetting">注解</view>
+      <view class="mode-btn {{settings.playStories ? 'active' : ''}}" 
+            data-key="playStories" bindtap="toggleSetting">故事</view>
+    </view>
+  </view>
+
+  <!-- 播放模式 -->
+  <view class="settings-section">
+    <text class="section-label">播放模式</text>
+    <view class="mode-buttons">
+      <view class="mode-btn {{settings.playMode === 'single' ? 'active' : ''}}" 
+            data-mode="single" bindtap="setPlayMode">单次</view>
+      <view class="mode-btn {{settings.playMode === 'chapterLoop' ? 'active' : ''}}" 
+            data-mode="chapterLoop" bindtap="setPlayMode">单章循环</view>
+    </view>
+    <view class="mode-buttons">
+      <view class="mode-btn {{settings.playMode === 'allOnce' ? 'active' : ''}}" 
+            data-mode="allOnce" bindtap="setPlayMode">全章一次</view>
+      <view class="mode-btn {{settings.playMode === 'allLoop' ? 'active' : ''}}" 
+            data-mode="allLoop" bindtap="setPlayMode">全章循环</view>
+    </view>
+  </view>
+
+  <!-- 定时停止 -->
+  <view class="settings-section">
+    <text class="section-label">定时停止</text>
+    <view class="mode-buttons">
+      <view class="mode-btn {{settings.autoStop === 0 ? 'active' : ''}}" 
+            data-minutes="0" bindtap="setAutoStop">关</view>
+      <view class="mode-btn {{settings.autoStop === 10 ? 'active' : ''}}" 
+            data-minutes="10" bindtap="setAutoStop">10分</view>
+      <view class="mode-btn {{settings.autoStop === 20 ? 'active' : ''}}" 
+            data-minutes="20" bindtap="setAutoStop">20分</view>
+      <view class="mode-btn {{settings.autoStop === 30 ? 'active' : ''}}" 
+            data-minutes="30" bindtap="setAutoStop">30分</view>
+      <view class="mode-btn {{settings.autoStop === 60 ? 'active' : ''}}" 
+            data-minutes="60" bindtap="setAutoStop">1时</view>
+    </view>
+    <view class="countdown-display" wx:if="{{countdown > 0}}">
+      <text>⏱ 剩余：{{countdown}}秒</text>
+    </view>
+  </view>
+</view>

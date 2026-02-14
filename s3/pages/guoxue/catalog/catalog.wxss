@@ -1,0 +1,82 @@
+.catalog-container {
+  height: 100vh;
+  background-color: #FDF5E6;
+  display: flex;
+  flex-direction: column;
+}
+
+/* Tab 切换 */
+.tab-bar {
+  display: flex;
+  background-color: #FFFFFF;
+  border-bottom: 1rpx solid #DEB887;
+}
+
+.tab-item {
+  flex: 1;
+  text-align: center;
+  padding: 30rpx 0;
+  font-size: 30rpx;
+  color: #666;
+  position: relative;
+}
+
+.tab-item.active {
+  color: #B8860B;
+  font-weight: bold;
+}
+
+.tab-item.active::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 60rpx;
+  height: 4rpx;
+  background-color: #B8860B;
+  border-radius: 2rpx;
+}
+
+/* 章节列表 */
+.catalog-list {
+  flex: 1;
+  padding: 20rpx;
+}
+
+.catalog-item {
+  background-color: #FFFFFF;
+  border-radius: 12rpx;
+  padding: 28rpx 24rpx;
+  margin-bottom: 16rpx;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  border: 2rpx solid transparent;
+}
+
+.catalog-item.active {
+  border-color: #B8860B;
+  background-color: #FFF8DC;
+}
+
+.item-title {
+  font-size: 30rpx;
+  color: #2C1810;
+  flex: 1;
+}
+
+.item-author {
+  font-size: 26rpx;
+  color: #888;
+  margin-left: 16rpx;
+}
+
+.current-badge {
+  background-color: #B8860B;
+  color: #FFFFFF;
+  font-size: 22rpx;
+  padding: 6rpx 16rpx;
+  border-radius: 20rpx;
+  margin-left: 16rpx;
+}
