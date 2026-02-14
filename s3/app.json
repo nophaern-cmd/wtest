@@ -14,6 +14,7 @@
     "pages/guoxue/catalog/catalog",
     "pages/guoxue/settings/settings"
   ],
+  "requiredBackgroundModes": ["audio"],
   "window": {
     "backgroundTextStyle": "light",
     "navigationBarBackgroundColor": "#4A90E2",
