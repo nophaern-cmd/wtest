@@ -1,4 +1,4 @@
-<!-- 国学学习页面 -->
+<!-- 国学朗读页面 -->
 <view class="guoxue-container">
   <!-- 内容区域 - 支持滑动 -->
   <swiper 

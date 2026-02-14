@@ -17,7 +17,7 @@
         <view class="section-title">引言</view>
       </view>
       <view class="section-content">
-        <text class="content-text">欢迎使用"快乐英语学习"小程序。我们非常重视您的个人信息保护。本隐私保护指引将向您说明我们如何收集、使用、存储和保护您的个人信息。</text>
+        <text class="content-text">欢迎使用"英语朗读助手"小程序。我们非常重视您的个人信息保护。本隐私保护指引将向您说明我们如何收集、使用、存储和保护您的个人信息。</text>
       </view>
     </view>
 
@@ -29,12 +29,12 @@
       </view>
       <view class="section-content">
         <view class="content-item">
-          <view class="item-title">1. 学习进度数据</view>
-          <view class="item-content">包括您已学习的词汇数量、句型数量、测试成绩记录</view>
+          <view class="item-title">1. 使用数据</view>
+          <view class="item-content">包括您已朗读的词汇数量、句型数量、测试成绩记录</view>
           <view class="item-tag">存储方式: 本地设备</view>
         </view>
         <view class="content-item">
-          <view class="item-title">2. 学习偏好数据</view>
+          <view class="item-title">2. 偏好数据</view>
           <view class="item-content">包括您收藏的歌曲、已读的故事记录</view>
           <view class="item-tag">存储方式: 本地设备</view>
         </view>
@@ -55,15 +55,15 @@
       <view class="section-content">
         <view class="content-item">
           <view class="item-check">✓</view>
-          <view class="item-text">记录和展示您的学习进度</view>
+          <view class="item-text">记录和展示您的使用进度</view>
         </view>
         <view class="content-item">
           <view class="item-check">✓</view>
-          <view class="item-text">提供学习统计数据(如最高分、平均分)</view>
+          <view class="item-text">提供使用统计数据(如最高分、平均分)</view>
         </view>
         <view class="content-item">
           <view class="item-check">✓</view>
-          <view class="item-text">优化您的学习体验</view>
+          <view class="item-text">优化您的使用体验</view>
         </view>
       </view>
     </view>
@@ -97,11 +97,11 @@
       <view class="section-content">
         <view class="content-item">
           <view class="item-title">查看权</view>
-          <view class="item-content">您可以查看自己的学习进度和统计数据</view>
+          <view class="item-content">您可以查看自己的使用记录和统计数据</view>
         </view>
         <view class="content-item">
           <view class="item-title">更正权</view>
-          <view class="item-content">您可以清除学习进度,重新开始学习</view>
+          <view class="item-content">您可以清除使用记录,重新开始</view>
         </view>
         <view class="content-item">
           <view class="item-title">删除权</view>
@@ -124,7 +124,7 @@
           <view class="item-text">所有数据仅存储在家长控制的设备上</view>
         </view>
         <view class="content-item">
-          <view class="item-text">家长可以随时查看和清除孩子的学习数据</view>
+          <view class="item-text">家长可以随时查看和清除孩子的使用数据</view>
         </view>
       </view>
     </view>
@@ -138,7 +138,7 @@
       <view class="section-content">
         <view class="content-item">
           <view class="item-title">小程序名称</view>
-          <view class="item-content">快乐英语学习</view>
+          <view class="item-content">英语朗读助手</view>
         </view>
         <view class="content-item">
           <view class="item-title">AppID</view>

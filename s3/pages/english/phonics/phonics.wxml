@@ -1,8 +1,8 @@
 <!--pages/phonics/phonics.wxml-->
 <view class="container">
   <view class="header">
-    <view class="title">自然拼读学习</view>
-    <view class="subtitle">点击字母学习发音和词汇</view>
+    <view class="title">自然拼读</view>
+    <view class="subtitle">点击字母朗读发音和词汇</view>
   </view>
 
   <view class="letters-grid">

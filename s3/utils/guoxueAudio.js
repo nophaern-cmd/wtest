@@ -1,6 +1,6 @@
 /**
  * 国学音频播放工具
- * 支持下载在线音频到持久缓存并播放（支持后台播放）
+ * 支持下载音频到持久缓存并播放（支持后台播放）
  * 当前播放使用CDN，预下载使用GitHub源
  */
 
@@ -573,7 +573,7 @@ class GuoxueAudioPlayer {
       const manager = this.getBgAudioManager()
       
       // 设置后台音频信息（锁屏界面显示）
-      manager.title = item.title || '国学学习'
+      manager.title = item.title || '国学朗读'
       manager.singer = item.singer || '国学启蒙'
       manager.epname = item.epname || '国学经典'
       manager.coverImgUrl = 'https://lian-1394056348.cos.ap-beijing.myqcloud.com/guoxue/logo.png'

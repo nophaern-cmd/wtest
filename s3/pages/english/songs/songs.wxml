@@ -29,8 +29,8 @@
   </view>
 
   <view class="tip-card">
-    <view class="tip-title">💡 学习建议</view>
-    <view class="tip-content">跟着英文歌曲和MC音乐与宝贝一起唱跳，提升学习兴趣。结合节日主题相关儿歌视频，巩固对应词汇与句型。</view>
+    <view class="tip-title">💡 小贴士</view>
+    <view class="tip-content">跟着英文歌曲和MC音乐一起唱跳，提升朗读兴趣。结合节日主题相关儿歌视频，巩固对应词汇与句型。</view>
   </view>
 </view>
 

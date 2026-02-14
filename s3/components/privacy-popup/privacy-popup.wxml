@@ -10,16 +10,16 @@
     <scroll-view class="privacy-body" scroll-y>
       <view class="privacy-section">
         <text class="privacy-section-title">一、我们收集的信息</text>
-        <text class="privacy-section-text">• 学习进度数据: 词汇学习数量、句型学习数量、测试成绩</text>
-        <text class="privacy-section-text">• 学习偏好: 收藏的歌曲、已读故事</text>
+        <text class="privacy-section-text">• 使用数据: 朗读记录、收藏内容</text>
+        <text class="privacy-section-text">• 偏好设置: 音频缓存、显示设置</text>
         <text class="privacy-section-text">• 存储方式: 所有数据仅存储在您的本地设备上</text>
       </view>
 
       <view class="privacy-section">
         <text class="privacy-section-title">二、信息使用方式</text>
-        <text class="privacy-section-text">• 记录和展示您的学习进度</text>
-        <text class="privacy-section-text">• 提供学习统计数据</text>
-        <text class="privacy-section-text">• 优化您的学习体验</text>
+        <text class="privacy-section-text">• 记录您的阅读进度</text>
+        <text class="privacy-section-text">• 提供使用统计数据</text>
+        <text class="privacy-section-text">• 优化您的使用体验</text>
       </view>
 
       <view class="privacy-section">
@@ -31,8 +31,8 @@
 
       <view class="privacy-section">
         <text class="privacy-section-title">四、您的权利</text>
-        <text class="privacy-section-text">• 查看学习进度和统计数据</text>
-        <text class="privacy-section-text">• 清除学习数据</text>
+        <text class="privacy-section-text">• 查看使用记录和统计数据</text>
+        <text class="privacy-section-text">• 清除本地缓存数据</text>
         <text class="privacy-section-text">• 卸载小程序即可删除所有存储信息</text>
       </view>
     </scroll-view>

@@ -1,4 +1,4 @@
-<!--pages/index/index.wxml-->
+<!--pages/english/index/index.wxml-->
 <view class="container">
   <!-- 隐私弹窗 -->
   <privacy-popup bind:agree="onPrivacyAgreed"></privacy-popup>
@@ -15,29 +15,29 @@
     <view class="header-decoration">✨</view>
     <view class="welcome-section">
       <view class="greeting">你好，小朋友！</view>
-      <view class="app-title">快乐英语学习</view>
+      <view class="app-title">英语朗读助手</view>
     </view>
     <view class="header-decoration">🌟</view>
   </view>
 
-  <!-- 学习进度卡片 -->
+  <!-- 使用进度卡片 -->
   <view class="progress-section">
     <view class="section-header">
-      <view class="section-title">📊 学习进度</view>
+      <view class="section-title">📊 使用进度</view>
     </view>
     <view class="stats-row">
       <view class="stat-card">
         <view class="stat-icon-wrapper words">📚</view>
         <view class="stat-info">
           <view class="stat-number">{{learnedWords}}</view>
-          <view class="stat-label">已学词汇</view>
+          <view class="stat-label">已读词汇</view>
         </view>
       </view>
       <view class="stat-card">
         <view class="stat-icon-wrapper sentences">💬</view>
         <view class="stat-info">
           <view class="stat-number">{{learnedSentences}}</view>
-          <view class="stat-label">已学句型</view>
+          <view class="stat-label">已读句型</view>
         </view>
       </view>
       <view class="stat-card">
@@ -58,12 +58,12 @@
     <view class="quick-access-grid">
       <view class="quick-card primary" catchtap="goToWords">
         <view class="quick-icon">📚</view>
-        <view class="quick-title">词汇学习</view>
+        <view class="quick-title">词汇朗读</view>
         <view class="quick-badge">30词</view>
       </view>
       <view class="quick-card accent" catchtap="goToSentences">
         <view class="quick-icon">💬</view>
-        <view class="quick-title">句型练习</view>
+        <view class="quick-title">句型朗读</view>
         <view class="quick-badge">26句</view>
       </view>
     </view>
@@ -110,7 +110,7 @@
   <view class="daily-tip-card">
     <view class="tip-header">
       <view class="tip-icon">💡</view>
-      <view class="tip-label">每日学习小贴士</view>
+      <view class="tip-label">每日小贴士</view>
     </view>
     <view class="tip-content">{{dailyTip}}</view>
   </view>

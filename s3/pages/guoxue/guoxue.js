@@ -1,4 +1,4 @@
-// 国学学习页面 - 完整实现
+// 国学朗读页面 - 完整实现
 const app = getApp()
 const { createGuoxuePlayer } = require('../../utils/guoxueAudio')
 

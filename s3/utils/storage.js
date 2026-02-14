@@ -80,9 +80,9 @@ function clear() {
 }
 
 /**
- * 更新学习进度 - 单词
+ * 更新使用进度 - 单词
  * @param {string} english - 单词英文
- * @param {boolean} isLearned - 是否已学习
+ * @param {boolean} isLearned - 是否已朗读
  */
 function updateWordProgress(english, isLearned) {
   const learnedWords = get(STORAGE_KEYS.LEARNED_WORDS_LIST, [])
@@ -104,9 +104,9 @@ function updateWordProgress(english, isLearned) {
 }
 
 /**
- * 更新学习进度 - 句子
+ * 更新使用进度 - 句子
  * @param {string} english - 句子英文
- * @param {boolean} isLearned - 是否已学习
+ * @param {boolean} isLearned - 是否已朗读
  */
 function updateSentenceProgress(english, isLearned) {
   const learnedSentences = get(STORAGE_KEYS.LEARNED_SENTENCES_LIST, [])

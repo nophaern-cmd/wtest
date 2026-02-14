@@ -2,7 +2,7 @@
 <view class="container" wx:if="{{!quizStarted}}">
   <view class="header">
     <view class="title">测试复习</view>
-    <view class="subtitle">检验你的学习成果</view>
+    <view class="subtitle">检验你的掌握程度</view>
   </view>
 
   <view class="quiz-types">

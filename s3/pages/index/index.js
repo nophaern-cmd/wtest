@@ -1,4 +1,4 @@
-// 学习大厅首页
+// 国学朗读工具首页
 const app = getApp()
 
 Page({
@@ -36,14 +36,14 @@ Page({
     this.setData(counts)
   },
 
-  // 跳转到英语学习
+  // 跳转到英语朗读
   navigateToEnglish() {
     wx.navigateTo({
       url: '/pages/english/index/index'
     })
   },
 
-  // 跳转到国学学习
+  // 跳转到国学朗读
   navigateToGuoxue() {
     wx.navigateTo({
       url: '/pages/guoxue/guoxue'

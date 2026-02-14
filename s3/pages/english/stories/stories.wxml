@@ -36,7 +36,7 @@
     </view>
 
     <view class="learning-points" wx:if="{{currentStory.points && currentStory.points.length > 0}}">
-      <view class="section-title">学习要点</view>
+      <view class="section-title">阅读要点</view>
       <view class="points-list">
         <view class="point-item" wx:for="{{currentStory.points}}" wx:key="*this">
           • {{item}}

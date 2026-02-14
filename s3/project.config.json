@@ -1,7 +1,7 @@
 {
   "miniprogramRoot": "./",
-  "projectname": "学习大厅",
-  "description": "英语学习 + 国学学习小程序",
+  "projectname": "国学朗读工具",
+  "description": "国学朗读 + 英语朗读助手",
   "appid": "请填写你的AppID",
   "setting": {
     "urlCheck": false,

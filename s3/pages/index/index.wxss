@@ -1,4 +1,4 @@
-/* 学习大厅首页样式 */
+/* 国学朗读工具首页样式 */
 .hall-container {
   min-height: 100vh;
   background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
@@ -42,7 +42,7 @@
   letter-spacing: 2rpx;
 }
 
-/* 主要入口 - 国学学习 */
+/* 主要入口 - 国学朗读 */
 .main-entry {
   padding: 0 30rpx;
   margin-top: -10rpx;

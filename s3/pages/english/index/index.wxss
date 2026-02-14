@@ -93,7 +93,7 @@
   color: #333;
 }
 
-/* 学习进度卡片 */
+/* 使用进度卡片 */
 .stats-row {
   display: flex;
   gap: 16rpx;

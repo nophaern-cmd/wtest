@@ -211,7 +211,7 @@ Page({
     if (accuracy >= 60) {
       return { emoji: '💪', title: '继续加油！', desc: '多复习一下，下次会更好！' }
     }
-    return { emoji: '📚', title: '需要复习', desc: '多花点时间学习词汇和句型吧！' }
+    return { emoji: '📚', title: '需要复习', desc: '多花点时间朗读词汇和句型吧！' }
   },
 
   restartQuiz() {

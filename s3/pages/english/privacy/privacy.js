@@ -27,7 +27,7 @@ Page({
    */
   onShareAppMessage() {
     return {
-      title: '快乐英语学习 - 用户隐私保护指引',
+      title: '英语朗读助手 - 用户隐私保护指引',
       path: '/pages/privacy/privacy'
     }
   }

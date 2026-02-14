@@ -280,6 +280,6 @@ App({
     }
   },
   onLaunch() {
-    console.log('学习大厅小程序启动')
+    console.log('国学朗读工具启动')
   }
 })

@@ -48,9 +48,9 @@ function getSentenceCategory(english) {
 }
 
 /**
- * 为句子列表添加分类和已学习状态
+ * 为句子列表添加分类和已朗读状态
  * @param {Array} sentences - 句子列表
- * @param {Array} learnedSentences - 已学习的句子列表
+ * @param {Array} learnedSentences - 已朗读的句子列表
  * @returns {Array} 处理后的句子列表
  */
 function enrichSentences(sentences, learnedSentences = []) {
@@ -174,11 +174,11 @@ function enrichStories(stories, readStories = []) {
  */
 function getDailyTip(day = new Date().getDate()) {
   const tips = [
-    '每天坚持学习15分钟，英语水平会有很大提升哦！',
-    '跟着英文歌曲一起唱跳，学习更有趣！',
+    '每天坚持朗读15分钟，英语水平会有很大提升哦！',
+    '跟着英文歌曲一起唱跳，朗读更有趣！',
     '家长可以和孩子一起读绘本，增加互动乐趣。',
-    '结合节日主题学习，感受节日氛围。',
-    '使用本APP复习词汇，效果会更好！'
+    '结合节日主题朗读，感受节日氛围。',
+    '使用本工具复习词汇，效果会更好！'
   ]
   return tips[day % tips.length]
 }

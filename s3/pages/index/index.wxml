@@ -1,22 +1,22 @@
-<!-- 学习大厅首页 -->
+<!-- 国学朗读工具首页 -->
 <view class="hall-container">
   <!-- 顶部欢迎区域 -->
   <view class="welcome-section">
     <view class="welcome-bg"></view>
     <view class="welcome-content">
-      <text class="welcome-title">🎓 学习大厅</text>
-      <text class="welcome-subtitle">开启智慧学习之旅</text>
+      <text class="welcome-title">📖 国学朗读</text>
+      <text class="welcome-subtitle">经典诵读 · 启迪智慧</text>
     </view>
   </view>
 
-  <!-- 主要入口 - 国学学习 -->
+  <!-- 主要入口 - 国学朗读 -->
   <view class="main-entry">
     <view class="main-card guoxue-main" bindtap="navigateToGuoxue">
       <view class="main-icon-wrapper">
-        <text class="main-icon">📖</text>
+        <text class="main-icon">📜</text>
       </view>
       <view class="main-info">
-        <text class="main-title">国学学习</text>
+        <text class="main-title">国学朗读</text>
         <text class="main-desc">传承经典，启迪智慧</text>
         <view class="main-stats">
           <text class="stats-item">📜 {{sanzijingCount}} 篇三字经</text>
@@ -24,7 +24,7 @@
         </view>
       </view>
       <view class="main-enter">
-        <text class="enter-text">开始学习</text>
+        <text class="enter-text">开始朗读</text>
         <text class="enter-icon">→</text>
       </view>
     </view>
@@ -32,14 +32,14 @@
 
   <!-- 其他入口 -->
   <view class="other-section">
-    <text class="section-title">更多学习内容</text>
+    <text class="section-title">更多内容</text>
     <view class="other-card english-card" bindtap="navigateToEnglish">
       <view class="other-icon-wrapper">
         <text class="other-icon">📚</text>
       </view>
       <view class="other-info">
-        <text class="other-title">英语学习</text>
-        <text class="other-desc">快乐英语，轻松学习</text>
+        <text class="other-title">英语朗读</text>
+        <text class="other-desc">英语单词、句型朗读</text>
       </view>
       <view class="other-enter">
         <text class="enter-icon">→</text>
@@ -59,7 +59,7 @@
     </view>
     <view class="quick-item" bindtap="quickStart" data-type="random">
       <text class="quick-icon">🎲</text>
-      <text class="quick-text">随机学习</text>
+      <text class="quick-text">随机朗读</text>
     </view>
   </view>
 </view>
