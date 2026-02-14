@@ -3,8 +3,23 @@
  * 支持下载在线音频到持久缓存并播放
  */
 
-// 音频基础 URL (GitHub raw)
-const AUDIO_BASE_URL = 'https://raw.githubusercontent.com/nophaern-cmd/wtest/sa/sa/app/src/main/assets/js/data/audio'
+// 音频源配置（可选择不同的 CDN 源）
+const AUDIO_SOURCES = {
+  // GitHub Raw（国内可能无法访问）
+  github: 'https://raw.githubusercontent.com/nophaern-cmd/wtest/sa/sa/app/src/main/assets/js/data/audio',
+  // jsDelivr CDN（推荐，国内可访问）
+  jsdelivr: 'https://cdn.jsdelivr.net/gh/nophaern-cmd/wtest@sa/sa/app/src/main/assets/js/data/audio',
+  // ghproxy 代理（备用）
+  ghproxy: 'https://ghproxy.com/https://raw.githubusercontent.com/nophaern-cmd/wtest/sa/sa/app/src/main/assets/js/data/audio',
+  // fastgit 镜像（备用）
+  fastgit: 'https://raw.fastgit.org/nophaern-cmd/wtest/sa/sa/app/src/main/assets/js/data/audio'
+}
+
+// 当前使用的音频源（默认使用 jsDelivr，国内可直接访问）
+let currentSource = 'jsdelivr'
+
+// 音频基础 URL
+const AUDIO_BASE_URL = AUDIO_SOURCES[currentSource]
 
 // 缓存键前缀
 const CACHE_KEY_PREFIX = 'guoxue_audio_cache_'
@@ -33,7 +48,8 @@ function getAudioFileName(type, index, name, contentType) {
  * @returns {string} 完整的音频 URL
  */
 function getAudioUrl(fileName) {
-  return `${AUDIO_BASE_URL}/${encodeURIComponent(fileName)}`
+  const baseUrl = AUDIO_SOURCES[currentSource]
+  return `${baseUrl}/${encodeURIComponent(fileName)}`
 }
 
 /**
@@ -53,8 +69,18 @@ function hasCache(fileName) {
   const cacheKey = getCacheKey(fileName)
   const cached = wx.getStorageSync(cacheKey)
   if (cached && cached.path) {
-    memoryCache[fileName] = cached.path
-    return true
+    // 验证文件是否真实存在
+    const fs = wx.getFileSystemManager()
+    try {
+      fs.accessSync(cached.path)
+      memoryCache[fileName] = cached.path
+      return true
+    } catch (e) {
+      // 文件不存在，清理无效缓存记录
+      console.log('缓存文件不存在，清理记录:', fileName)
+      wx.removeStorageSync(cacheKey)
+      return false
+    }
   }
   return false
 }
@@ -69,8 +95,18 @@ function getCachePath(fileName) {
   const cacheKey = getCacheKey(fileName)
   const cached = wx.getStorageSync(cacheKey)
   if (cached && cached.path) {
-    memoryCache[fileName] = cached.path
-    return cached.path
+    // 验证文件是否真实存在
+    const fs = wx.getFileSystemManager()
+    try {
+      fs.accessSync(cached.path)
+      memoryCache[fileName] = cached.path
+      return cached.path
+    } catch (e) {
+      // 文件不存在，清理无效缓存记录
+      console.log('缓存文件不存在，清理记录:', fileName)
+      wx.removeStorageSync(cacheKey)
+      return null
+    }
   }
   return null
 }
@@ -165,6 +201,36 @@ function formatSize(bytes) {
   if (bytes < 1024) return bytes + ' B'
   if (bytes < 1024 * 1024) return (bytes / 1024).toFixed(1) + ' KB'
   return (bytes / (1024 * 1024)).toFixed(2) + ' MB'
+}
+
+/**
+ * 获取当前音频源
+ */
+function getCurrentSource() {
+  return currentSource
+}
+
+/**
+ * 切换音频源
+ * @param {string} source - 源名称：'github' | 'jsdelivr' | 'ghproxy' | 'fastgit'
+ */
+function switchSource(source) {
+  if (AUDIO_SOURCES[source]) {
+    currentSource = source
+    console.log('音频源已切换为:', source, AUDIO_SOURCES[source])
+    return true
+  }
+  return false
+}
+
+/**
+ * 获取所有可用的音频源
+ */
+function getAvailableSources() {
+  return Object.keys(AUDIO_SOURCES).map(key => ({
+    name: key,
+    url: AUDIO_SOURCES[key]
+  }))
 }
 
 /**
@@ -560,5 +626,10 @@ module.exports = {
   getCacheTotalSize,
   getCacheList,
   formatSize,
-  downloadChapterAudio
+  downloadChapterAudio,
+  // 音频源管理
+  getCurrentSource,
+  switchSource,
+  getAvailableSources,
+  AUDIO_SOURCES
 }

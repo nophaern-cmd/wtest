@@ -64,6 +64,26 @@
     </view>
   </view>
 
+  <!-- 音频源设置 -->
+  <view class="settings-section">
+    <text class="section-label">音频源（国内推荐 jsDelivr）</text>
+    <view class="mode-buttons">
+      <view class="mode-btn {{currentSource === 'jsdelivr' ? 'active' : ''}}" 
+            data-source="jsdelivr" bindtap="setAudioSource">jsDelivr</view>
+      <view class="mode-btn {{currentSource === 'ghproxy' ? 'active' : ''}}" 
+            data-source="ghproxy" bindtap="setAudioSource">ghproxy</view>
+    </view>
+    <view class="mode-buttons">
+      <view class="mode-btn {{currentSource === 'fastgit' ? 'active' : ''}}" 
+            data-source="fastgit" bindtap="setAudioSource">fastgit</view>
+      <view class="mode-btn {{currentSource === 'github' ? 'active' : ''}}" 
+            data-source="github" bindtap="setAudioSource">GitHub</view>
+    </view>
+    <view class="source-tip">
+      <text>当前: {{currentSource}}</text>
+    </view>
+  </view>
+
   <!-- 音频缓存管理 -->
   <view class="settings-section cache-section">
     <view class="section-header" bindtap="toggleCacheDetail">

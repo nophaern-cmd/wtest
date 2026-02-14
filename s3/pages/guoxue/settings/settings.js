@@ -24,7 +24,8 @@ Page({
     cacheList: [],
     showCacheDetail: false,
     downloading: false,
-    downloadProgress: ''
+    downloadProgress: '',
+    currentSource: 'jsdelivr'
   },
 
   onLoad(options) {
@@ -32,6 +33,7 @@ Page({
     if (savedSettings) {
       this.setData({ settings: savedSettings })
     }
+    this.setData({ currentSource: audioUtils.getCurrentSource() })
     this.loadCacheInfo()
   },
 
@@ -103,6 +105,15 @@ Page({
   // 显示/隐藏缓存详情
   toggleCacheDetail() {
     this.setData({ showCacheDetail: !this.data.showCacheDetail })
+  },
+
+  // 切换音频源
+  setAudioSource(e) {
+    const source = e.currentTarget.dataset.source
+    if (audioUtils.switchSource(source)) {
+      this.setData({ currentSource: source })
+      wx.showToast({ title: `已切换到 ${source}`, icon: 'success' })
+    }
   },
 
   // 清除所有缓存

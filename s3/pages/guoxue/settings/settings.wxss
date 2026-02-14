@@ -156,3 +156,12 @@
   font-size: 24rpx;
   color: #888;
 }
+
+/* 音频源提示 */
+.source-tip {
+  text-align: center;
+  padding: 8rpx 0;
+  font-size: 22rpx;
+  color: #888;
+  margin-top: 8rpx;
+}
