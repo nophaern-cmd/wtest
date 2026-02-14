@@ -1,25 +1,14 @@
 /**
  * 国学音频播放工具
- * 支持下载在线音频到持久缓存并播放
+ * 支持下载在线音频到持久缓存并播放（支持后台播放）
+ * 当前播放使用CDN，预下载使用GitHub源
  */
 
-// 音频源配置（可选择不同的 CDN 源）
-const AUDIO_SOURCES = {
-  // GitHub Raw（国内可能无法访问）
-  github: 'https://raw.githubusercontent.com/nophaern-cmd/wtest/sa/sa/app/src/main/assets/js/data/audio',
-  // jsDelivr CDN（推荐，国内可访问）
-  jsdelivr: 'https://cdn.jsdelivr.net/gh/nophaern-cmd/wtest@sa/sa/app/src/main/assets/js/data/audio',
-  // ghproxy 代理（备用）
-  ghproxy: 'https://ghproxy.com/https://raw.githubusercontent.com/nophaern-cmd/wtest/sa/sa/app/src/main/assets/js/data/audio',
-  // fastgit 镜像（备用）
-  fastgit: 'https://raw.fastgit.org/nophaern-cmd/wtest/sa/sa/app/src/main/assets/js/data/audio'
-}
+// 当前播放使用的CDN源（国内快速访问）
+const PLAY_BASE_URL = 'https://lian-1394056348.cos.ap-beijing.myqcloud.com/guoxue/audio'
 
-// 当前使用的音频源（默认使用 jsDelivr，国内可直接访问）
-let currentSource = 'jsdelivr'
-
-// 音频基础 URL
-const AUDIO_BASE_URL = AUDIO_SOURCES[currentSource]
+// 预下载使用的GitHub源
+const PRELOAD_BASE_URL = 'https://raw.githubusercontent.com/nophaern-cmd/wtest/sa/sa/app/src/main/assets/js/data/audio'
 
 // 缓存键前缀
 const CACHE_KEY_PREFIX = 'guoxue_audio_cache_'
@@ -27,6 +16,9 @@ const CACHE_SIZE_KEY = 'guoxue_audio_cache_size'
 
 // 内存缓存（快速访问）
 const memoryCache = {}
+
+// 正在进行的预下载任务
+const preloadingTasks = {}
 
 /**
  * 获取音频文件名
@@ -43,13 +35,17 @@ function getAudioFileName(type, index, name, contentType) {
 }
 
 /**
- * 获取音频完整 URL
- * @param {string} fileName - 音频文件名
- * @returns {string} 完整的音频 URL
+ * 获取播放用的音频URL（CDN）
  */
-function getAudioUrl(fileName) {
-  const baseUrl = AUDIO_SOURCES[currentSource]
-  return `${baseUrl}/${encodeURIComponent(fileName)}`
+function getPlayUrl(fileName) {
+  return `${PLAY_BASE_URL}/${encodeURIComponent(fileName)}`
+}
+
+/**
+ * 获取预下载用的音频URL（GitHub）
+ */
+function getPreloadUrl(fileName) {
+  return `${PRELOAD_BASE_URL}/${encodeURIComponent(fileName)}`
 }
 
 /**
@@ -143,6 +139,9 @@ function removeCache(fileName) {
   const cacheKey = getCacheKey(fileName)
   const cached = wx.getStorageSync(cacheKey)
   
+  // 取消正在进行的预下载
+  cancelPreload(fileName)
+  
   if (cached && cached.path) {
     // 尝试删除文件
     const fs = wx.getFileSystemManager()
@@ -166,6 +165,11 @@ function removeCache(fileName) {
  * 清除所有缓存
  */
 function clearAllCache() {
+  // 取消所有预下载
+  Object.keys(preloadingTasks).forEach(key => {
+    cancelPreload(key)
+  })
+  
   const res = wx.getStorageInfoSync()
   const keys = res.keys.filter(key => key.startsWith(CACHE_KEY_PREFIX))
   
@@ -204,36 +208,6 @@ function formatSize(bytes) {
 }
 
 /**
- * 获取当前音频源
- */
-function getCurrentSource() {
-  return currentSource
-}
-
-/**
- * 切换音频源
- * @param {string} source - 源名称：'github' | 'jsdelivr' | 'ghproxy' | 'fastgit'
- */
-function switchSource(source) {
-  if (AUDIO_SOURCES[source]) {
-    currentSource = source
-    console.log('音频源已切换为:', source, AUDIO_SOURCES[source])
-    return true
-  }
-  return false
-}
-
-/**
- * 获取所有可用的音频源
- */
-function getAvailableSources() {
-  return Object.keys(AUDIO_SOURCES).map(key => ({
-    name: key,
-    url: AUDIO_SOURCES[key]
-  }))
-}
-
-/**
  * 获取所有缓存列表
  */
 function getCacheList() {
@@ -258,12 +232,50 @@ function getCacheList() {
 }
 
 /**
- * 下载音频到本地缓存
+ * 取消预下载任务
+ */
+function cancelPreload(fileName) {
+  const task = preloadingTasks[fileName]
+  if (task) {
+    console.log('取消预下载:', fileName)
+    task.aborted = true
+    delete preloadingTasks[fileName]
+  }
+}
+
+/**
+ * 检查是否正在预下载
+ */
+function isPreloading(fileName) {
+  return !!preloadingTasks[fileName]
+}
+
+/**
+ * 获取所有正在进行的下载任务
+ */
+function getPreloadingTasks() {
+  return Object.keys(preloadingTasks).map(fileName => ({
+    fileName,
+    aborted: preloadingTasks[fileName].aborted
+  }))
+}
+
+/**
+ * 取消所有下载任务
+ */
+function cancelAllPreloads() {
+  Object.keys(preloadingTasks).forEach(fileName => {
+    cancelPreload(fileName)
+  })
+}
+
+/**
+ * 下载音频到本地缓存（用于播放，使用CDN源）
  * @param {string} fileName - 音频文件名
  * @param {boolean} silent - 是否静默下载（不显示提示）
  * @returns {Promise<string>} 本地缓存路径
  */
-function downloadAudio(fileName, silent = false) {
+function downloadAudioForPlay(fileName, silent = false) {
   return new Promise((resolve, reject) => {
     // 检查缓存
     const cachedPath = getCachePath(fileName)
@@ -273,14 +285,19 @@ function downloadAudio(fileName, silent = false) {
       return
     }
 
-    const url = getAudioUrl(fileName)
-    console.log('下载音频:', url)
+    // 如果正在预下载，取消预下载
+    if (isPreloading(fileName)) {
+      cancelPreload(fileName)
+    }
+
+    const url = getPlayUrl(fileName)
+    console.log('CDN下载音频:', url)
 
     if (!silent) {
       wx.showLoading({ title: '下载中...', mask: true })
     }
 
-    wx.downloadFile({
+    const downloadTask = wx.downloadFile({
       url: url,
       success: (res) => {
         if (res.statusCode === 200) {
@@ -331,84 +348,189 @@ function downloadAudio(fileName, silent = false) {
 }
 
 /**
- * 预下载下一片段
+ * 预下载音频（使用GitHub源，可被取消）
+ * @param {string} fileName - 音频文件名
+ * @returns {Promise<string>} 本地缓存路径
  */
 function preloadAudio(fileName) {
+  // 已缓存则跳过
   if (hasCache(fileName)) {
-    return Promise.resolve()
+    return Promise.resolve(getCachePath(fileName))
   }
   
-  console.log('预下载:', fileName)
-  return downloadAudio(fileName, true).catch(() => {})
+  // 正在预下载则等待
+  if (preloadingTasks[fileName]) {
+    return preloadingTasks[fileName].promise
+  }
+  
+  console.log('预下载(GitHub):', fileName)
+  
+  const task = { aborted: false }
+  const url = getPreloadUrl(fileName)
+  
+  task.promise = new Promise((resolve, reject) => {
+    const downloadTask = wx.downloadFile({
+      url: url,
+      success: (res) => {
+        if (task.aborted) {
+          console.log('预下载已取消:', fileName)
+          reject(new Error('预下载已取消'))
+          return
+        }
+        
+        if (res.statusCode === 200) {
+          const tempFilePath = res.tempFilePath
+          
+          // 再次检查是否被取消
+          if (task.aborted) {
+            reject(new Error('预下载已取消'))
+            return
+          }
+          
+          wx.saveFile({
+            tempFilePath: tempFilePath,
+            success: (saveRes) => {
+              const savedPath = saveRes.savedFilePath
+              
+              const fs = wx.getFileSystemManager()
+              let fileSize = 0
+              try {
+                const stat = fs.statSync(savedPath)
+                fileSize = stat.size
+              } catch (e) {}
+              
+              saveToCache(fileName, savedPath, fileSize)
+              delete preloadingTasks[fileName]
+              resolve(savedPath)
+            },
+            fail: (err) => {
+              delete preloadingTasks[fileName]
+              // 保存失败，使用临时文件
+              resolve(tempFilePath)
+            }
+          })
+        } else {
+          delete preloadingTasks[fileName]
+          reject(new Error(`预下载失败，状态码: ${res.statusCode}`))
+        }
+      },
+      fail: (err) => {
+        delete preloadingTasks[fileName]
+        console.log('预下载失败:', fileName, err)
+        reject(err)
+      }
+    })
+    
+    task.downloadTask = downloadTask
+  })
+  
+  preloadingTasks[fileName] = task
+  return task.promise
 }
 
 /**
- * 国学音频播放器类
+ * 国学音频播放器类（支持后台播放）
  */
 class GuoxueAudioPlayer {
   constructor() {
-    this.audioContext = null
+    this.bgAudioManager = null
     this.isPlaying = false
     this.playQueue = []
     this.queueIndex = 0
     this.callbacks = {}
-    this.preloadTimer = null
+    this.currentInfo = null
+    this.currentType = null
+    this.currentIndex = null
   }
 
   /**
-   * 创建音频上下文
+   * 获取后台音频管理器
    */
-  createAudioContext() {
-    if (this.audioContext) {
-      this.destroy()
+  getBgAudioManager() {
+    if (!this.bgAudioManager) {
+      this.bgAudioManager = wx.getBackgroundAudioManager()
+      this.setupEvents()
     }
-    this.audioContext = wx.createInnerAudioContext()
-    this.setupEvents()
-    return this.audioContext
+    return this.bgAudioManager
   }
 
   /**
    * 设置音频事件监听
    */
   setupEvents() {
-    if (!this.audioContext) return
+    const manager = this.bgAudioManager
 
-    this.audioContext.onCanplay(() => {
-      console.log('音频已就绪')
-      wx.hideToast()
-      this.audioContext.play()
-    })
-
-    this.audioContext.onPlay(() => {
+    manager.onPlay(() => {
       this.isPlaying = true
-      console.log('音频正在播放')
-      
-      // 预下载下一片段
+      console.log('后台音频正在播放')
+      wx.hideToast()
+      // 预下载下一片段（跨章节）
       this.preloadNext()
     })
 
-    this.audioContext.onEnded(() => {
-      console.log('音频播放结束')
+    manager.onEnded(() => {
+      console.log('后台音频播放结束')
       this.playNext()
     })
 
-    this.audioContext.onError((res) => {
-      console.log('音频播放失败:', res)
+    manager.onError((res) => {
+      console.log('后台音频播放失败:', res)
       this.isPlaying = false
       setTimeout(() => this.playNext(), 300)
+    })
+
+    manager.onStop(() => {
+      console.log('后台音频停止')
+      this.isPlaying = false
+    })
+
+    manager.onPrev(() => {
+      console.log('点击上一首')
+    })
+
+    manager.onNext(() => {
+      console.log('点击下一首')
+      this.playNext()
     })
   }
 
   /**
-   * 预下载下一片段
+   * 预下载下一片段（支持跨章节）
    */
   preloadNext() {
+    // 预下载当前章节的下一个片段
     const nextIndex = this.queueIndex + 1
     if (nextIndex < this.playQueue.length) {
-      const nextUrl = this.playQueue[nextIndex]
-      // 从 URL 提取文件名
-      const fileName = decodeURIComponent(nextUrl.split('/').pop())
-      preloadAudio(fileName)
+      const nextItem = this.playQueue[nextIndex]
+      preloadAudio(nextItem.fileName).catch(() => {})
+    }
+    
+    // 如果是当前章节最后一个片段，预下载下一章的第一部分
+    if (nextIndex >= this.playQueue.length) {
+      this.preloadNextChapter()
+    }
+  }
+
+  /**
+   * 预下载下一章的第一部分
+   */
+  preloadNextChapter() {
+    const app = getApp()
+    const guoxue = app.globalData.guoxue
+    if (!guoxue || !this.currentType) return
+    
+    const list = this.currentType === 'sanzijing' ? guoxue.sanzijing : guoxue.poems
+    const nextChapterIndex = this.currentIndex + 1
+    
+    // 如果还有下一章
+    if (nextChapterIndex < list.length) {
+      const nextItem = list[nextChapterIndex]
+      const name = nextItem.audioName || nextItem.title.replace(/^第[一二三四五六七八九十]+章\s*/, '')
+      
+      // 预下载下一章的正文
+      const fileName = getAudioFileName(this.currentType, nextChapterIndex + 1, name, '正文')
+      console.log('跨章节预下载:', fileName)
+      preloadAudio(fileName).catch(() => {})
     }
   }
 
@@ -432,13 +554,29 @@ class GuoxueAudioPlayer {
   /**
    * 播放队列中的单个音频
    */
-  async playQueueItem(audioUrl) {
+  async playQueueItem(item) {
     try {
-      // 从 URL 提取文件名
-      const fileName = decodeURIComponent(audioUrl.split('/').pop())
-      const localPath = await downloadAudio(fileName)
-      this.createAudioContext()
-      this.audioContext.src = localPath
+      let localPath = getCachePath(item.fileName)
+      
+      // 只有缓存不存在时才使用CDN下载
+      if (!localPath) {
+        // 如果正在预下载，取消预下载
+        if (isPreloading(item.fileName)) {
+          cancelPreload(item.fileName)
+        }
+        localPath = await downloadAudioForPlay(item.fileName)
+      }
+      
+      const manager = this.getBgAudioManager()
+      
+      // 设置后台音频信息（锁屏界面显示）
+      manager.title = item.title || '国学学习'
+      manager.singer = item.singer || '国学启蒙'
+      manager.epname = item.epname || '国学经典'
+      manager.coverImgUrl = 'https://lian-1394056348.cos.ap-beijing.myqcloud.com/guoxue/logo.png'
+      manager.src = localPath
+      
+      this.currentInfo = item
     } catch (error) {
       console.error('播放失败:', error)
       setTimeout(() => this.playNext(), 300)
@@ -457,6 +595,8 @@ class GuoxueAudioPlayer {
     this.callbacks = { onEnd, onError }
     this.playQueue = []
     this.queueIndex = 0
+    this.currentType = type
+    this.currentIndex = index
 
     // 获取名称（用于构建音频URL）
     const app = getApp()
@@ -483,8 +623,13 @@ class GuoxueAudioPlayer {
     for (const content of contents) {
       const contentType = contentTypeMap[content.type] || content.type
       const fileName = getAudioFileName(type, index + 1, name, contentType)
-      const audioUrl = getAudioUrl(fileName)
-      this.playQueue.push(audioUrl)
+      
+      this.playQueue.push({
+        fileName,
+        title: `${item.title} - ${contentType}`,
+        singer: item.author || '国学',
+        epname: type === 'sanzijing' ? '三字经' : '古诗词'
+      })
     }
 
     if (this.playQueue.length === 0) {
@@ -506,39 +651,40 @@ class GuoxueAudioPlayer {
    * 暂停播放
    */
   pause() {
-    if (this.audioContext) {
-      this.audioContext.pause()
-      this.isPlaying = false
-    }
+    const manager = this.getBgAudioManager()
+    manager.pause()
+    this.isPlaying = false
+  }
+
+  /**
+   * 恢复播放
+   */
+  resume() {
+    const manager = this.getBgAudioManager()
+    manager.play()
+    this.isPlaying = true
   }
 
   /**
    * 停止播放
    */
   stop() {
-    if (this.audioContext) {
-      this.audioContext.stop()
-      this.destroy()
-    }
+    const manager = this.getBgAudioManager()
+    try {
+      manager.stop()
+    } catch (e) {}
     this.isPlaying = false
     this.playQueue = []
     this.queueIndex = 0
     this.callbacks = {}
-    if (this.preloadTimer) {
-      clearTimeout(this.preloadTimer)
-      this.preloadTimer = null
-    }
   }
 
   /**
-   * 销毁音频上下文
+   * 销毁
    */
   destroy() {
-    if (this.audioContext) {
-      this.audioContext.destroy()
-      this.audioContext = null
-      this.isPlaying = false
-    }
+    this.stop()
+    this.bgAudioManager = null
   }
 }
 
@@ -550,7 +696,7 @@ function createGuoxuePlayer() {
 }
 
 /**
- * 批量下载章节音频
+ * 批量下载章节音频（使用GitHub源）
  */
 function downloadChapterAudio(type, index, progressCallback) {
   return new Promise((resolve, reject) => {
@@ -589,7 +735,8 @@ function downloadChapterAudio(type, index, progressCallback) {
         return
       }
       
-      downloadAudio(fileName, true)
+      // 使用GitHub源下载
+      preloadAudio(fileName)
         .then(path => {
           completed++
           results.push({ fileName, cached: false, path })
@@ -616,9 +763,13 @@ module.exports = {
   GuoxueAudioPlayer,
   createGuoxuePlayer,
   getAudioFileName,
-  getAudioUrl,
-  downloadAudio,
+  getPlayUrl,
+  downloadAudioForPlay,
   preloadAudio,
+  cancelPreload,
+  cancelAllPreloads,
+  isPreloading,
+  getPreloadingTasks,
   hasCache,
   getCachePath,
   removeCache,
@@ -626,10 +777,5 @@ module.exports = {
   getCacheTotalSize,
   getCacheList,
   formatSize,
-  downloadChapterAudio,
-  // 音频源管理
-  getCurrentSource,
-  switchSource,
-  getAvailableSources,
-  AUDIO_SOURCES
+  downloadChapterAudio
 }

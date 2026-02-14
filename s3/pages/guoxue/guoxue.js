@@ -223,6 +223,8 @@ Page({
   togglePlay() {
     if (this.data.isPlaying) {
       this.pause()
+    } else if (this.data.isPaused) {
+      this.resume()
     } else {
       this.play()
     }
@@ -252,6 +254,13 @@ Page({
       this.audioPlayer.pause()
     }
     this.setData({ isPlaying: false, isPaused: true })
+  },
+
+  resume() {
+    if (this.audioPlayer) {
+      this.audioPlayer.resume()
+    }
+    this.setData({ isPlaying: true, isPaused: false })
   },
 
   stopAll() {

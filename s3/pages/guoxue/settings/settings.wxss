@@ -157,11 +157,47 @@
   color: #888;
 }
 
-/* 音频源提示 */
-.source-tip {
-  text-align: center;
-  padding: 8rpx 0;
+/* 正在下载的任务 */
+.downloading-list {
+  margin-top: 12rpx;
+}
+
+.downloading-item {
+  display: flex;
+  align-items: center;
+  padding: 12rpx 0;
+  border-bottom: 1rpx solid #F5F5F5;
+}
+
+.downloading-info {
+  flex: 1;
+  overflow: hidden;
+}
+
+.downloading-name {
+  display: block;
+  font-size: 24rpx;
+  color: #333;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.downloading-status {
+  display: block;
   font-size: 22rpx;
-  color: #888;
-  margin-top: 8rpx;
+  color: #4CAF50;
+  margin-top: 4rpx;
+}
+
+.cancel-btn {
+  padding: 8rpx 16rpx;
+  font-size: 24rpx;
+  color: #DC143C;
+}
+
+.cancel-all-btn {
+  font-size: 24rpx;
+  color: #DC143C;
+  padding: 0 16rpx;
 }

@@ -64,23 +64,20 @@
     </view>
   </view>
 
-  <!-- 音频源设置 -->
-  <view class="settings-section">
-    <text class="section-label">音频源（国内推荐 jsDelivr）</text>
-    <view class="mode-buttons">
-      <view class="mode-btn {{currentSource === 'jsdelivr' ? 'active' : ''}}" 
-            data-source="jsdelivr" bindtap="setAudioSource">jsDelivr</view>
-      <view class="mode-btn {{currentSource === 'ghproxy' ? 'active' : ''}}" 
-            data-source="ghproxy" bindtap="setAudioSource">ghproxy</view>
+  <!-- 正在下载的任务 -->
+  <view class="settings-section" wx:if="{{downloadingCount > 0}}">
+    <view class="section-header">
+      <text class="section-label">正在下载 ({{downloadingCount}})</text>
+      <text class="cancel-all-btn" bindtap="cancelAllDownloads">全部取消</text>
     </view>
-    <view class="mode-buttons">
-      <view class="mode-btn {{currentSource === 'fastgit' ? 'active' : ''}}" 
-            data-source="fastgit" bindtap="setAudioSource">fastgit</view>
-      <view class="mode-btn {{currentSource === 'github' ? 'active' : ''}}" 
-            data-source="github" bindtap="setAudioSource">GitHub</view>
-    </view>
-    <view class="source-tip">
-      <text>当前: {{currentSource}}</text>
+    <view class="downloading-list">
+      <view class="downloading-item" wx:for="{{downloadingTasks}}" wx:key="fileName">
+        <view class="downloading-info">
+          <text class="downloading-name">{{item.fileName}}</text>
+          <text class="downloading-status">下载中...</text>
+        </view>
+        <text class="cancel-btn" data-file="{{item.fileName}}" bindtap="cancelDownloadTask">取消</text>
+      </view>
     </view>
   </view>
 
@@ -93,15 +90,9 @@
     </view>
     
     <view class="cache-actions">
-      <button class="cache-btn" bindtap="downloadCurrentChapter" disabled="{{downloading}}">
-        {{downloading ? downloadProgress : '下载当前章节'}}
-      </button>
-      <button class="cache-btn" bindtap="downloadAllChapters" disabled="{{downloading}}">
-        下载全部
-      </button>
-      <button class="cache-btn danger" bindtap="clearCache" disabled="{{cacheSize === 0}}">
-        清除缓存
-      </button>
+      <button class="cache-btn" bindtap="downloadCurrentChapter">下载当前章节</button>
+      <button class="cache-btn" bindtap="downloadAllChapters">下载全部</button>
+      <button class="cache-btn danger" bindtap="clearCache" disabled="{{cacheSize === 0}}">清除缓存</button>
     </view>
     
     <!-- 缓存详情 -->

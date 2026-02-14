@@ -23,9 +23,9 @@ Page({
     cacheSizeText: '0 B',
     cacheList: [],
     showCacheDetail: false,
-    downloading: false,
-    downloadProgress: '',
-    currentSource: 'jsdelivr'
+    // 正在进行的下载任务
+    downloadingTasks: [],
+    downloadingCount: 0
   },
 
   onLoad(options) {
@@ -33,14 +33,32 @@ Page({
     if (savedSettings) {
       this.setData({ settings: savedSettings })
     }
-    this.setData({ currentSource: audioUtils.getCurrentSource() })
     this.loadCacheInfo()
+    this.loadDownloadingTasks()
   },
 
   onShow() {
     const countdown = app.globalData.guoxueCountdown || 0
     this.setData({ countdown, countdownText: this.formatTime(countdown) })
     this.loadCacheInfo()
+    this.loadDownloadingTasks()
+    
+    // 定时刷新下载任务状态
+    this.taskTimer = setInterval(() => {
+      this.loadDownloadingTasks()
+    }, 1000)
+  },
+
+  onUnload() {
+    if (this.taskTimer) {
+      clearInterval(this.taskTimer)
+    }
+  },
+
+  onHide() {
+    if (this.taskTimer) {
+      clearInterval(this.taskTimer)
+    }
   },
 
   formatTime(seconds) {
@@ -57,6 +75,14 @@ Page({
       cacheSize: totalSize,
       cacheSizeText: audioUtils.formatSize(totalSize),
       cacheList: cacheList.slice(0, 20) // 只显示最近20条
+    })
+  },
+
+  loadDownloadingTasks() {
+    const tasks = audioUtils.getPreloadingTasks()
+    this.setData({
+      downloadingTasks: tasks,
+      downloadingCount: tasks.length
     })
   },
 
@@ -107,15 +133,6 @@ Page({
     this.setData({ showCacheDetail: !this.data.showCacheDetail })
   },
 
-  // 切换音频源
-  setAudioSource(e) {
-    const source = e.currentTarget.dataset.source
-    if (audioUtils.switchSource(source)) {
-      this.setData({ currentSource: source })
-      wx.showToast({ title: `已切换到 ${source}`, icon: 'success' })
-    }
-  },
-
   // 清除所有缓存
   clearCache() {
     wx.showModal({
@@ -125,6 +142,7 @@ Page({
         if (res.confirm) {
           const count = audioUtils.clearAllCache()
           this.loadCacheInfo()
+          this.loadDownloadingTasks()
           wx.showToast({ title: `已清除 ${count} 个文件`, icon: 'success' })
         }
       }
@@ -136,13 +154,27 @@ Page({
     const fileName = e.currentTarget.dataset.file
     audioUtils.removeCache(fileName)
     this.loadCacheInfo()
+    this.loadDownloadingTasks()
     wx.showToast({ title: '已删除', icon: 'success' })
   },
 
-  // 预下载当前章节
+  // 取消单个下载任务
+  cancelDownloadTask(e) {
+    const fileName = e.currentTarget.dataset.file
+    audioUtils.cancelPreload(fileName)
+    this.loadDownloadingTasks()
+    wx.showToast({ title: '已取消', icon: 'success' })
+  },
+
+  // 取消所有下载任务
+  cancelAllDownloads() {
+    audioUtils.cancelAllPreloads()
+    this.loadDownloadingTasks()
+    wx.showToast({ title: '已取消所有下载', icon: 'success' })
+  },
+
+  // 下载当前章节
   downloadCurrentChapter() {
-    if (this.data.downloading) return
-    
     const pages = getCurrentPages()
     const prevPage = pages[pages.length - 2]
     if (!prevPage) return
@@ -155,31 +187,23 @@ Page({
       return
     }
     
-    this.setData({ downloading: true, downloadProgress: '准备下载...' })
-    
+    // 开始下载，退出页面后会继续
     audioUtils.downloadChapterAudio(type, index, (completed, total, fileName) => {
-      this.setData({
-        downloadProgress: `下载中 ${completed}/${total}`
-      })
+      // 下载进度回调
     }).then(results => {
       const success = results.filter(r => !r.error).length
-      const cached = results.filter(r => r.cached).length
-      this.setData({ downloading: false, downloadProgress: '' })
       this.loadCacheInfo()
-      wx.showToast({ 
-        title: cached > 0 ? `已缓存${cached}个，新下载${success - cached}个` : `下载完成 ${success} 个`, 
-        icon: 'success' 
-      })
+      this.loadDownloadingTasks()
     }).catch(err => {
-      this.setData({ downloading: false, downloadProgress: '' })
-      wx.showToast({ title: '下载失败', icon: 'none' })
+      console.log('下载出错:', err)
     })
+    
+    wx.showToast({ title: '已开始下载', icon: 'success' })
+    this.loadDownloadingTasks()
   },
 
-  // 预下载所有章节
+  // 下载所有章节
   downloadAllChapters() {
-    if (this.data.downloading) return
-    
     wx.showModal({
       title: '下载全部',
       content: '将下载所有三字经和古诗的音频文件，可能需要较长时间。确定继续？',
@@ -192,39 +216,24 @@ Page({
   },
 
   async doDownloadAll() {
-    this.setData({ downloading: true, downloadProgress: '准备下载...' })
-    
     const guoxue = app.globalData.guoxue
     const sanzijing = guoxue.sanzijing || []
     const poems = guoxue.poems || []
-    const total = sanzijing.length + poems.length
-    let completed = 0
+    
+    wx.showToast({ title: '已开始后台下载', icon: 'success' })
     
     // 下载三字经
     for (let i = 0; i < sanzijing.length; i++) {
-      try {
-        await audioUtils.downloadChapterAudio('sanzijing', i, (c, t, f) => {})
-        completed++
-        this.setData({ downloadProgress: `下载中 ${completed}/${total}` })
-      } catch (e) {}
-      
-      // 让 UI 有机会更新
+      audioUtils.downloadChapterAudio('sanzijing', i, (c, t, f) => {}).catch(() => {})
       await new Promise(r => setTimeout(r, 100))
     }
     
     // 下载古诗
     for (let i = 0; i < poems.length; i++) {
-      try {
-        await audioUtils.downloadChapterAudio('poems', i, (c, t, f) => {})
-        completed++
-        this.setData({ downloadProgress: `下载中 ${completed}/${total}` })
-      } catch (e) {}
-      
+      audioUtils.downloadChapterAudio('poems', i, (c, t, f) => {}).catch(() => {})
       await new Promise(r => setTimeout(r, 100))
     }
     
-    this.setData({ downloading: false, downloadProgress: '' })
-    this.loadCacheInfo()
-    wx.showToast({ title: '全部下载完成', icon: 'success' })
+    this.loadDownloadingTasks()
   }
 })
