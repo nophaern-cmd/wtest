@@ -2,16 +2,16 @@
 const app = getApp()
 const { createGuoxuePlayer } = require('../../utils/guoxueAudio')
 
-// 设置默认值
+// 设置默认值（与 settings.js 保持一致）
 const defaultSettings = {
   showExplanation: true,
   showNotes: true,
   showStories: true,
   playContent: true,
   playExplanation: true,
-  playNotes: true,
-  playStories: true,
-  playMode: 'chapterLoop',
+  playNotes: false,
+  playStories: false,
+  playMode: 'single',
   autoStop: 0
 }
 
@@ -312,8 +312,9 @@ Page({
       contents.push({ type: 'notes', text: '注释：' + lesson.notes })
     }
     if (settings.playStories && lesson.stories && lesson.stories.length > 0) {
-      lesson.stories.forEach(story => {
-        contents.push({ type: 'story', text: story.title + '。' + story.content })
+      lesson.stories.forEach((story, index) => {
+        // 传递故事索引，用于生成不同的音频文件名
+        contents.push({ type: 'story', text: story.title + '。' + story.content, storyIndex: index + 1 })
       })
     }
     

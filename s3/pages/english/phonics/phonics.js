@@ -8,11 +8,21 @@ Page({
     selectedLetter: '',
     currentWords: [],
     showAnimation: false,
-    animatingLetter: ''
+    animatingLetter: '',
+    audioPlayer: null
   },
 
   onLoad() {
+    this.setData({
+      audioPlayer: audio.createPlayer()
+    })
     this.loadLetters()
+  },
+
+  onUnload() {
+    if (this.data.audioPlayer) {
+      this.data.audioPlayer.destroy()
+    }
   },
 
   loadLetters() {
@@ -49,24 +59,16 @@ Page({
       'Hh': 'H', 'Ii': 'I', 'Rr': 'R', 'Ss': 'S'
     }[letter] || letter[0]
 
-    wx.showToast({
-      title: `播放字母 ${letter}`,
-      icon: 'none',
-      duration: 1000
-    })
-
-    audio.speakTTS(letterName, { lang: 'en-US' })
+    if (this.data.audioPlayer) {
+      this.data.audioPlayer.playText(letterName)
+    }
   },
 
   playWordSound(e) {
     const word = e.currentTarget.dataset.word
 
-    wx.showToast({
-      title: `播放单词 ${word}`,
-      icon: 'none',
-      duration: 1000
-    })
-
-    audio.speakTTS(word, { lang: 'en-US' })
+    if (this.data.audioPlayer) {
+      this.data.audioPlayer.playText(word)
+    }
   }
 })

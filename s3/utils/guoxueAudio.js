@@ -26,11 +26,16 @@ const preloadingTasks = {}
  * @param {number} index - 索引（从1开始）
  * @param {string} name - 名称（如：静夜思、人之初）
  * @param {string} contentType - 内容类型：正文、解释、关键词、故事
+ * @param {number} storyIndex - 故事索引（从1开始，仅当 contentType 为故事时使用）
  * @returns {string} 音频文件名
  */
-function getAudioFileName(type, index, name, contentType) {
+function getAudioFileName(type, index, name, contentType, storyIndex = 0) {
   const prefix = type === 'sanzijing' ? 'sanzi' : 'poem'
   const num = String(index).padStart(2, '0')
+  // 如果是故事且有索引，添加故事编号
+  if (contentType === '故事' && storyIndex > 0) {
+    return `${prefix}_${num}_${name}_${contentType}${storyIndex}.mp3`
+  }
   return `${prefix}_${num}_${name}_${contentType}.mp3`
 }
 
@@ -625,11 +630,13 @@ class GuoxueAudioPlayer {
 
     for (const content of contents) {
       const contentType = contentTypeMap[content.type] || content.type
-      const fileName = getAudioFileName(type, index + 1, name, contentType)
+      // 传入故事索引用于生成不同的文件名
+      const storyIndex = content.storyIndex || 0
+      const fileName = getAudioFileName(type, index + 1, name, contentType, storyIndex)
       
       this.playQueue.push({
         fileName,
-        title: `${item.title} - ${contentType}`,
+        title: `${item.title} - ${contentType}${storyIndex > 0 ? storyIndex : ''}`,
         singer: item.author || '国学',
         epname: type === 'sanzijing' ? '三字经' : '古诗词'
       })

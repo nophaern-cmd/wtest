@@ -208,9 +208,10 @@ function getQuizStats() {
     }
   }
 
-  const scores = quizHistory.map(q => q.score)
-  const highestScore = Math.max(...scores)
-  const avgScore = Math.round(scores.reduce((a, b) => a + b, 0) / totalQuizzes)
+  // 使用 accuracy（正确率）作为分数，与 saveQuizScore 保持一致
+  const accuracies = quizHistory.map(q => q.accuracy || 0)
+  const highestScore = Math.max(...accuracies)
+  const avgScore = Math.round(accuracies.reduce((a, b) => a + b, 0) / totalQuizzes)
 
   return {
     highestScore,

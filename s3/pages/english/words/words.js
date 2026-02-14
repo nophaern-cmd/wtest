@@ -91,7 +91,11 @@ Page({
 
   showWordDetail(e) {
     const word = e.currentTarget.dataset.word
-    const index = this.data.basicWords.findIndex(w => w.english === word.english)
+    let index = this.data.basicWords.findIndex(w => w.english === word.english)
+    // 如果在 basicWords 中找不到（比如 phonics 单词），设置为 -1 并禁用上下切换
+    if (index === -1) {
+      index = 0  // 设置默认值避免切换时报错
+    }
     this.setData({
       currentWord: word,
       currentIndex: index,
