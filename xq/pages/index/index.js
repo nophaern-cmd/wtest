@@ -4,13 +4,14 @@ Page({
     gameStatus: '游戏进行中',
     selectedPiece: null,
     moveHistory: [],
-    gameEnded: false
-  },
-
-  config: {
-    cellSize: 40,
-    padding: 20,
-    scaleFactor: 1
+    gameEnded: false,
+    soundEnabled: true,
+    boardWidth: 360,
+    boardHeight: 400,
+    redTime: 0,
+    blackTime: 0,
+    redTimeStr: '00:00',
+    blackTimeStr: '00:00'
   },
 
   pieceTypes: {
@@ -44,12 +45,18 @@ Page({
   ],
 
   board: [],
-  canvas: null,
+  canvasNode: null,
   ctx: null,
+  lastTapTime: 0,
   canvasRect: null,
+  cellSize: 40,
+  padding: 20,
+  timer: null,
 
   onLoad() {
     this.initGame()
+    this.loadSoundSetting()
+    this.startTimer()
   },
 
   onReady() {
@@ -57,45 +64,56 @@ Page({
   },
 
   onShow() {
-    if (this.canvas && this.ctx) {
+    if (this.ctx) {
       this.drawBoard()
     }
   },
 
-  initCanvas() {
-    const query = wx.createSelectorQuery()
-    query.select('#chessBoard')
-      .fields({ node: true, size: true })
-      .exec((res) => {
-        if (!res[0]) {
-          console.log('Canvas element not found')
-          return
-        }
+  onUnload() {
+    this.stopTimer()
+  },
 
-        const canvas = res[0].node
-        const ctx = canvas.getContext('2d')
+  loadSoundSetting() {
+    try {
+      const sound = wx.getStorageSync('chessSoundEnabled')
+      if (sound !== '') {
+        this.setData({ soundEnabled: sound })
+      }
+    } catch (e) {}
+  },
 
-        const dpr = wx.getSystemInfoSync().pixelRatio
-        const baseWidth = 360
-        const baseHeight = 400
+  formatTime(seconds) {
+    const mins = Math.floor(seconds / 60)
+    const secs = seconds % 60
+    return `${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`
+  },
 
-        canvas.width = baseWidth * dpr
-        canvas.height = baseHeight * dpr
-        ctx.scale(dpr, dpr)
-
-        this.canvas = canvas
-        this.ctx = ctx
-
-        const query2 = wx.createSelectorQuery()
-        query2.select('#chessBoard').boundingClientRect()
-        query2.exec((rectRes) => {
-          if (rectRes[0]) {
-            this.canvasRect = rectRes[0]
-            console.log('Canvas initialized:', rectRes[0])
-            this.drawBoard()
-          }
+  startTimer() {
+    this.stopTimer()
+    this.timer = setInterval(() => {
+      if (this.data.gameEnded) return
+      const turn = this.data.currentTurn
+      if (turn === 'red') {
+        const newTime = this.data.redTime + 1
+        this.setData({
+          redTime: newTime,
+          redTimeStr: this.formatTime(newTime)
         })
-      })
+      } else {
+        const newTime = this.data.blackTime + 1
+        this.setData({
+          blackTime: newTime,
+          blackTimeStr: this.formatTime(newTime)
+        })
+      }
+    }, 1000)
+  },
+
+  stopTimer() {
+    if (this.timer) {
+      clearInterval(this.timer)
+      this.timer = null
+    }
   },
 
   initGame() {
@@ -105,28 +123,136 @@ Page({
       gameStatus: '游戏进行中',
       selectedPiece: null,
       moveHistory: [],
-      gameEnded: false
+      gameEnded: false,
+      redTime: 0,
+      blackTime: 0,
+      redTimeStr: '00:00',
+      blackTimeStr: '00:00'
     })
   },
 
-  drawBoard() {
-    if (!this.ctx) {
-      console.log('Canvas context not ready')
-      return
-    }
+  initCanvas() {
+    const sysInfo = wx.getSystemInfoSync()
+    const screenWidth = sysInfo.windowWidth
+    const screenHeight = sysInfo.windowHeight
 
-    const { cellSize, padding } = this.config
+    const headerHeight = 80
+    const footerHeight = 150
+    const availableHeight = screenHeight - headerHeight - footerHeight - 40
+
+    const baseWidth = 360
+    const baseHeight = 400
+
+    const scale = Math.min(
+      (screenWidth - 40) / baseWidth,
+      availableHeight / baseHeight
+    )
+
+    const boardWidth = Math.floor(baseWidth * scale / 9) * 9
+    const boardHeight = Math.floor(boardWidth * 10 / 9)
+
+    this.setData({
+      boardWidth: boardWidth,
+      boardHeight: boardHeight
+    })
+
+    this.cellSize = boardWidth / 9
+    this.padding = this.cellSize / 2
+
+    const query = wx.createSelectorQuery()
+    query.select('#chessBoard').fields({ node: true, size: true }).exec((res) => {
+      if (!res[0]) return
+
+      const canvas = res[0].node
+      const ctx = canvas.getContext('2d')
+      const dpr = sysInfo.pixelRatio
+
+      canvas.width = boardWidth * dpr
+      canvas.height = boardHeight * dpr
+      ctx.scale(dpr, dpr)
+
+      this.canvasNode = canvas
+      this.ctx = ctx
+
+      // Delay getting rect to ensure canvas is rendered
+      setTimeout(() => {
+        const rectQuery = wx.createSelectorQuery()
+        rectQuery.select('#chessBoard').boundingClientRect().exec((rectRes) => {
+          if (rectRes[0]) {
+            this.canvasRect = rectRes[0]
+            this.drawBoard()
+          }
+        })
+      }, 100)
+    })
+  },
+
+  toggleSound() {
+    const newValue = !this.data.soundEnabled
+    this.setData({ soundEnabled: newValue })
+    wx.setStorageSync('chessSoundEnabled', newValue)
+  },
+
+  playSound(type) {
+    if (!this.data.soundEnabled) return
+
+    try {
+      const audioCtx = wx.createWebAudioContext()
+      const osc = audioCtx.createOscillator()
+      const gain = audioCtx.createGain()
+
+      const freqs = {
+        move: 800,
+        capture: 400,
+        check: 600,
+        win: [523, 659]
+      }
+
+      const freq = Array.isArray(freqs[type]) ? freqs[type][0] : freqs[type]
+
+      osc.type = 'sine'
+      osc.frequency.setValueAtTime(freq, audioCtx.currentTime)
+      gain.gain.setValueAtTime(0.2, audioCtx.currentTime)
+      gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.1)
+
+      osc.connect(gain)
+      gain.connect(audioCtx.destination)
+      osc.start()
+      osc.stop(audioCtx.currentTime + 0.1)
+
+      if (type === 'win' && freqs[type][1]) {
+        setTimeout(() => {
+          const osc2 = audioCtx.createOscillator()
+          const gain2 = audioCtx.createGain()
+          osc2.type = 'sine'
+          osc2.frequency.setValueAtTime(freqs[type][1], audioCtx.currentTime)
+          gain2.gain.setValueAtTime(0.2, audioCtx.currentTime)
+          gain2.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.15)
+          osc2.connect(gain2)
+          gain2.connect(audioCtx.destination)
+          osc2.start()
+          osc2.stop(audioCtx.currentTime + 0.15)
+        }, 120)
+      }
+
+      setTimeout(() => audioCtx.close(), 300)
+    } catch (e) {}
+  },
+
+  drawBoard() {
+    if (!this.ctx) return
+
     const ctx = this.ctx
-    const width = padding * 2 + cellSize * 8
-    const height = padding * 2 + cellSize * 9
+    const width = this.data.boardWidth
+    const height = this.data.boardHeight
+    const cellSize = this.cellSize
+    const padding = this.padding
 
     ctx.clearRect(0, 0, width, height)
-
     ctx.fillStyle = '#DEB887'
     ctx.fillRect(0, 0, width, height)
-
     ctx.strokeStyle = '#8B4513'
-    ctx.lineWidth = 1.5
+    ctx.lineWidth = Math.max(1, cellSize / 30)
 
     for (let i = 0; i < 10; i++) {
       const y = padding + i * cellSize
@@ -182,8 +308,11 @@ Page({
     ctx.lineTo(padding + 3 * cellSize, padding + 9 * cellSize)
     ctx.stroke()
 
-    ctx.font = '20px sans-serif'
+    const fontSize = cellSize * 0.5
+    ctx.font = `${fontSize}px sans-serif`
     ctx.fillStyle = '#8B4513'
+    ctx.textAlign = 'center'
+    ctx.textBaseline = 'middle'
     ctx.fillText('楚 河', padding + 1 * cellSize, padding + 4.6 * cellSize)
     ctx.fillText('汉 界', padding + 5.5 * cellSize, padding + 4.6 * cellSize)
 
@@ -191,82 +320,113 @@ Page({
   },
 
   drawPieces() {
-    const { cellSize, padding } = this.config
     const ctx = this.ctx
+    const cellSize = this.cellSize
+    const padding = this.padding
 
     for (let row = 0; row < 10; row++) {
       for (let col = 0; col < 9; col++) {
         const pieceKey = this.board[row][col]
-        if (pieceKey) {
-          const piece = this.pieceTypes[pieceKey]
-          const x = padding + col * cellSize
-          const y = padding + row * cellSize
+        if (!pieceKey) continue
 
+        const piece = this.pieceTypes[pieceKey]
+        const x = padding + col * cellSize
+        const y = padding + row * cellSize
+
+        ctx.beginPath()
+        ctx.arc(x, y, cellSize * 0.42, 0, 2 * Math.PI)
+        ctx.fillStyle = '#FFF8DC'
+        ctx.fill()
+
+        ctx.strokeStyle = piece.color === 'red' ? '#C0392B' : '#2C3E50'
+        ctx.lineWidth = Math.max(2, cellSize / 15)
+        ctx.stroke()
+
+        if (this.data.selectedPiece &&
+            this.data.selectedPiece.row === row &&
+            this.data.selectedPiece.col === col) {
           ctx.beginPath()
-          ctx.arc(x, y, cellSize * 0.42, 0, 2 * Math.PI)
-          ctx.fillStyle = '#FFF8DC'
-          ctx.fill()
-
-          ctx.strokeStyle = piece.color === 'red' ? '#C0392B' : '#2C3E50'
-          ctx.lineWidth = 2
+          ctx.arc(x, y, cellSize * 0.48, 0, 2 * Math.PI)
+          ctx.strokeStyle = '#00FF00'
+          ctx.lineWidth = Math.max(3, cellSize / 12)
           ctx.stroke()
-
-          if (this.data.selectedPiece &&
-              this.data.selectedPiece.row === row &&
-              this.data.selectedPiece.col === col) {
-            ctx.beginPath()
-            ctx.arc(x, y, cellSize * 0.48, 0, 2 * Math.PI)
-            ctx.strokeStyle = '#00FF00'
-            ctx.lineWidth = 3
-            ctx.stroke()
-          }
-
-          ctx.font = '24px sans-serif'
-          ctx.fillStyle = piece.color === 'red' ? '#C0392B' : '#2C3E50'
-          ctx.textAlign = 'center'
-          ctx.textBaseline = 'middle'
-
-          ctx.save()
-          ctx.translate(x, y)
-          if (piece.color === 'red') {
-            ctx.rotate(0)
-          } else {
-            ctx.rotate(Math.PI)
-          }
-          ctx.fillText(piece.name, 0, 0)
-          ctx.restore()
         }
+
+        const fontSize = cellSize * 0.55
+        ctx.font = `bold ${fontSize}px sans-serif`
+        ctx.fillStyle = piece.color === 'red' ? '#C0392B' : '#2C3E50'
+        ctx.textAlign = 'center'
+        ctx.textBaseline = 'middle'
+
+        ctx.save()
+        ctx.translate(x, y)
+        if (piece.color === 'black') {
+          ctx.rotate(Math.PI)
+        }
+        ctx.fillText(piece.name, 0, 0)
+        ctx.restore()
       }
     }
   },
 
-  onCanvasTap(e) {
+  onTouchStart(e) {
+    this.touchStartPos = e.touches[0]
+  },
+
+  onTouchEnd(e) {
+    const now = Date.now()
+    if (now - this.lastTapTime < 150) return
+    this.lastTapTime = now
+
     if (this.data.gameEnded) return
+
+    const touch = e.changedTouches[0]
+    const x = touch.clientX
+    const y = touch.clientY
+
     if (!this.canvasRect) {
-      console.log('Canvas rect not available')
+      setTimeout(() => this.getCanvasRectAndHandleTap(x, y), 50)
       return
     }
 
-    const x = e.detail.x
-    const y = e.detail.y
+    this.getPositionAndHandleTap(x, y)
+  },
 
-    const { cellSize, padding } = this.config
-    const width = padding * 2 + cellSize * 8
-    const height = padding * 2 + cellSize * 9
+  getCanvasRectAndHandleTap(x, y) {
+    const query = wx.createSelectorQuery()
+    query.select('#chessBoard').boundingClientRect().exec((rectRes) => {
+      if (rectRes[0]) {
+        this.canvasRect = rectRes[0]
+        this.getPositionAndHandleTap(x, y)
+      }
+    })
+  },
+
+  getPositionAndHandleTap(x, y) {
+    if (!this.canvasRect) return
 
     const canvasX = x - this.canvasRect.left
     const canvasY = y - this.canvasRect.top
 
-    const scaleX = width / this.canvasRect.width
-    const scaleY = height / this.canvasRect.height
-
-    const col = Math.round((canvasX * scaleX - padding) / cellSize)
-    const row = Math.round((canvasY * scaleY - padding) / cellSize)
-
-    if (row < 0 || row >= 10 || col < 0 || col >= 9) {
+    if (canvasX < 0 || canvasX > this.canvasRect.width || 
+        canvasY < 0 || canvasY > this.canvasRect.height) {
       return
     }
 
+    const cellSize = this.cellSize
+    const padding = this.padding
+    const scaleX = this.data.boardWidth / this.canvasRect.width
+    const scaleY = this.data.boardHeight / this.canvasRect.height
+
+    const col = Math.floor((canvasX * scaleX - padding) / cellSize + 0.5)
+    const row = Math.floor((canvasY * scaleY - padding) / cellSize + 0.5)
+
+    if (row >= 0 && row < 10 && col >= 0 && col < 9) {
+      this.handleTap(row, col)
+    }
+  },
+
+  handleTap(row, col) {
     const pieceKey = this.board[row][col]
     const piece = pieceKey ? this.pieceTypes[pieceKey] : null
 
@@ -280,16 +440,20 @@ Page({
       }
 
       if (this.isValidMove(fromRow, fromCol, row, col)) {
+        const targetKey = this.board[row][col]
         this.movePiece(fromRow, fromCol, row, col)
         this.setData({ selectedPiece: null })
+        this.playSound(targetKey ? 'capture' : 'move')
       } else if (piece && piece.color === this.data.currentTurn) {
         this.setData({ selectedPiece: { row, col } })
+        this.playSound('move')
       } else {
         this.setData({ selectedPiece: null })
       }
     } else {
       if (piece && piece.color === this.data.currentTurn) {
         this.setData({ selectedPiece: { row, col } })
+        this.playSound('move')
       }
     }
 
@@ -304,9 +468,7 @@ Page({
     const targetKey = this.board[toRow][toCol]
     const targetPiece = targetKey ? this.pieceTypes[targetKey] : null
 
-    if (targetPiece && targetPiece.color === piece.color) {
-      return false
-    }
+    if (targetPiece && targetPiece.color === piece.color) return false
 
     switch (piece.type) {
       case 'ju': return this.validateJu(fromRow, fromCol, toRow, toCol)
@@ -323,93 +485,66 @@ Page({
   validateJu(fromRow, fromCol, toRow, toCol) {
     if (fromRow !== toRow && fromCol !== toCol) return false
     if (fromRow === toRow) {
-      const minCol = Math.min(fromCol, toCol)
-      const maxCol = Math.max(fromCol, toCol)
-      for (let col = minCol + 1; col < maxCol; col++) {
-        if (this.board[fromRow][col]) return false
+      for (let c = Math.min(fromCol, toCol) + 1; c < Math.max(fromCol, toCol); c++) {
+        if (this.board[fromRow][c]) return false
       }
     } else {
-      const minRow = Math.min(fromRow, toRow)
-      const maxRow = Math.max(fromRow, toRow)
-      for (let row = minRow + 1; row < maxRow; row++) {
-        if (this.board[row][fromCol]) return false
+      for (let r = Math.min(fromRow, toRow) + 1; r < Math.max(fromRow, toRow); r++) {
+        if (this.board[r][fromCol]) return false
       }
     }
     return true
   },
 
   validateMa(fromRow, fromCol, toRow, toCol) {
-    const rowDiff = Math.abs(toRow - fromRow)
-    const colDiff = Math.abs(toCol - fromCol)
-    if (!((rowDiff === 2 && colDiff === 1) || (rowDiff === 1 && colDiff === 2))) {
-      return false
-    }
-    if (rowDiff === 2) {
-      const blockRow = fromRow + (toRow > fromRow ? 1 : -1)
-      if (this.board[blockRow][fromCol]) return false
+    const rd = Math.abs(toRow - fromRow)
+    const cd = Math.abs(toCol - fromCol)
+    if (!((rd === 2 && cd === 1) || (rd === 1 && cd === 2))) return false
+    if (rd === 2) {
+      const br = fromRow + (toRow > fromRow ? 1 : -1)
+      if (this.board[br][fromCol]) return false
     } else {
-      const blockCol = fromCol + (toCol > fromCol ? 1 : -1)
-      if (this.board[fromRow][blockCol]) return false
+      const bc = fromCol + (toCol > fromCol ? 1 : -1)
+      if (this.board[fromRow][bc]) return false
     }
     return true
   },
 
   validateXiang(fromRow, fromCol, toRow, toCol, color) {
-    const rowDiff = Math.abs(toRow - fromRow)
-    const colDiff = Math.abs(toCol - fromCol)
-    if (rowDiff !== 2 || colDiff !== 2) return false
-    if (color === 'red') {
-      if (toRow < 5) return false
-    } else {
-      if (toRow > 4) return false
-    }
-    const blockRow = (fromRow + toRow) / 2
-    const blockCol = (fromCol + toCol) / 2
-    if (this.board[blockRow][blockCol]) return false
+    if (Math.abs(toRow - fromRow) !== 2 || Math.abs(toCol - fromCol) !== 2) return false
+    if (color === 'red' && toRow < 5) return false
+    if (color === 'black' && toRow > 4) return false
+    const br = (fromRow + toRow) / 2
+    const bc = (fromCol + toCol) / 2
+    if (this.board[br][bc]) return false
     return true
   },
 
   validateShi(fromRow, fromCol, toRow, toCol, color) {
-    const rowDiff = Math.abs(toRow - fromRow)
-    const colDiff = Math.abs(toCol - fromCol)
-    if (rowDiff !== 1 || colDiff !== 1) return false
+    if (Math.abs(toRow - fromRow) !== 1 || Math.abs(toCol - fromCol) !== 1) return false
     if (toCol < 3 || toCol > 5) return false
-    if (color === 'red') {
-      if (toRow < 7 || toRow > 9) return false
-    } else {
-      if (toRow < 0 || toRow > 2) return false
-    }
+    if (color === 'red' && (toRow < 7 || toRow > 9)) return false
+    if (color === 'black' && (toRow < 0 || toRow > 2)) return false
     return true
   },
 
   validateJiang(fromRow, fromCol, toRow, toCol, color) {
-    const rowDiff = Math.abs(toRow - fromRow)
-    const colDiff = Math.abs(toCol - fromCol)
-    if (rowDiff + colDiff === 1) {
+    const rd = Math.abs(toRow - fromRow)
+    const cd = Math.abs(toCol - fromCol)
+    if (rd + cd === 1) {
       if (toCol < 3 || toCol > 5) return false
-      if (color === 'red') {
-        if (toRow < 7 || toRow > 9) return false
-      } else {
-        if (toRow < 0 || toRow > 2) return false
-      }
+      if (color === 'red' && (toRow < 7 || toRow > 9)) return false
+      if (color === 'black' && (toRow < 0 || toRow > 2)) return false
       return true
     }
     if (fromCol === toCol) {
-      const enemyKing = color === 'red' ? 'b_jiang' : 'r_shuai'
-      const enemyKingRow = this.findPiece(enemyKing)
-      if (enemyKingRow && enemyKingRow.col === toCol) {
-        const minRow = Math.min(fromRow, enemyKingRow.row)
-        const maxRow = Math.max(fromRow, enemyKingRow.row)
-        let hasBlocker = false
-        for (let row = minRow + 1; row < maxRow; row++) {
-          if (this.board[row][fromCol]) {
-            hasBlocker = true
-            break
-          }
+      const ek = color === 'red' ? 'b_jiang' : 'r_shuai'
+      const ekPos = this.findPiece(ek)
+      if (ekPos && ekPos.row === toRow && ekPos.col === toCol) {
+        for (let r = Math.min(fromRow, toRow) + 1; r < Math.max(fromRow, toRow); r++) {
+          if (this.board[r][fromCol]) return false
         }
-        if (!hasBlocker) {
-          return true
-        }
+        return true
       }
     }
     return false
@@ -417,55 +552,43 @@ Page({
 
   validatePao(fromRow, fromCol, toRow, toCol) {
     if (fromRow !== toRow && fromCol !== toCol) return false
-    let jumpCount = 0
+    let jumps = 0
     if (fromRow === toRow) {
-      const minCol = Math.min(fromCol, toCol)
-      const maxCol = Math.max(fromCol, toCol)
-      for (let col = minCol + 1; col < maxCol; col++) {
-        if (this.board[fromRow][col]) jumpCount++
+      for (let c = Math.min(fromCol, toCol) + 1; c < Math.max(fromCol, toCol); c++) {
+        if (this.board[fromRow][c]) jumps++
       }
     } else {
-      const minRow = Math.min(fromRow, toRow)
-      const maxRow = Math.max(fromRow, toRow)
-      for (let row = minRow + 1; row < maxRow; row++) {
-        if (this.board[row][fromCol]) jumpCount++
+      for (let r = Math.min(fromRow, toRow) + 1; r < Math.max(fromRow, toRow); r++) {
+        if (this.board[r][fromCol]) jumps++
       }
     }
-    const targetKey = this.board[toRow][toCol]
-    if (targetKey) {
-      return jumpCount === 1
-    } else {
-      return jumpCount === 0
-    }
+    const target = this.board[toRow][toCol]
+    return target ? jumps === 1 : jumps === 0
   },
 
   validateZu(fromRow, fromCol, toRow, toCol, color) {
-    const rowDiff = toRow - fromRow
-    const colDiff = Math.abs(toCol - fromCol)
+    const rd = toRow - fromRow
+    const cd = Math.abs(toCol - fromCol)
     if (color === 'red') {
       if (fromRow >= 5) {
-        if (colDiff !== 0 || rowDiff !== -1) return false
+        if (cd !== 0 || rd !== -1) return false
       } else {
-        if (Math.abs(rowDiff) + colDiff !== 1) return false
-        if (rowDiff > 0) return false
+        if (Math.abs(rd) + cd !== 1 || rd > 0) return false
       }
     } else {
       if (fromRow <= 4) {
-        if (colDiff !== 0 || rowDiff !== 1) return false
+        if (cd !== 0 || rd !== 1) return false
       } else {
-        if (Math.abs(rowDiff) + colDiff !== 1) return false
-        if (rowDiff < 0) return false
+        if (Math.abs(rd) + cd !== 1 || rd < 0) return false
       }
     }
     return true
   },
 
-  findPiece(pieceKey) {
-    for (let row = 0; row < 10; row++) {
-      for (let col = 0; col < 9; col++) {
-        if (this.board[row][col] === pieceKey) {
-          return { row, col }
-        }
+  findPiece(key) {
+    for (let r = 0; r < 10; r++) {
+      for (let c = 0; c < 9; c++) {
+        if (this.board[r][c] === key) return { row: r, col: c }
       }
     }
     return null
@@ -486,16 +609,13 @@ Page({
     this.board[fromRow][fromCol] = null
 
     if (targetKey === 'r_shuai') {
-      this.setData({
-        gameStatus: '黑方获胜！',
-        gameEnded: true
-      })
+      this.setData({ gameStatus: '黑方获胜！', gameEnded: true })
+      this.playSound('win')
       return
-    } else if (targetKey === 'b_jiang') {
-      this.setData({
-        gameStatus: '红方获胜！',
-        gameEnded: true
-      })
+    }
+    if (targetKey === 'b_jiang') {
+      this.setData({ gameStatus: '红方获胜！', gameEnded: true })
+      this.playSound('win')
       return
     }
 
@@ -504,28 +624,23 @@ Page({
 
     if (this.isCheck(nextTurn)) {
       this.setData({ gameStatus: '将军！' })
+      this.playSound('check')
     } else {
       this.setData({ gameStatus: '游戏进行中' })
     }
   },
 
   isCheck(color) {
-    const kingKey = color === 'red' ? 'r_shuai' : 'b_jiang'
-    const kingPos = this.findPiece(kingKey)
-    if (!kingPos) return false
+    const key = color === 'red' ? 'r_shuai' : 'b_jiang'
+    const pos = this.findPiece(key)
+    if (!pos) return false
 
-    const enemyColor = color === 'red' ? 'black' : 'red'
-
-    for (let row = 0; row < 10; row++) {
-      for (let col = 0; col < 9; col++) {
-        const pieceKey = this.board[row][col]
-        if (pieceKey) {
-          const piece = this.pieceTypes[pieceKey]
-          if (piece.color === enemyColor) {
-            if (this.isValidMove(row, col, kingPos.row, kingPos.col)) {
-              return true
-            }
-          }
+    const enemy = color === 'red' ? 'black' : 'red'
+    for (let r = 0; r < 10; r++) {
+      for (let c = 0; c < 9; c++) {
+        const pk = this.board[r][c]
+        if (pk && this.pieceTypes[pk].color === enemy) {
+          if (this.isValidMove(r, c, pos.row, pos.col)) return true
         }
       }
     }
@@ -535,10 +650,11 @@ Page({
   restartGame() {
     wx.showModal({
       title: '提示',
-      content: '确定要重新开始游戏吗？',
+      content: '确定重新开始？',
       success: (res) => {
         if (res.confirm) {
           this.initGame()
+          this.startTimer()
           this.drawBoard()
         }
       }
@@ -547,31 +663,24 @@ Page({
 
   undoMove() {
     if (this.data.moveHistory.length === 0) {
-      wx.showToast({
-        title: '没有可以悔的棋',
-        icon: 'none'
-      })
+      wx.showToast({ title: '没有可悔的棋', icon: 'none' })
       return
     }
-
     wx.showModal({
       title: '悔棋',
-      content: '确定要悔棋吗？',
+      content: '确定悔棋？',
       success: (res) => {
         if (res.confirm) {
-          const lastMove = this.data.moveHistory.pop()
-
-          this.board[lastMove.from.row][lastMove.from.col] = lastMove.piece
-          this.board[lastMove.to.row][lastMove.to.col] = lastMove.captured
-
-          const prevTurn = this.data.currentTurn === 'red' ? 'black' : 'red'
+          const last = this.data.moveHistory.pop()
+          this.board[last.from.row][last.from.col] = last.piece
+          this.board[last.to.row][last.to.col] = last.captured
+          const prev = this.data.currentTurn === 'red' ? 'black' : 'red'
           this.setData({
-            currentTurn: prevTurn,
+            currentTurn: prev,
             selectedPiece: null,
             gameEnded: false,
             gameStatus: '游戏进行中'
           })
-
           this.drawBoard()
         }
       }
@@ -581,7 +690,7 @@ Page({
   showRules() {
     wx.showModal({
       title: '象棋规则',
-      content: '红方先行，双方轮流走棋。将/帅被吃掉则游戏结束。车马炮相象士兵卒各走法不同，点击棋子可移动。',
+      content: '红方先行，双方轮流走棋。将/帅被吃则游戏结束。',
       showCancel: false
     })
   }

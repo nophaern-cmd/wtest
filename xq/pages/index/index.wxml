@@ -1,24 +1,33 @@
 <!--index.wxml-->
 <view class="container">
-  <view class="header">
-    <view class="turn-indicator">
-      <text class="turn-text {{currentTurn === 'red' ? 'red-turn' : 'black-turn'}}">
-        {{currentTurn === 'red' ? '红方走棋' : '黑方走棋'}}
-      </text>
+  <view class="game-area">
+    <!-- 左侧玩家信息栏：红方在下(楚河下)，黑方在上(楚河上) -->
+    <view class="player-bar">
+      <view class="player-info {{currentTurn === 'red' ? 'active' : ''}}">
+        <text class="player-badge red">红</text>
+        <text class="player-time">{{redTimeStr}}</text>
+      </view>
+      <view class="bar-divider"></view>
+      <view class="player-info {{currentTurn === 'black' ? 'active' : ''}}">
+        <text class="player-badge black">黑</text>
+        <text class="player-time">{{blackTimeStr}}</text>
+      </view>
+    </view>
+
+    <view class="board-container">
+      <view class="canvas-container" style="width:{{boardWidth}}px;height:{{boardHeight}}px;">
+        <canvas type="2d" id="chessBoard" class="chess-canvas" bindtouchstart="onTouchStart" bindtouchend="onTouchEnd"></canvas>
+      </view>
     </view>
   </view>
 
-  <view class="status-info">
-    <text class="game-status">{{gameStatus}}</text>
-  </view>
-
-  <view class="board-container">
-    <canvas type="2d" id="chessBoard" class="board-canvas" bindtap="onCanvasTap"></canvas>
-  </view>
-
-  <view class="controls">
-    <button class="control-btn" bindtap="restartGame">重新开始</button>
-    <button class="control-btn" bindtap="undoMove">悔棋</button>
-    <button class="control-btn" bindtap="showRules">规则</button>
+  <view class="footer">
+    <text class="status">{{gameStatus}}</text>
+    <view class="btn-row">
+      <view class="btn" bindtap="restartGame">重新开始</view>
+      <view class="btn" bindtap="undoMove">悔棋</view>
+      <view class="btn" bindtap="showRules">规则</view>
+      <view class="btn {{soundEnabled ? '' : 'off'}}" bindtap="toggleSound">{{soundEnabled ? '声音' : '静音'}}</view>
+    </view>
   </view>
 </view>

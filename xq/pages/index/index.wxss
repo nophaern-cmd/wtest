@@ -1,94 +1,178 @@
-/* index.wxss */
+/** index.wxss **/
 page {
   background-color: #F5E6D3;
+  width: 100%;
   height: 100%;
 }
 
 .container {
+  width: 100%;
+  height: 100%;
   display: flex;
   flex-direction: column;
+}
+
+/* 游戏区域 */
+.game-area {
+  flex: 1;
+  display: flex;
+  flex-direction: row;
   align-items: center;
-  padding: 10rpx;
-  height: 100vh;
-  box-sizing: border-box;
+  justify-content: center;
+  min-height: 0;
 }
 
-.header {
-  width: 100%;
-  margin: 10rpx 0;
-  text-align: center;
+/* 左侧玩家信息栏 - 旋转90度，对齐楚河位置 */
+.player-bar {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: 6rpx;
+  transform: rotate(-90deg) translateX(-5%);
+  transform-origin: center center;
+  width: 50rpx;
+  flex-shrink: 0;
+  align-self: center;
 }
 
-.turn-indicator {
-  padding: 10rpx 30rpx;
-  background: #fff;
+/* 分隔线 */
+.bar-divider {
+  width: 8rpx;
+  height: 2rpx;
+  background: #999;
+}
+
+/* 单个玩家信息 */
+.player-info {
+  position: relative;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: 6rpx;
+  padding: 5rpx 8rpx;
+  background: rgba(255, 255, 255, 0.5);
+  border-radius: 6rpx;
+  white-space: nowrap;
+  border: 2rpx solid transparent;
+}
+
+.player-info.active {
+  background: rgba(255, 215, 0, 0.15);
+  border: 2rpx solid transparent;
+  background-clip: padding-box;
+}
+
+/* 长方形流动边框 */
+.player-info.active::before {
+  content: '';
+  position: absolute;
+  top: -3rpx;
+  left: -3rpx;
+  right: -3rpx;
+  bottom: -3rpx;
   border-radius: 8rpx;
-  box-shadow: 0 2rpx 6rpx rgba(0, 0, 0, 0.1);
-  display: inline-block;
+  background: linear-gradient(90deg, #FFD700, #FFA500, #FFD700, #FFA500);
+  background-size: 300% 100%;
+  animation: flow 3s linear infinite;
+  z-index: -1;
 }
 
-.turn-text {
-  font-size: 28rpx;
-  font-weight: bold;
+.player-info.active::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  border-radius: 6rpx;
+  background: rgba(255, 248, 220, 0.9);
+  z-index: -1;
 }
 
-.turn-text.red-turn {
-  color: #C0392B;
+@keyframes flow {
+  0% { background-position: 0% 50%; }
+  100% { background-position: 300% 50%; }
 }
 
-.turn-text.black-turn {
-  color: #2C3E50;
-}
-
-.status-info {
-  width: 100%;
+/* 玩家徽章 */
+.player-badge {
+  width: 30rpx;
+  height: 30rpx;
+  line-height: 30rpx;
   text-align: center;
-  margin: 5rpx 0;
+  border-radius: 50%;
+  font-size: 18rpx;
+  font-weight: bold;
+  color: #fff;
+  flex-shrink: 0;
 }
 
-.game-status {
-  font-size: 26rpx;
+.player-badge.black {
+  background: #2C3E50;
+}
+
+.player-badge.red {
+  background: #C0392B;
+}
+
+/* 时间显示 */
+.player-time {
+  font-size: 22rpx;
+  font-family: 'Menlo', 'Monaco', monospace;
+  color: #555;
+}
+
+.player-info.active .player-time {
   color: #8B4513;
   font-weight: bold;
 }
 
+/* 棋盘容器 */
 .board-container {
-  flex: 1;
-  width: 100%;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  overflow: hidden;
-  min-height: 400rpx;
+  flex: 0 0 auto;
 }
 
-.board-canvas {
-  width: 360px;
-  height: 400px;
+.canvas-container {
+  background: #DEB887;
+  border-radius: 8rpx;
+  box-shadow: 0 4rpx 16rpx rgba(0, 0, 0, 0.2);
+}
+
+.chess-canvas {
+  width: 100%;
+  height: 100%;
   display: block;
 }
 
-.controls {
-  width: 100%;
+/* 底部区域 */
+.footer {
+  flex: 0 0 auto;
+  padding: 6rpx 15rpx 10rpx;
+}
+
+.status {
+  display: block;
+  text-align: center;
+  font-size: 28rpx;
+  font-weight: bold;
+  color: #8B4513;
+  padding: 4rpx 0 8rpx;
+}
+
+.btn-row {
   display: flex;
   justify-content: center;
-  gap: 15rpx;
-  margin: 10rpx 0;
+  gap: 10rpx;
 }
 
-.control-btn {
-  flex: 1;
-  max-width: 150rpx;
-  height: 60rpx;
-  line-height: 60rpx;
+.btn {
+  padding: 10rpx 18rpx;
   background: #8B4513;
-  color: white;
-  font-size: 22rpx;
-  border: none;
+  color: #fff;
+  font-size: 24rpx;
   border-radius: 6rpx;
-  padding: 0 10rpx;
 }
 
-.control-btn:active {
-  background: #6B3513;
+.btn.off {
+  background: #999;
 }
