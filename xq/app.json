@@ -1,0 +1,14 @@
+{
+  "pages": [
+    "pages/index/index"
+  ],
+  "window": {
+    "backgroundTextStyle": "light",
+    "navigationBarBackgroundColor": "#8B4513",
+    "navigationBarTitleText": "中国象棋",
+    "navigationBarTextStyle": "white",
+    "backgroundColor": "#F5E6D3"
+  },
+  "style": "v2",
+  "sitemapLocation": "sitemap.json"
+}

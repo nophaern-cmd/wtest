@@ -1,0 +1,24 @@
+<!--index.wxml-->
+<view class="container">
+  <view class="header">
+    <view class="turn-indicator">
+      <text class="turn-text {{currentTurn === 'red' ? 'red-turn' : 'black-turn'}}">
+        {{currentTurn === 'red' ? '红方走棋' : '黑方走棋'}}
+      </text>
+    </view>
+  </view>
+
+  <view class="status-info">
+    <text class="game-status">{{gameStatus}}</text>
+  </view>
+
+  <view class="board-container">
+    <canvas type="2d" id="chessBoard" class="board-canvas" bindtap="onCanvasTap"></canvas>
+  </view>
+
+  <view class="controls">
+    <button class="control-btn" bindtap="restartGame">重新开始</button>
+    <button class="control-btn" bindtap="undoMove">悔棋</button>
+    <button class="control-btn" bindtap="showRules">规则</button>
+  </view>
+</view>
